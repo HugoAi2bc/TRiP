@@ -1,0 +1,46 @@
+# Name for the experiment
+project_name: "Shwachman-Diamond"
+
+# Directory where the program is performed
+workdir: "/home/hugo.arbes/Hugo/GST/Schwachman-Diamond/"
+
+
+# Names of the files in the "database/" directory :
+
+# Name of the fasta file to align on
+fasta_transcriptome: "transcriptome_transcriptLePlusLong.fa"
+# Name of the gff file with genome annotations
+gff_transcriptome: "transcriptome_transcriptLePlusLong.gff3"
+# Fasta file with not interesting sequences
+fasta_outRNA: "human_ncRNA.fa"
+
+# Does UTR covering has to be calculated : "Yes" or "No"
+UTR: "yes"
+# File with CDS lengths
+CDSlength: "CDSlength.transcriptome_transcriptLePlusLong.txt"
+# File with 5' UTR lengths
+5primelength: "5primelength.transcriptome_transcriptLePlusLong.txt"
+# File with 3' UTR lengths
+3primelength: "3primelength.transcriptome_transcriptLePlusLong.txt"
+
+# Are the data from "ribo-seq" or "rna-seq" : "yes" or "no"
+RNAseq: "no"
+
+# Name of the reference condition
+reference_condition: "Mminus"
+
+# Adaptator sequence
+adapt_sequence: "AGATCGGAAGAGCACACGTCTGAACT"
+
+# Minimum read length kept for ribosome profiling
+kmer_min: "25"
+# Maximum read length kept for ribosome profiling
+kmer_max: "35"
+
+# Number of bases to look before the start and after the stop for periodicity (relative positions)
+window_bf: "50"
+# Number of bases to look after the start and before the stop for periodicity (relative positions)
+window_af: "100"
+
+# Number of threads to be used
+threads: "4"
