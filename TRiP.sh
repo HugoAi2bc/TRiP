@@ -23,12 +23,16 @@ conda --version;
 # source /home/hugo.arbes/miniconda3/etc/profile.d/conda.sh
 # MYSHELL=`basename $SHELL`;
 # conda init -v $MYSHELL;
-conda activate all_TRiP;
+
+# conda activate all_TRiP;
+
 # conda list;
-snakemake -j --dag -np |  dot -Tsvg > dag_last-run.svg;
-snakemake -j --dag -np --forceall |  dot -Tsvg > dag_all.svg;
-snakemake -j -np;
-conda deactivate;
+snakemake -s TRiP/Snakefile -j --dag -np |  dot -Tsvg > dag_last-run.svg;
+snakemake -s TRiP/Snakefile -j --dag -np --forceall |  dot -Tsvg > dag_all.svg;
+snakemake -s TRiP/Snakefile -j -np;
+
+# conda deactivate;
+
 
 # conda activate analysis
 # snakemake -s snakefile_analysis -j-np
