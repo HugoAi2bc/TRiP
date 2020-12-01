@@ -291,7 +291,6 @@ dependencies:
   - r-rsqlite=2.2.1=r40h1b71b39_0
   - r-rstudioapi=0.11=r40h6115d3f_1
   - r-rvest=0.3.6=r40h6115d3f_0
-  - r-sartools=1.7.3=r40_1
   - r-scales=1.1.1=r40h6115d3f_0
   - r-selectr=0.4_2=r40h6115d3f_1
   - r-snow=0.4_3=r40h6115d3f_1002

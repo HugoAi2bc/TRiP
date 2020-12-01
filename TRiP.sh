@@ -7,7 +7,7 @@
 ################################################################################
 ### Tool for Ribosome Profiling
 ### Pauline FRANCOIS ; Hugo ARBES
-### October 14th, 2020
+### December 1st, 2020
 ################################################################################
 
 ######
@@ -27,9 +27,9 @@ conda --version;
 # conda activate all_TRiP;
 
 # conda list;
-snakemake -s TRiP/Snakefile -j --dag -np |  dot -Tsvg > dag_last-run.svg;
-snakemake -s TRiP/Snakefile -j --dag -np --forceall |  dot -Tsvg > dag_all.svg;
-snakemake -s TRiP/Snakefile -j -np;
+snakemake -s /TRiP/Snakefile -j --dag -np |  dot -Tsvg > dag_last-run.svg;
+snakemake -s /TRiP/Snakefile -j --dag -np --forceall |  dot -Tsvg > dag_all.svg;
+snakemake -s /TRiP/Snakefile -j -np;
 
 # conda deactivate;
 
