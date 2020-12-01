@@ -1,5 +1,3 @@
-#! /bin/bash
-
 ################################################################################
 #########################           TRiP           ################e#############
 ################################################################################
@@ -29,7 +27,7 @@ conda --version;
 # conda list;
 snakemake -s /TRiP/Snakefile -j --dag -np |  dot -Tsvg > /data/dag_last-run.svg;
 snakemake -s /TRiP/Snakefile -j --dag -np --forceall |  dot -Tsvg > /data/dag_all.svg;
-snakemake -s /TRiP/Snakefile -j -np;
+snakemake -s /TRiP/Snakefile -j;
 
 # conda deactivate;
 
