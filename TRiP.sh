@@ -17,7 +17,7 @@
 # Need installation de locate : $ sudo apt install locate
 
 
-conda --version;
+# conda --version;
 # source /home/hugo.arbes/miniconda3/etc/profile.d/conda.sh
 # MYSHELL=`basename $SHELL`;
 # conda init -v $MYSHELL;
