@@ -33,10 +33,6 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
 #var
 
 RUN git clone https://github.com/HugoAi2bc/TRiP.git
-RUN ls /data/
-RUN ls /TRiP/
-RUN ls /TRiP/tools/
-RUN cat /TRiP/Dockerfile
 
 ENV BASH_ENV ~/.bashrc
 
@@ -48,6 +44,7 @@ SHELL ["/bin/bash", "-c"]
 RUN conda env create -f TRiP/all_TRiP.yml
 RUN conda init bash
 RUN echo "conda activate all_TRiP" >> /root/.bashrc \
-    && conda info --envs
+    && conda info --envs \
+    && conda list
 
 CMD ["bash","-i","/TRiP/TRiP.sh"]
