@@ -45,6 +45,6 @@ RUN conda env create -f TRiP/all_TRiP.yml
 RUN conda init bash
 RUN echo "conda activate all_TRiP" >> /root/.bashrc \
     && conda info --envs \
-    && conda list
+    && conda list --name all_TRiP
 
 CMD ["bash","-i","/TRiP/TRiP.sh"]
