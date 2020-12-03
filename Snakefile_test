@@ -1,0 +1,14 @@
+
+
+# mamba install -c bioconda -c conda-forge snakemake
+# snakemake 5.26.1
+rule all:
+    input:
+        "/data/tmp.txt"
+
+rule pandoc_test:
+    output:
+        "/data/tmp.txt"
+    shell:
+        "Rscript /TRiP/find_pandoc.R ;"
+        "mv tmp.txt /data/ ;"
