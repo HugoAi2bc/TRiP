@@ -10,7 +10,7 @@ HISAT2 = ["1","2","3","4","5","6","7","8"]
 KMER = list(map(str,range(int(config['kmer_min']),int(config['kmer_max'])+1)))
 
 #
-if config['UTR'] == "Yes":
+if config['UTR'] == "yes":
     counts = "htseqcountCDS"
 else:
     counts = "htseqcount"
@@ -333,6 +333,8 @@ rule quality_controls_bamDivision:
     shell:
         # mamba install -c bioconda -c conda-forge samtools
         # samtools 1.11
+        # mamba install --name all_TRiP -c anaconda gawk
+        # gawk 5.1.0
         "/TRiP/tools/BamDivision.sh -N {params.sample_names} -S {input.sam} -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log};"
         "rm {input.sam};"
 

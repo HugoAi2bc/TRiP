@@ -1,5 +1,6 @@
 name: all_TRiP
 channels:
+  - anaconda
   - bioconda
   - conda-forge
   - defaults
@@ -49,7 +50,7 @@ dependencies:
   - ca-certificates=2020.11.8=ha878542_0
   - cachetools=4.1.1=py_0
   - cairo=1.16.0=h3fc0475_1005
-  - certifi=2020.11.8=py38h578d9bd_0
+  - certifi=2020.11.8=py38h06a4308_0
   - cffi=1.14.3=py38h1bdcb99_1
   - chardet=3.0.4=py38h924ce5b_1008
   - coincbc=2.10.5=hab63836_0
@@ -77,6 +78,7 @@ dependencies:
   - freetype=2.10.3=he06d7ca_0
   - fribidi=1.0.10=h516909a_0
   - ftputil=4.0.0=py_0
+  - gawk=5.1.0=h7b6447c_0
   - gcc_impl_linux-64=7.5.0=hd9e1a51_17
   - gcc_linux-64=7.5.0=he2a3fca_29
   - gdk-pixbuf=2.38.2=h3f25603_4
@@ -172,7 +174,7 @@ dependencies:
   - olefile=0.46=py_0
   - openjdk=11.0.8=hacce0ff_0
   - openjpeg=2.3.1=h981e76c_3
-  - openssl=1.1.1h=h516909a_0
+  - openssl=1.1.1h=h7b6447c_0
   - pandas=1.1.3=py38hc5bc63f_2
   - pandoc=2.11.0.4=hd18ef5c_0
   - pango=1.42.4=h7062337_4
