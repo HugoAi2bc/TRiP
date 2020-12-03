@@ -12,7 +12,7 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm Miniconda3-latest-Linux-x86_64.sh
 
-RUN cat /TRiP/tools/Dockerfile
+RUN cat /data/Dockerfile
 #bin
 #boot
 #dev
