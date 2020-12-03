@@ -11,10 +11,7 @@ RUN apt-get update \
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm Miniconda3-latest-Linux-x86_64.sh
-RUN ls /data/
-RUN ls /TRiP/
-RUN ls /TRiP/tools/
-RUN cat /data/Dockerfile
+
 #bin
 #boot
 #dev
@@ -36,6 +33,10 @@ RUN cat /data/Dockerfile
 #var
 
 RUN git clone https://github.com/HugoAi2bc/TRiP.git
+RUN ls /data/
+RUN ls /TRiP/
+RUN ls /TRiP/tools/
+RUN cat /TRiP/Dockerfile
 
 ENV BASH_ENV ~/.bashrc
 
