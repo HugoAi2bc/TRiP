@@ -11,7 +11,9 @@ RUN apt-get update \
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm Miniconda3-latest-Linux-x86_64.sh
-
+RUN ls /data/
+RUN ls /TRiP/
+RUN ls /TRiP/tools/
 RUN cat /data/Dockerfile
 #bin
 #boot
