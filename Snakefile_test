@@ -1,14 +1,26 @@
-
-
-# mamba install -c bioconda -c conda-forge snakemake
-# snakemake 5.26.1
 rule all:
     input:
-        "/data/tmp.txt"
+        "/data/tmp1.txt",
+        "/data/tmp2.txt",
+        "/data/tmp3.txt",
+        "/data/tmp4.txt",
+        "/data/tmp5.txt",
+        "/data/tmp6.txt",
+        "/data/complete.txt"
 
 rule pandoc_test:
     output:
-        "/data/tmp.txt"
+        "/data/tmp1.txt",
+        "/data/tmp2.txt",
+        "/data/tmp3.txt",
+        "/data/tmp4.txt",
+        "/data/tmp5.txt",
+        "/data/tmp6.txt"
     shell:
         "Rscript /TRiP/find_pandoc.R ;"
-        "mv tmp.txt /data/ ;"
+
+rule pandoc_test:
+    output:
+        "/data/complete.txt"
+    shell:
+        Rscript -e "rmarkdown::render('DESeq2_analysis_test.Rmd', clean=TRUE) ;"
