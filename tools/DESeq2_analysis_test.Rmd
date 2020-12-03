@@ -43,7 +43,7 @@ Var_padj <- as.numeric(args[3])
 ```{r data , echo=FALSE}
 expData = read.table("/data/count_matrix_R2.txt", header = T, row.names = 1)
 ```
-##### *`./count_matrix.txt`*
+##### *`/data/count_matrix_R2.txt`*
 \
 
 ####  Visualisation donnees brutes
