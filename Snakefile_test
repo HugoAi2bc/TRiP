@@ -23,4 +23,4 @@ rule pandoc_test:
     output:
         "/data/complete.txt"
     shell:
-        Rscript -e "rmarkdown::render('DESeq2_analysis_test.Rmd', clean=TRUE) ;"
+        """Rscript -e "rmarkdown::render("DESeq2_analysis_test.Rmd", clean=TRUE)" ;"""
