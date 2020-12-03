@@ -23,4 +23,4 @@ rule Rmd_rule:
     output:
         "/data/complete.txt"
     shell:
-        """Rscript -e "rmarkdown::render("./tools/DESeq2_analysis_test.Rmd", clean=TRUE)" ;"""
+        """Rscript -e "rmarkdown::render("/data/tools/DESeq2_analysis_test.Rmd", clean=TRUE)" ;"""
