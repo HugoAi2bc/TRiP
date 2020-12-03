@@ -1,12 +1,12 @@
 rule all:
     input:
+        "/data/complete.txt"
         "/data/tmp1.txt",
         "/data/tmp2.txt",
         "/data/tmp3.txt",
         "/data/tmp4.txt",
         "/data/tmp5.txt",
         "/data/tmp6.txt",
-        "/data/complete.txt"
 
 rule pandoc_test:
     output:
