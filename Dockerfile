@@ -12,6 +12,27 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm Miniconda3-latest-Linux-x86_64.sh
 
+#RUN ls .
+#bin
+#boot
+#dev
+#etc
+#home
+#lib
+#lib64
+#media
+#mnt
+#opt
+#proc
+#root
+#run
+#sbin
+#srv
+#sys
+#tmp
+#usr
+#var
+
 RUN git clone https://github.com/HugoAi2bc/TRiP.git
 
 ENV BASH_ENV ~/.bashrc
