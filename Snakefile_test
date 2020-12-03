@@ -27,4 +27,4 @@ rule Rmd_rule:
         "/data/up.txt",
         "/data/down.txt"
     shell:
-        """Rscript -e "rmarkdown::render("/TRiP/tools/DESeq2_analysis_test.Rmd {input}", clean=TRUE)" ;"""
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis_test.Rmd {input}', clean=TRUE)\" ;"
