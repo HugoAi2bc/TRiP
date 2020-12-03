@@ -19,7 +19,7 @@ rule pandoc_test:
     shell:
         "Rscript /TRiP/find_pandoc.R ;"
 
-rule pandoc_test:
+rule Rmd_rule:
     output:
         "/data/complete.txt"
     shell:
