@@ -432,7 +432,8 @@ rule DESeq2_analysis:
         "/data/RESULTS/DESeq2/complete.txt",
         "/data/RESULTS/DESeq2/up.txt",
         "/data/RESULTS/DESeq2/down.txt"
+    log:
+        "/data/logs/DESeq2_analysis/DESeq2_analysis.log"
     shell:
-        """Rscript -e "rmarkdown::render("/data/tools/DESeq2_analysis_test.Rmd", clean=TRUE)" ;"""
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis_test.Rmd', clean=TRUE)\" 2> {log} ;"
         # "Rscript /TRiP/tools/DE_SEQ2_Analyse.R " + config['reference_condition'] + " ;"
-        # "mv Rplots.pdf /data/RESULTS/DESeq2/ ;"

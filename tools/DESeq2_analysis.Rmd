@@ -5,6 +5,9 @@ date: "`r format (Sys.time(), '%B %d, %Y')`"
 output: html_document
 
 ---
+
+Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/lib/R/library/rmarkdown/rmd/h/pandoc")
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(include = TRUE, message = FALSE, warning = FALSE)
@@ -17,7 +20,7 @@ rm(list=ls())
 
 
 ```{r packages}
-  
+
 library(DESeq2)
 library(stringr)
 ```
@@ -38,9 +41,9 @@ Var_padj <- as.numeric(args[3])
 
 #### Lecture des donnees
 ```{r data , echo=FALSE}
-expData = read.table("./results/DESeq2/count_matrix.txt", header = T, row.names = 1)
+expData = read.table("/data/RESULTS/DESeq2/count_matrix.txt", header = T, row.names = 1)
 ```
-##### *`./results/DESeq2/count_matrix.txt`*
+##### *`/data/count_matrix_R2.txt`*
 \
 
 ####  Visualisation donnees brutes
@@ -59,9 +62,9 @@ nb_col_condB <- table(factor(Cond))[[2]]
 
 if (Cond[1] != args[1]) {
         Ord <- c( (1:nb_col_condB)+nb_col_condA , (1:nb_col_condA) )
-        expData_Sorted <- expData_Sorted[, Ord] 
+        expData_Sorted <- expData_Sorted[, Ord]
 
-# inversion des 2 valeurs nb_col_condA et B sans passer par une 3eme variable 
+# inversion des 2 valeurs nb_col_condA et B sans passer par une 3eme variable
         nb_col_condA <- nb_col_condA + nb_col_condB
         nb_col_condB <- nb_col_condA - nb_col_condB
         nb_col_condA <- nb_col_condA - nb_col_condB
@@ -88,7 +91,7 @@ barplot(colSums(expData_Sorted), ylab = "Total read number",
 ```{r}
 conds    = factor(c(rep("CondA", nb_col_condA), rep("CondB", nb_col_condB)))
 colData  = data.frame(condition = conds)
-ddsObjet = DESeqDataSetFromMatrix(countData = expData_Sorted, 
+ddsObjet = DESeqDataSetFromMatrix(countData = expData_Sorted,
                                   colData   = colData, formula(~ condition))
 ddsObjet = estimateSizeFactors(ddsObjet)
 Size_Factors <- sizeFactors(ddsObjet)
@@ -100,7 +103,7 @@ normCountData = counts(ddsObjet, normalized = TRUE)
 #### Comparaison des tailles des librairies (apres normalisation)
 ```{r , fig.height = 3, fig.width = 4}
 barplot(colSums(normCountData), ylab = "Total read number",
-        main = "Library sizes (after normalization)", 
+        main = "Library sizes (after normalization)",
         col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
         names = colnames(expData_Sorted),
         cex.names = 0.6)
@@ -113,9 +116,9 @@ row_sub_1 = apply(expData_Sorted, 1, function(row) all(row !=0 ))
 row_sub_2 = apply(normCountData, 1, function(row) all(row !=0 ))
 par(mfrow = c(1,2))
 
-boxplot((expData_Sorted[row_sub_1,]), 
+boxplot((expData_Sorted[row_sub_1,]),
         #ylab = "Total read number",
-        main = "Library sizes", 
+        main = "Library sizes",
         log = "y",
         col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
         names = colnames(expData_Sorted),
@@ -124,7 +127,7 @@ boxplot((expData_Sorted[row_sub_1,]),
         ,ylim = c(1,max(expData_Sorted[,]) )
         )
 boxplot((normCountData[row_sub_2,]), ylab = "Total read number",
-        main = "Library sizes (after normalization)", 
+        main = "Library sizes (after normalization)",
         log = "y",
         col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
         names = colnames(expData_Sorted),
@@ -165,7 +168,7 @@ colnames(logFC) = paste("logFC")
 
 vec_logFC <- as.vector(t(logFC))
 hist(vec_logFC,
-     nclass = 200, 
+     nclass = 200,
      xlab = "logFC values",
      main ="Histogramme Frequence / LogFC" )
 abline(v = 2, col = "red")
@@ -195,7 +198,7 @@ meanExp = apply(normCountData, 1, mean)
 ```
 \
 
-#### Application du package DESeq2, pour le calcul des statistiques 
+#### Application du package DESeq2, pour le calcul des statistiques
 ```{r, include = FALSE}
 ddsEstim = DESeq(ddsObjet)
 resDESeq = results(ddsEstim, contrast = c("condition", "CondA", "CondB"))
@@ -218,7 +221,7 @@ plotDispEsts(dds)
 ```
 \
 
-#### l'histogramme des pvalues 
+#### l'histogramme des pvalues
 ```{r }
 hist(resDESeq[,"pvalue"], nclass = 100, xlab = "p-value",
      main = "p-values (DESeq2)")
@@ -238,7 +241,7 @@ myColors <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), "green" 
                    ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange <0), "red" ,
                           "black" ) )
 
-plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]), 
+plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
      pch = 20, cex = 1,
      col=myColors,
      xlab = "log2 FC", ylab = "-log10(padj)",
@@ -253,25 +256,25 @@ myColors <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), "green" 
                    ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange <0), "red" ,
                           "black" ) )
 
-Valeurs_Limite_Y <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), 0.01 , 
+Valeurs_Limite_Y <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), 0.01 ,
                ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange <0), 0.01 ,
                resDESeq$padj) )
 
-Forme_Pixel_Y <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), 17 , 
+Forme_Pixel_Y <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), 17 ,
                            ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange <0), 17 ,
                                   20) )
 
 
 
-plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y), 
+plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
      pch = Forme_Pixel_Y,
      col=myColors,
      xlab = "log2 FC", ylab = "-log10(padj)",
      ylim = c(0,2),
-    
+
      main = paste0("Volcano plot - ",Cond[nb_col_condB+1]," vs ",Cond[1])
-     
-     
+
+
      )
 ```
 \
@@ -315,27 +318,25 @@ repressedGenes <- repressedGenes[(order(repressedGenes[,"padj"])),]
 
 #### Ecriture des resultats
 ```{r, include= FALSE}
-write.table(Table_Complete, 
-            file = paste0("./results/DESeq2/complete.txt"), 
+write.table(Table_Complete,
+            file = paste0("/data/RESULTS/DESeq2/complete.txt"),
             quote = F, sep = "\t", row.names = F)
 
 
-write.table(inducedGenes, 
-            file = paste0("./results/DESeq2/up.txt"), 
+write.table(inducedGenes,
+            file = paste0("/data/RESULTS/DESeq2/up.txt"),
             quote = F, sep = "\t", row.names = F)
 
-write.table(repressedGenes, 
-            file = paste0("./results/DESeq2/down.txt"), 
+write.table(repressedGenes,
+            file = paste0("/data/RESULTS/DESeq2/down.txt"),
             quote = F, sep = "\t", row.names = F)
 
 ```
 
 
 
-`r paste0("./results/DESeq2/complete.txt")`
+`r paste0("/data/RESULTS/DESeq2/complete.txt")`
 \
-`r paste0("./results/DESeq2/up.txt")  `
+`r paste0("/data/RESULTS/DESeq2/up.txt")  `
 \
-`r paste0("./results/DESeq2/down.txt")  `
-
-
+`r paste0("/data/RESULTS/DESeq2/down.txt")  `

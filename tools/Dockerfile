@@ -17,6 +17,7 @@ RUN git clone https://github.com/HugoAi2bc/TRiP.git
 ENV BASH_ENV ~/.bashrc
 
 ENV PATH=/root/miniconda3/bin:$PATH
+ENV PATH=/root/miniconda3/envs/all_TRiP/bin:$PATH
 
 SHELL ["/bin/bash", "-c"]
 
@@ -25,4 +26,4 @@ RUN conda init bash
 RUN echo "conda activate all_TRiP" >> /root/.bashrc \
     && conda info --envs
 
-CMD ["Rscript","/TRiP/tools/find_pandoc.R"]
+CMD ["bash","-i","/TRiP/TRiP.sh"]
