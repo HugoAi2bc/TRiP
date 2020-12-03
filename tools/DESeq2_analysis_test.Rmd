@@ -41,7 +41,7 @@ Var_padj <- as.numeric(args[3])
 
 #### Lecture des donnees
 ```{r data , echo=FALSE}
-expData = read.table("./count_matrix.txt", header = T, row.names = 1)
+expData = read.table("/data/count_matrix_R2.txt", header = T, row.names = 1)
 ```
 ##### *`./count_matrix.txt`*
 \
@@ -319,24 +319,24 @@ repressedGenes <- repressedGenes[(order(repressedGenes[,"padj"])),]
 #### Ecriture des resultats
 ```{r, include= FALSE}
 write.table(Table_Complete,
-            file = paste0("./complete.txt"),
+            file = paste0("/data/complete.txt"),
             quote = F, sep = "\t", row.names = F)
 
 
 write.table(inducedGenes,
-            file = paste0("./up.txt"),
+            file = paste0("/data/up.txt"),
             quote = F, sep = "\t", row.names = F)
 
 write.table(repressedGenes,
-            file = paste0("./down.txt"),
+            file = paste0("/data/down.txt"),
             quote = F, sep = "\t", row.names = F)
 
 ```
 
 
 
-`r paste0("./complete.txt")`
+`r paste0("/data/complete.txt")`
 \
-`r paste0("./up.txt")  `
+`r paste0("/data/up.txt")  `
 \
-`r paste0("./down.txt")  `
+`r paste0("/data/down.txt")  `

@@ -1,26 +1,30 @@
 rule all:
     input:
-        "/data/complete.txt"
-        "/data/tmp1.txt",
-        "/data/tmp2.txt",
-        "/data/tmp3.txt",
-        "/data/tmp4.txt",
-        "/data/tmp5.txt",
-        "/data/tmp6.txt",
-
-rule pandoc_test:
-    output:
+        "/data/complete.txt",
         "/data/tmp1.txt",
         "/data/tmp2.txt",
         "/data/tmp3.txt",
         "/data/tmp4.txt",
         "/data/tmp5.txt",
         "/data/tmp6.txt"
-    shell:
-        "Rscript /TRiP/find_pandoc.R ;"
+
+#rule pandoc_test:
+#    output:
+#        "/data/tmp1.txt",
+#        "/data/tmp2.txt",
+#        "/data/tmp3.txt",
+#        "/data/tmp4.txt",
+#        "/data/tmp5.txt",
+#        "/data/tmp6.txt"
+#    shell:
+#        "Rscript /TRiP/find_pandoc.R ;"
 
 rule Rmd_rule:
+    input:
+        "/data/count_matrix_R2.txt"
     output:
-        "/data/complete.txt"
+        "/data/complete.txt",
+        "/data/up.txt",
+        "/data/down.txt"
     shell:
-        """Rscript -e "rmarkdown::render("/data/tools/DESeq2_analysis_test.Rmd", clean=TRUE)" ;"""
+        """Rscript -e "rmarkdown::render("/TRiP/tools/DESeq2_analysis_test.Rmd {input}", clean=TRUE)" ;"""
