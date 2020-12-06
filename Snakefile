@@ -44,7 +44,7 @@ rule all:
 onsuccess:
     # List of interesting logs to make the report
     logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
-    if config['UTR'] == "False":
+    if config['UTR'] == "no":
         logs_names = logs_names[:-1]
 
     # File for the statistical report
