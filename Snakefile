@@ -398,7 +398,7 @@ rule quality_controls_periodicity:
 # Creates the row names (genes/transcript names) of the count matrix
 rule count_matrix_initialization:
     input:
-        ready= expand(rules.htseqcount_transcript_utr.output, sample=SAMPLES) if config['UTR']=="True" else expand(rules.htseqcount_transcript.output, sample=SAMPLES),
+        ready= expand(rules.htseqcount_transcript_utr.output, sample=SAMPLES) if config['UTR']=="yes" else expand(rules.htseqcount_transcript.output, sample=SAMPLES),
         counts="/data/RESULTS/htseqcount_CDS/" + SAMPLES[0] + "" + frag_length_L + ".no-outRNA." + counts + ".txt"
     output:
         "/data/RESULTS/DESeq2/gene_list.txt"
