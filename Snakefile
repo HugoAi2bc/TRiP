@@ -9,7 +9,7 @@ BOWTIE2 = ["1","2","3","4","rev.1","rev.2"]
 HISAT2 = ["1","2","3","4","5","6","7","8"]
 KMER = list(map(str,range(int(config['kmer_min']),int(config['kmer_max'])+1)))
 
-#
+# Change names for snamkemake workflow, depending on data given
 if config['UTR'] == "yes":
     counts = "htseqcountCDS"
 else:
@@ -37,7 +37,7 @@ rule all:
         expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
 
         # Count matrix for DESeq2
-        "/data/RESULTS/DESeq2/complete.txt"
+        "/data/RESULTS/Final_report.html"
 
 
 # When the jobs are all done
@@ -317,7 +317,7 @@ rule htseqcount_transcript_utr:
         "echo '5prime : '$RPKMmoyen5prime 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
         "echo '3prime : '$RPKMmoyen3prime 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
 
-# Quality control :
+# Quality controls :
 # Divisions of SAM file according to kmer length and turns it into BAM
 rule quality_controls_bamDivision:
     input:
@@ -412,7 +412,6 @@ rule count_matrix_initialization:
 # Adds the read counts of each sample to the matrix
 rule count_matrix_creation:
     input:
-        # rules.count_matrix_initialization.output
         "/data/RESULTS/DESeq2/gene_list.txt"
     output:
         "/data/RESULTS/DESeq2/count_matrix.txt"
@@ -431,11 +430,14 @@ rule DESeq2_analysis:
     input:
         counts_matrix="/data/RESULTS/DESeq2/count_matrix.txt"
     output:
-        "/data/RESULTS/DESeq2/complete.txt",
-        "/data/RESULTS/DESeq2/up.txt",
-        "/data/RESULTS/DESeq2/down.txt"
+        complete="/data/RESULTS/DESeq2/complete.txt",
+        up="/data/RESULTS/DESeq2/up.txt",
+        down="/data/RESULTS/DESeq2/down.txt",
+        report="Final_report.html"
     log:
         "/data/logs/DESeq2_analysis/DESeq2_analysis.log"
+    params:
+        "/data/RESULTS/"
     shell:
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', clean=TRUE, output_file = '/data/RESULTS/Final_report.html')\" 2> {log} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', clean=TRUE, output_file={params}{output.report}, params=list(output_dir={params}))\" 2> {log} ;"
         # "Rscript /TRiP/tools/DE_SEQ2_Analyse.R " + config['reference_condition'] + " ;"
