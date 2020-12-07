@@ -62,7 +62,7 @@ do
     #division of read depending of read length
 	gawk -v l=${kmer} '{if($1 !~ /^ *@/){if(length($10)==l){print $0}}else{print $0}}' ${S} > ${O}bamDivision/${sample}.${kmer}.sam;
     #Conversion as bam
-	samtools view -@ ${T} -F 4 -b ${O}bamDivision/${sample}.${kmer}.sam > ${O}bamDivision/${sample}.${kmer}.uniq.bam ;
+	samtools view -@ ${T} -F 268 -b ${O}bamDivision/${sample}.${kmer}.sam > ${O}bamDivision/${sample}.${kmer}.uniq.bam ;
     #sorting bam file
 	samtools sort -@ ${T} ${O}bamDivision/${sample}.${kmer}.uniq.bam -o ${O}bamDivision/${sample}.${kmer}.uniq.sort.bam ;
     #index bam file
