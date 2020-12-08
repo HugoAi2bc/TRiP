@@ -436,8 +436,6 @@ rule DESeq2_analysis:
         report="Final_report.html"
     log:
         "/data/logs/DESeq2_analysis/DESeq2_analysis.log"
-    params:
-        "/data/RESULTS/DESeq2/"
     shell:
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', clean=TRUE, output_file={params}{output.report})\" 2> {log} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', clean=TRUE, output_file={output.report}, output_dir='/data/RESULTS/DESeq2/')\" 2> {log} ;"
         # "Rscript /TRiP/tools/DE_SEQ2_Analyse.R " + config['reference_condition'] + " ;"
