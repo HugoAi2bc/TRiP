@@ -442,7 +442,7 @@ rule DESeq2_analysis:
         reportPath="/data/RESULTS/"
     shell:
         "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file={output.report}, output_dir={params.reportPath}, knit_root_dir = {params.reportPath}{output.report})\" 2> {log.deseq2} ;"
-        "echo 'a' ;"
+        "echo 'a' >> {output.wtf} ;"
         "echo `ls /TRiP/tools/` > {output.wtf};"
         "echo `ls /data/` >> {output.wtf} ;"
         "cp /TRiP/tools/DESeq2_analysis.html {output.report} 2> {log.cp} ;"
