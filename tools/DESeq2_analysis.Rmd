@@ -21,7 +21,7 @@ rm(list=ls())
 
 
 ```{r packages}
-
+writeLines(Sys.getenv("RSTUDIO_PANDOC"),"/data/")
 library(DESeq2)
 library(stringr)
 ```
