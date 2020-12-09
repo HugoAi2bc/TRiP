@@ -433,8 +433,8 @@ rule DESeq2_analysis:
         complete="/data/RESULTS/DESeq2/complete.txt",
         up="/data/RESULTS/DESeq2/up.txt",
         down="/data/RESULTS/DESeq2/down.txt",
-        wtf="wtf.txt",
-        report="Final_report.html"
+        wtf="/data/wtf.txt",
+        report="/data/Final_report.html"
     log:
         deseq2="/data/logs/DESeq2_analysis/DESeq2_analysis.log",
         cp="/data/logs/DESeq2_analysis/cp.log"
