@@ -442,6 +442,7 @@ rule DESeq2_analysis:
     params:
         reportPath="/data/RESULTS/"
     shell:
+        "echo 'YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'"
         "cat 'blabla' > {output.wtf} 2> {log.test} ;"
         "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file='', output_dir='{params.reportPath}', knit_root_dir = '{output.report}')\" 2> {log.deseq2} ;"
         "cat 'a' >> {output.wtf} ;"
