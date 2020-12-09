@@ -5,7 +5,7 @@ date: "`r format (Sys.time(), '%B %d, %Y')`"
 output: html_document
 ---
 
-Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/pkgs/r-rmarkdown-2.5-r40h142f84f_0/lib/R/library/rmarkdown/rmd/h/pandoc")
+Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/bin/pandoc")
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
