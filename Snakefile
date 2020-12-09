@@ -451,6 +451,7 @@ rule DESeq2_analysis:
         "ls /data/RESULTS/ >> wtf.txt ;"
         "ls /data/DESeq2/ >> wtf.txt ;"
         "ls / >> wtf.txt ;"
+        "find / -iname pandoc"
         "cp wtf.txt /data/ ;"
 
         # "Rscript /TRiP/tools/DE_SEQ2_Analyse.R " + config['reference_condition'] + " ;"
