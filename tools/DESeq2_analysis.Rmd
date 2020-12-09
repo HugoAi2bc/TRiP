@@ -2,9 +2,6 @@
 title: "Analyse DEseq2"
 author: "LES GST"
 date: "`r format (Sys.time(), '%B %d, %Y')`"
-knit: (function(inputFile) { 
-      rmarkdown::render(inputFile,
-                        output_file="/data/RESULTS/Final_report.html") })
 output: html_document
 ---
 
@@ -14,6 +11,7 @@ Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/lib/R/library/rmarkdow
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(include = TRUE, message = FALSE, warning = FALSE)
 knitr::opts_chunk$set(root.dir = "/data/")
+knitr::opts_knit$set(root.dir = "/data/RESULTS/DESeq2/")
 ```
 
 
