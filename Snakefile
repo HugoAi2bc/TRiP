@@ -440,4 +440,6 @@ rule DESeq2_analysis:
         reportPath="/data/RESULTS/"
     shell:
         "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file={output.report}, output_dir={params.reportPath}, knit_root_dir = {params.reportPath}{output.report})\" 2> {log} ;"
+        "mv /TRiP/tools/DESeq2_analysis.html /data/RESULTS/ ;"
+
         # "Rscript /TRiP/tools/DE_SEQ2_Analyse.R " + config['reference_condition'] + " ;"
