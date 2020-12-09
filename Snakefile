@@ -441,8 +441,9 @@ rule DESeq2_analysis:
     params:
         reportPath="/data/RESULTS/"
     shell:
+        "cat 'blabla' > {output.wtf};"
         "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file='', output_dir='{params.reportPath}', knit_root_dir = '{output.report}')\" 2> {log.deseq2} ;"
-        "cat 'a' > {output.wtf} ;"
+        "cat 'a' >> {output.wtf} ;"
         "cat `ls /TRiP/tools/` >> {output.wtf};"
         "cat `ls /data/` >> {output.wtf} ;"
         "cp /TRiP/tools/DESeq2_analysis.html {output.report} 2> {log.cp} ;"
@@ -452,6 +453,6 @@ rule DESeq2_analysis:
         "cat `ls /data/RESULTS/` >> {output.wtf} ;"
         "cat `ls /data/DESeq2/` >> {output.wtf} ;"
         "cat `ls /` >> {output.wtf} ;"
-        "find / -iname pandoc"
+        "find / -iname pandoc >> {output.wtf} ;"
 
         # "Rscript /TRiP/tools/DE_SEQ2_Analyse.R " + config['reference_condition'] + " ;"
