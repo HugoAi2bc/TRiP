@@ -435,16 +435,18 @@ rule DESeq2_analysis:
         down="/data/RESULTS/DESeq2/down.txt",
         report="Final_report.html"
     log:
-        "/data/logs/DESeq2_analysis/DESeq2_analysis.log"
+        deseq2="/data/logs/DESeq2_analysis/DESeq2_analysis.log",
+        cp="/data/logs/DESeq2_analysis/cp.log"
     params:
         reportPath="/data/RESULTS/"
     shell:
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file={output.report}, output_dir={params.reportPath}, knit_root_dir = {params.reportPath}{output.report})\" 2> {log} ;"
-        "echo `ls /TRiP/tools/`"
-        "echo `ls /data/`"
-        "mv /TRiP/tools/DESeq2_analysis.html /data/RESULTS/ ;"
-        "echo `ls /TRiP/`"
-        "echo `ls /TRiP/tools/`"
-        "echo `ls /data/`"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file={output.report}, output_dir={params.reportPath}, knit_root_dir = {params.reportPath}{output.report})\" 2> {log.deseq2} ;"
+        "ls /TRiP/tools/ > wtf.txt;"
+        "ls /data/ >> wtf.txt ;"
+        "cp /TRiP/tools/DESeq2_analysis.html /data/RESULTS/ 2> {log.cp} ;"
+        "ls /TRiP/ >> wtf.txt ;"
+        "ls /TRiP/tools/ >> wtf.txt ;"
+        "ls /data/ >> wtf.txt ;"
+        "ls / >> wtf.txt ;"
 
         # "Rscript /TRiP/tools/DE_SEQ2_Analyse.R " + config['reference_condition'] + " ;"
