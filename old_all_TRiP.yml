@@ -1,4 +1,4 @@
-name: all_TRiP
+name: old_all_TRiP
 channels:
   - bioconda
   - conda-forge
@@ -210,7 +210,7 @@ dependencies:
   - r-askpass=1.1=r40hcdcec82_2
   - r-assertthat=0.2.1=r40h6115d3f_2
   - r-backports=1.1.10=r40hcdcec82_0
-  - r-base=4.0.3=ha43b4e8_3
+  - r-base=4.0.3=hfb3ec26_1
   - r-base64enc=0.1_3=r40hcdcec82_1004
   - r-bh=1.72.0_3=r40h6115d3f_1
   - r-bit=4.0.4=r40hcdcec82_0

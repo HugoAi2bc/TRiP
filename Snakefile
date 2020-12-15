@@ -1,5 +1,7 @@
 configfile: "/data/config.yaml"
 
+# mamba install -c bioconda -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
+
 # Imports
 from optparse import OptionParser
 
@@ -157,7 +159,7 @@ rule adapt_trimming:
         sample_names="{sample}"
     shell:
         # mamba install -c bioconda -c conda-forge cutadapt
-        # cutadapt 2.10
+        # cutadapt 3.1
         "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 --trimmed-only --max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt}"
 
 # Mapping of non-coding RNA
@@ -442,6 +444,8 @@ rule DESeq2_analysis:
     params:
         reportPath="/data/RESULTS/"
     shell:
+        # mamba install -c bioconda -c conda-forge r-rmarkdown
+        # r-rmarkdown 2.6
         "echo 'YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'"
         "cat 'blabla' > {output.wtf} 2> {log.test} ;"
         "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file='Final_report.html', output_dir='{params.reportPath}', knit_root_dir = '{output.report}')\" 2> {log.deseq2} ;"
