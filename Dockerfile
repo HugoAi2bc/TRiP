@@ -14,6 +14,8 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
 
 RUN git clone https://github.com/HugoAi2bc/TRiP.git
 
+RUN cat /TRiP/all_TRiP.yml
+
 ENV BASH_ENV ~/.bashrc
 
 ENV PATH=/root/miniconda3/bin:$PATH
@@ -21,7 +23,7 @@ ENV PATH=/root/miniconda3/envs/all_TRiP/bin:$PATH
 
 SHELL ["/bin/bash", "-c"]
 
-RUN conda env create -f TRiP/all_TRiP.yml
+RUN conda env create -f /TRiP/all_TRiP.yml
 RUN conda init bash
 RUN echo "conda activate all_TRiP" >> /root/.bashrc \
     && conda info --envs \
