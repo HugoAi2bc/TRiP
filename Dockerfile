@@ -12,6 +12,7 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm Miniconda3-latest-Linux-x86_64.sh
 
+RUN echo "dkfjghhifdug"
 RUN git clone https://github.com/HugoAi2bc/TRiP.git
 
 RUN cat /TRiP/all_TRiP.yml
