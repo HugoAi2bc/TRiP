@@ -442,6 +442,8 @@ rule DESeq2_analysis:
     shell:
         # mamba install -c bioconda -c conda-forge r-rmarkdown
         # r-rmarkdown 2.6
+        # mamba install -c bioconda -c conda-forge bioconductor-deseq2
+        # bioconductor-deseq2 1.30.0
         "echo 'YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'"
         "cat 'blabla' > {output.wtf} 2> {log.test} ;"
         "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
