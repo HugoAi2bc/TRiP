@@ -39,7 +39,7 @@ rule all:
         expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
 
         # Count matrix for DESeq2
-        # "/data/RESULTS/Final_report.html"
+        "/data/RESULTS/Final_report.html"
 
 
 # When the jobs are all done
