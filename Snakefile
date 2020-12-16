@@ -1,7 +1,8 @@
 configfile: "/data/config.yaml"
 
 # conda create --name all_TRiP -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
-# OR mamba install -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
+# OR on existing env
+# mamba install -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
 
 # Imports
 from optparse import OptionParser
@@ -440,10 +441,10 @@ rule DESeq2_analysis:
     params:
         reportPath="/data/RESULTS/"
     shell:
-        # mamba install -c bioconda -c conda-forge r-rmarkdown
-        # r-rmarkdown 2.6
         # mamba install -c bioconda -c conda-forge bioconductor-deseq2
         # bioconductor-deseq2 1.30.0
+        # mamba install -c bioconda -c conda-forge r-rmarkdown
+        # r-rmarkdown 2.6
         "echo 'YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'"
         "cat 'blabla' > {output.wtf} 2> {log.test} ;"
         "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', run_pandoc = FALSE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"

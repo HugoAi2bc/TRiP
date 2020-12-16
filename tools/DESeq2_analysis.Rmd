@@ -21,7 +21,6 @@ rm(list=ls())
 
 
 ```{r packages}
-writeLines(Sys.getenv("RSTUDIO_PANDOC"),"/data/test_pandoc")
 library(DESeq2)
 library(stringr)
 ```
