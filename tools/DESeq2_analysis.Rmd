@@ -10,8 +10,8 @@ Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/bin/pandoc")
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(include = TRUE, message = FALSE, warning = FALSE)
-knitr::opts_chunk$set(root.dir = "/data/")
-knitr::opts_knit$set(root.dir = paste0("/data/RESULTS/DESeq2/"))
+#knitr::opts_chunk$set(root.dir = "/data/")
+#knitr::opts_knit$set(root.dir = paste0("/data/RESULTS/DESeq2/"))
 ```
 
 
