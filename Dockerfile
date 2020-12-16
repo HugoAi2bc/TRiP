@@ -5,7 +5,7 @@ LABEL version="0.6"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-    && apt-get install -y apt-utils
+    && apt-get install -y apt-utils \
     && apt-get install -y wget git-all \
     && rm -rf /var/lib/apt/lists/*
 
