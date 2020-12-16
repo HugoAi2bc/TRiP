@@ -5,7 +5,6 @@ LABEL version="0.6"
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-    && apt-get install -y apt-utils \
     && apt-get install -y wget git-all \
     && rm -rf /var/lib/apt/lists/*
 
@@ -13,9 +12,9 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm Miniconda3-latest-Linux-x86_64.sh
 
-RUN echo "dkfjgghtfytdfskfg"
+RUN echo "dkfjgghtfyfeeftdfskfg"
 RUN git clone https://github.com/HugoAi2bc/TRiP.git \
-    && cat /TRiP/all_TRiP.yml
+    && cat /TRiP/all_TRiP_env.yml
 
 ENV BASH_ENV ~/.bashrc
 
