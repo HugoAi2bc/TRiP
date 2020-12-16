@@ -1,6 +1,7 @@
 configfile: "/data/config.yaml"
 
-# mamba install -c bioconda -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
+# conda create --name all_TRiP -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
+# OR mamba install -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
 
 # Imports
 from optparse import OptionParser
@@ -44,44 +45,44 @@ rule all:
 
 # When the jobs are all done
 onsuccess:
-    # List of interesting logs to make the report
-    logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
-    if config['UTR'] == "no":
-        logs_names = logs_names[:-1]
-
-    # File for the statistical report
-    data_report=open("/data/RESULTS/Analysis_Report.txt","w")
-
-    for sample in SAMPLES:
-        # Data treatment report creation
-        data_report.write("##################\n## NEXT SAMPLE ##\n##################\n\n" + sample + "\n")
-
-        for log in logs_names:
-            data_report.write("\n" + ("#" * (len(log)+6)) + "\n## " + log + " ##\n" + ("#" * (len(log)+6)) + "\n")
-            logs_files=open("/data/logsTmp/" + sample + "_" + log + ".log","r")
-
-            # Keep only lines of interest from cutadapt report
-            i=-1
-            if log=="adapt_trimming":
-                if int(config['threads']) > 1:
-                    lines_to_read = range(22)
-                else:
-                    lines_to_read = range(20)
-                for position, line in enumerate(logs_files):
-                    if position in lines_to_read:
-                        data_report.write(line)
-                    else:
-                        break
-            else:
-                for line in logs_files:
-                    data_report.write(line)
-
-            logs_files.close()
-        data_report.write("\n\n\n")
-    data_report.close()
-
-    # Removes useless directory
-    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
+    # # List of interesting logs to make the report
+    # logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
+    # if config['UTR'] == "no":
+    #     logs_names = logs_names[:-1]
+    #
+    # # File for the statistical report
+    # data_report=open("/data/RESULTS/Analysis_Report.txt","w")
+    #
+    # for sample in SAMPLES:
+    #     # Data treatment report creation
+    #     data_report.write("##################\n## NEXT SAMPLE ##\n##################\n\n" + sample + "\n")
+    #
+    #     for log in logs_names:
+    #         data_report.write("\n" + ("#" * (len(log)+6)) + "\n## " + log + " ##\n" + ("#" * (len(log)+6)) + "\n")
+    #         logs_files=open("/data/logsTmp/" + sample + "_" + log + ".log","r")
+    #
+    #         # Keep only lines of interest from cutadapt report
+    #         i=-1
+    #         if log=="adapt_trimming":
+    #             if int(config['threads']) > 1:
+    #                 lines_to_read = range(22)
+    #             else:
+    #                 lines_to_read = range(20)
+    #             for position, line in enumerate(logs_files):
+    #                 if position in lines_to_read:
+    #                     data_report.write(line)
+    #                 else:
+    #                     break
+    #         else:
+    #             for line in logs_files:
+    #                 data_report.write(line)
+    #
+    #         logs_files.close()
+    #     data_report.write("\n\n\n")
+    # data_report.close()
+    #
+    # # Removes useless directory
+    # shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
 
 
 
@@ -111,7 +112,6 @@ rule bowtie2_build_transcriptome:
     log:
         "/data/logs/bowtie2_build_transcriptome/bowtie2_build_transcriptome.log"
     shell:
-        # mamba install -c bioconda -c conda-forge bowtie2
         # bowtie2 2.4.2
         "bowtie2-build {input} {params.outNames} &> {log}"
 
@@ -174,7 +174,6 @@ rule bowtie2_run_outRNA:
     params:
         sample_names="{sample}"
     shell:
-        # mamba install -c bioconda -c conda-forge bowtie2
         # bowtie2 2.4.2
         "bowtie2 -x /data/database/outRNA_bowtie2 -p " + config['threads'] + " -U {input.fastq} --un-gz {output} > /dev/null 2>> {log.bt2} ;"
         "rm {input.fastq} ;"
@@ -195,9 +194,7 @@ rule run_transcriptome:
     params:
         sample_names="{sample}"
     shell:
-        # mamba install -c bioconda -c conda-forge bowtie2
         # bowtie2 2.4.2
-        # mamba install -c bioconda -c conda-forge hisat2
         # hisat2 2.2.1
         "hisat2 -x /data/database/transcriptome_hisat2 -p " + config['threads'] + " -U {input.fastq} --un-gz {output.fastq} -S {output.sam_hisat2} 2>> {log.hisat2_out} ;"
         "bowtie2 -x /data/database/transcriptome_bowtie2 -p " + config['threads'] + " -U {output.fastq} -S {output.sam_bowtie2} 2>> {log.bowtie2_out};"
@@ -333,7 +330,6 @@ rule quality_controls_bamDivision:
     log:
         "/data/logs/quality_controls_bamDivision/{sample}.{taille}.BamDivision.log"
     shell:
-        # mamba install -c bioconda -c conda-forge samtools
         # samtools 1.11
         # mamba install --name all_TRiP -c anaconda gawk
         # gawk 5.1.0
