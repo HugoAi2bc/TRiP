@@ -1,21 +1,22 @@
 configfile: "/data/config.yaml"
 
-# conda create --name all_TRiP -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
+# conda create --name all_TRiP -c conda-forge python=3.8.6 r-base=4.0.2 (for bowtie2-2.2.1 and r-base for r-rmarkdown )
 # OR on existing env
-# mamba install -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
+# mamba install --name all_TRiP -c conda-forge python=3.8.6 (python for bowtie2-2.2.1)
+# mamba install --name all_TRiP -c conda-forge r-base=4.0.2 (for r-rmarkdown )
 
-# mamba install --name all_TRiP -c bioconda -c conda-forge bioconductor-deseq2
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge bioconductor-deseq2
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge r-rmarkdown
 
-# mamba install --name all_TRiP -c bioconda -c conda-forge snakemake
-# mamba install --name all_TRiP -c bioconda -c conda-forge bowtie2
-# mamba install --name all_TRiP -c bioconda -c conda-forge hisat2
-# mamba install --name all_TRiP -c bioconda -c conda-forge fastqc
-# mamba install --name all_TRiP -c bioconda -c conda-forge cutadapt
-# mamba install --name all_TRiP -c bioconda -c conda-forge samtools
-# mamba install --name all_TRiP -c bioconda -c conda-forge htseq
-# mamba install --name all_TRiP -c anaconda -c conda-forge gawk
-# mamba install --name all_TRiP -c bioconda -c conda-forge bedtools
-# mamba install --name all_TRiP -c bioconda -c conda-forge r-rmarkdown
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge bowtie2
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge hisat2
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge fastqc
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge cutadapt
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge samtools
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge htseq
+# mamba install --name all_TRiP_env -c anaconda -c conda-forge gawk
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge bedtools
 
 # Imports
 from optparse import OptionParser
