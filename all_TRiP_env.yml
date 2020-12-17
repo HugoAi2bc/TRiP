@@ -1,4 +1,4 @@
-name: all_TRiP_env
+name: all_TRiP
 channels:
   - bioconda
   - conda-forge
