@@ -3,11 +3,10 @@ configfile: "/data/config.yaml"
 # conda create --name all_TRiP -c conda-forge python=3.8.6 r-base=4.0.2 (for bowtie2-2.2.1 and r-base for r-rmarkdown )
 # OR on existing env
 # mamba install --name all_TRiP -c conda-forge python=3.8.6 (python for bowtie2-2.2.1)
-# mamba install --name all_TRiP -c conda-forge r-base=4.0.2 (for r-rmarkdown )
+# mamba install --name all_TRiP -c conda-forge r-base=4.0.2 (for r-rmarkdown 2.6)
 
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge bioconductor-deseq2
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge r-rmarkdown
-
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge bowtie2
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge hisat2
@@ -31,7 +30,7 @@ BOWTIE2 = ["1","2","3","4","rev.1","rev.2"]
 HISAT2 = ["1","2","3","4","5","6","7","8"]
 KMER = list(map(str,range(int(config['kmer_min']),int(config['kmer_max'])+1)))
 
-# Change names for snamkemake workflow, depending on data given
+# Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
     counts = "htseqcountCDS"
 else:
@@ -44,7 +43,7 @@ else:
     frag_length_L = "." + KMER[0] + "-" + KMER[len(KMER)-1]
 
 
-# snakemake 5.26.1
+# snakemake 5.30.2
 rule all:
     input:
         #call of make_fastqc rule
@@ -453,7 +452,8 @@ rule DESeq2_analysis:
         # r-rmarkdown 2.6
         "echo 'YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'"
         "cat 'blabla' > {output.wtf} 2> {log.test} ;"
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd','html_document', run_pandoc = FALSE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
+        # "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', 'html_document', run_pandoc = FALSE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', c('html_document','pdf_document'), run_pandoc = FALSE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
         "cat 'a' >> {output.wtf} ;"
         "cat `ls /TRiP/tools/` >> {output.wtf};"
         "cat 'a' >> {output.wtf} ;"
