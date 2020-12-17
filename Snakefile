@@ -4,6 +4,19 @@ configfile: "/data/config.yaml"
 # OR on existing env
 # mamba install -c conda-forge python=3.8.6 (for bowtie2-2.2.1)
 
+# mamba install --name all_TRiP -c bioconda -c conda-forge bioconductor-deseq2
+
+# mamba install --name all_TRiP -c bioconda -c conda-forge snakemake
+# mamba install --name all_TRiP -c bioconda -c conda-forge bowtie2
+# mamba install --name all_TRiP -c bioconda -c conda-forge hisat2
+# mamba install --name all_TRiP -c bioconda -c conda-forge fastqc
+# mamba install --name all_TRiP -c bioconda -c conda-forge cutadapt
+# mamba install --name all_TRiP -c bioconda -c conda-forge samtools
+# mamba install --name all_TRiP -c bioconda -c conda-forge htseq
+# mamba install --name all_TRiP -c anaconda -c conda-forge gawk
+# mamba install --name all_TRiP -c bioconda -c conda-forge bedtools
+# mamba install --name all_TRiP -c bioconda -c conda-forge r-rmarkdown
+
 # Imports
 from optparse import OptionParser
 
@@ -26,7 +39,6 @@ else:
     frag_length_L = "." + KMER[0] + "-" + KMER[len(KMER)-1]
 
 
-# mamba install -c bioconda -c conda-forge snakemake
 # snakemake 5.26.1
 rule all:
     input:
@@ -98,7 +110,6 @@ rule bowtie2_build_outRNA:
     log:
         "/data/logs/bowtie2_build_outRNA/bowtie2_build_outRNA.log"
     shell:
-        # mamba install -c bioconda -c conda-forge bowtie2
         # bowtie2 2.4.2
         "bowtie2-build {input} {params.outNames} &> {log}"
 
@@ -127,7 +138,6 @@ rule hisat2_build_transcriptome:
     log:
         "/data/logs/hisat2_build_transcriptome/hisat2_build_transcriptome.log"
     shell:
-        # mamba install -c bioconda -c conda-forge hisat2
         # hisat2 2.2.1
         "hisat2-build {input} {params.outNames} &> {log}"
 
@@ -143,7 +153,6 @@ rule make_fastqc:
     log:
         "/data/logs/make_fastqc/{sample}.log"
     shell:
-        # mamba install -c bioconda -c conda-forge fastqc
         # fastqc 0.11.9
         "fastqc {input} --outdir {params.outdir} 2> {log}"
 
@@ -159,7 +168,6 @@ rule adapt_trimming:
     params:
         sample_names="{sample}"
     shell:
-        # mamba install -c bioconda -c conda-forge cutadapt
         # cutadapt 3.1
         "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 --trimmed-only --max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt}"
 
@@ -226,7 +234,6 @@ rule transcriptome_samtools:
     params:
         sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".sam"
     shell:
-        # mamba install -c bioconda -c conda-forge samtools
         # samtools 1.11
         "set +o pipefail ;"
         "egrep -i 'XM:i:2|XM:i:0|XM:i:1|@' {input.sam_hisat2} 1> {params.sam} 2> {log.egrep1} ;"
@@ -250,7 +257,6 @@ rule htseqcount_transcript:
     log:
         htseqcount_CDS="/data/logs/htseqcount_transcript/{sample}.htseqcount.log"
     shell:
-        # mamba install -c bioconda -c conda-forge htseq
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
@@ -287,7 +293,6 @@ rule htseqcount_transcript_utr:
     params:
         sample_names="{sample}"
     shell:
-        # mamba install -c bioconda -c conda-forge htseq
         # htseq 0.12.4
         "set +o pipefail ;"
         "totalReads=`samtools view -c {input.bam} 2> {log.view}` ;"
@@ -332,7 +337,6 @@ rule quality_controls_bamDivision:
         "/data/logs/quality_controls_bamDivision/{sample}.{taille}.BamDivision.log"
     shell:
         # samtools 1.11
-        # mamba install --name all_TRiP -c anaconda gawk
         # gawk 5.1.0
         "/TRiP/tools/BamDivision.sh -N {params.sample_names} -S {input.sam} -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log};"
         "rm {input.sam};"
@@ -352,7 +356,6 @@ rule quality_controls_bedcount:
     log:
         "/data/logs/quality_controls_bedcount/{sample}.{taille}.kmerRepartition.log"
     shell:
-        # mamba install -c bioconda -c conda-forge bedtools
         # bedtools 2.29.2
         "/TRiP/tools/kmerRepartition.sh -N {params.sample_names} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log}"
 
@@ -441,9 +444,7 @@ rule DESeq2_analysis:
     params:
         reportPath="/data/RESULTS/"
     shell:
-        # mamba install -c bioconda -c conda-forge bioconductor-deseq2
         # bioconductor-deseq2 1.30.0
-        # mamba install -c bioconda -c conda-forge r-rmarkdown
         # r-rmarkdown 2.6
         "echo 'YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'"
         "cat 'blabla' > {output.wtf} 2> {log.test} ;"
