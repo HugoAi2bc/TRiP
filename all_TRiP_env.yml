@@ -1,4 +1,4 @@
-name: all_TRiP
+name: all_TRiP_env
 channels:
   - bioconda
   - conda-forge
@@ -75,6 +75,7 @@ dependencies:
   - freetype=2.10.4=he06d7ca_0
   - fribidi=1.0.10=h516909a_0
   - ftputil=4.0.0=py_0
+  - gawk=5.1.0=h516909a_0
   - gcc_impl_linux-64=7.5.0=hd9e1a51_17
   - gcc_linux-64=7.5.0=he2a3fca_29
   - gdk-pixbuf=2.42.2=h19a9c64_1

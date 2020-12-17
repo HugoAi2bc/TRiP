@@ -18,6 +18,10 @@ configfile: "/data/config.yaml"
 # mamba install --name all_TRiP_env -c anaconda -c conda-forge gawk
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge bedtools
 
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools bioconductor-deseq2 r-rmarkdown
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools
+# mamba install --name all_TRiP_env -c anaconda -c conda-forge gawk
+
 # Imports
 from optparse import OptionParser
 
