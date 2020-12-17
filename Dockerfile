@@ -30,4 +30,6 @@ RUN echo "conda activate all_TRiP" >> /root/.bashrc \
     && conda info --envs \
     && conda list --name all_TRiP
 
+RUN echo "dkfjgsgdfjihdfsddfsgrskfg"
+RUN git clone https://github.com/HugoAi2bc/TRiP.git
 CMD ["bash","-i","/TRiP/TRiP.sh"]
