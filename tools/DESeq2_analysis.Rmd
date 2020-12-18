@@ -34,6 +34,7 @@ if (is.na(args[1])) {args[1] <- "CT"}
 if (is.na(args[2])) {args[2] <- 0}
 if (is.na(args[3])) {args[3] <- 0.01}
 
+writeLines(args[1], "/data/TEST_ARGS1.txt")
 
 Var_log2FC <- as.numeric(args[2])
 Var_padj <- as.numeric(args[3])
@@ -64,6 +65,8 @@ nb_col_condB <- table(factor(Cond))[[2]]
 if (Cond[1] != args[1]) {
         Ord <- c( (1:nb_col_condB)+nb_col_condA , (1:nb_col_condA) )
         expData_Sorted <- expData_Sorted[, Ord]
+
+writeLines(Cond[1], "/data/TEST_COND1.txt")
 
 # inversion des 2 valeurs nb_col_condA et B sans passer par une 3eme variable
         nb_col_condA <- nb_col_condA + nb_col_condB
