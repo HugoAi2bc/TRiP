@@ -429,7 +429,6 @@ rule count_matrix_creation:
         tmp_file="/data/RESULTS/DESeq2/tmp.txt"
     run:
         shell("cat {input} > {output} ;")
-        shell("head {output} ;")
         for sample in SAMPLES:
             shell("join --nocheck-order -t $'\t' -j 1 /data/RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2> {log} ;")
             shell("cat {params.tmp_file} > {output} ;")
@@ -451,4 +450,4 @@ rule DESeq2_analysis:
     shell:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd " + config['reference_condition'] + " " + config['p-val'] + " " + config['logFC'] + "', 'html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', params = list(refCond='" + config['reference_condition'] + "', logFC='" + config['logFC'] + "', p-val='" + config['p-val'] + "'), 'html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"

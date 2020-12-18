@@ -2,7 +2,11 @@
 title: "Analyse DEseq2"
 author: "LES GST"
 date: "`r format (Sys.time(), '%B %d, %Y')`"
-output: html_document
+output: "html_document"
+params:
+    refCond: "CT"
+    logFC: 0
+    pval: 0.01
 ---
 
 #Sys.getenv("RSTUDIO_PANDOC")
@@ -30,14 +34,17 @@ library(stringr)
 ```{r Arguments, include=FALSE}
 args = commandArgs(trailingOnly=TRUE)
 
-if (is.na(args[1])) {args[1] <- "CT"}
-if (is.na(args[2])) {args[2] <- 0}
-if (is.na(args[3])) {args[3] <- 0.01}
+#if (is.na(args[1])) {args[1] <- "CT"}
+#if (is.na(args[2])) {args[2] <- 0}
+#if (is.na(args[3])) {args[3] <- 0.01}
 
-writeLines(args[1], "/data/TEST_ARGS1.txt")
+#writeLines(args[1], "/data/TEST_ARGS1.txt")
+writeLines(params$refCond, "/data/TEST_ARGS1.txt")
 
-Var_log2FC <- as.numeric(args[2])
-Var_padj <- as.numeric(args[3])
+#Var_log2FC <- as.numeric(args[2])
+#Var_padj <- as.numeric(args[3])
+Var_log2FC <- as.numeric(params$logFC)
+Var_padj <- as.numeric(params$pval)
 ```
 \
 
@@ -62,7 +69,8 @@ nb_col_condA <- table(factor(Cond))[[1]]
 nb_col_condB <- table(factor(Cond))[[2]]
 
 
-if (Cond[1] != args[1]) {
+#if (Cond[1] != args[1]) {
+if (Cond[1] != params$refCond) {
         Ord <- c( (1:nb_col_condB)+nb_col_condA , (1:nb_col_condA) )
         expData_Sorted <- expData_Sorted[, Ord]
 
@@ -116,8 +124,8 @@ barplot(colSums(normCountData), ylab = "Total read number",
 
 #### Boxplot des tailles des librairies.
 ```{r Boxplot}
-row_sub_1 = apply(expData_Sorted, 1, function(row) all(row !=0 ))
-row_sub_2 = apply(normCountData, 1, function(row) all(row !=0 ))
+row_sub_1 = apply(expData_Sorted, 1, function(row) all(row != 0 ))
+row_sub_2 = apply(normCountData, 1, function(row) all(row != 0 ))
 par(mfrow = c(1,2))
 
 boxplot((expData_Sorted[row_sub_1,]),
@@ -216,8 +224,6 @@ dds = estimateDispersions(ddsObjet)
 ```
 
 ```{r, include=TRUE}
-
-
 plotMA(resDESeq)
 
 
@@ -241,8 +247,8 @@ hist(resDESeq[,"padj"], nclass = 100, xlab = "padj",
 
 #### Volcano plot
 ```{r, volcano plot global}
-myColors <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), "green" ,
-                   ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange <0), "red" ,
+myColors <- ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange > params$logFC), "green" ,
+                   ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange < params$logFC), "red" ,
                           "black" ) )
 
 plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
@@ -256,16 +262,16 @@ plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
 
 #### Volcano plot (zoom)
 ```{r, volcano plot zoom}
-myColors <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), "green" ,
-                   ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange <0), "red" ,
+myColors <- ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange > params$logFC), "green" ,
+                   ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange < params$logFC), "red" ,
                           "black" ) )
 
-Valeurs_Limite_Y <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), 0.01 ,
-               ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange <0), 0.01 ,
+Valeurs_Limite_Y <- ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange > params$logFC), params$pval ,
+               ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange < params$logFC), params$pval ,
                resDESeq$padj) )
 
-Forme_Pixel_Y <- ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange >0), 17 ,
-                           ifelse((resDESeq$padj < 0.01 & resDESeq$log2FoldChange <0), 17 ,
+Forme_Pixel_Y <- ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange > params$logFC), 17 ,
+                           ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange < params$logFC), 17 ,
                                   20) )
 
 
@@ -280,14 +286,6 @@ plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
 
 
      )
-```
-\
-
-```{r, include = FALSE}
-inducedGenes = resDESeq[which((resDESeq[, "log2FoldChange"] > 1.5) & (resDESeq[, "padj"] < 0.05)),]
-dim(inducedGenes)
-repressedGenes = resDESeq[which((resDESeq[, "log2FoldChange"] < -1.5) & (resDESeq[, "padj"] < 0.05)),]
-dim(repressedGenes)
 ```
 \
 
