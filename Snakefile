@@ -451,4 +451,4 @@ rule DESeq2_analysis:
     shell:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', 'html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd " + config['reference_condition'] + " " + config['p-val'] + " " + config['logFC'] + "', 'html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
