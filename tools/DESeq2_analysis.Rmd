@@ -17,13 +17,13 @@ knitr::opts_chunk$set(include = TRUE, message = FALSE, warning = FALSE)
 
 
 ```{r rm Global environment, include=FALSE}
-rm(list=ls())  
+rm(list=ls())
 ```
 
 
 ```{r packages}
-writeLines(packageVersion("DESeq2"), '/data/DESeq2/DESeq2.version.txt')
-writeLines(packageVersion("S4Vectors"), '/data/DESeq2/S4Vectors.version.txt')
+writeLines(packageVersion("DESeq2"), '/data/RESULTS/DESeq2/DESeq2.version.txt')
+writeLines(packageVersion("S4Vectors"), '/data/RESULTS/DESeq2/S4Vectors.version.txt')
 library(DESeq2)
 library(stringr)
 ```

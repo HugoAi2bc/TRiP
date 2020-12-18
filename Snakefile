@@ -5,6 +5,11 @@ configfile: "/data/config.yaml"
 # mamba install --name all_TRiP -c conda-forge python=3.8.6 (python for bowtie2-2.2.1)
 # mamba install --name all_TRiP -c conda-forge r-base=4.0.2 (for r-rmarkdown 2.6)
 
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools bioconductor-deseq2 r-rmarkdown
+
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools
+# mamba install --name all_TRiP_env -c anaconda -c conda-forge gawk
+
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge bioconductor-deseq2
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge r-rmarkdown
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake
@@ -17,9 +22,6 @@ configfile: "/data/config.yaml"
 # mamba install --name all_TRiP_env -c anaconda -c conda-forge gawk
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge bedtools
 
-# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools bioconductor-deseq2 r-rmarkdown
-# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools
-# mamba install --name all_TRiP_env -c anaconda -c conda-forge gawk
 
 # Imports
 from optparse import OptionParser
@@ -57,50 +59,49 @@ rule all:
         expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
 
         # Count matrix for DESeq2
-        "/data/RESULTS/DESeq2/complete.txt"
-        # "/data/RESULTS/Final_report.html"
+        "/data/RESULTS/Final_report.html"
 
 
 # When the jobs are all done
 # onsuccess:
-    # # List of interesting logs to make the report
-    # logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
-    # if config['UTR'] == "no":
-    #     logs_names = logs_names[:-1]
-    #
-    # # File for the statistical report
-    # data_report=open("/data/RESULTS/Analysis_Report.txt","w")
-    #
-    # for sample in SAMPLES:
-    #     # Data treatment report creation
-    #     data_report.write("##################\n## NEXT SAMPLE ##\n##################\n\n" + sample + "\n")
-    #
-    #     for log in logs_names:
-    #         data_report.write("\n" + ("#" * (len(log)+6)) + "\n## " + log + " ##\n" + ("#" * (len(log)+6)) + "\n")
-    #         logs_files=open("/data/logsTmp/" + sample + "_" + log + ".log","r")
-    #
-    #         # Keep only lines of interest from cutadapt report
-    #         i=-1
-    #         if log=="adapt_trimming":
-    #             if int(config['threads']) > 1:
-    #                 lines_to_read = range(22)
-    #             else:
-    #                 lines_to_read = range(20)
-    #             for position, line in enumerate(logs_files):
-    #                 if position in lines_to_read:
-    #                     data_report.write(line)
-    #                 else:
-    #                     break
-    #         else:
-    #             for line in logs_files:
-    #                 data_report.write(line)
-    #
-    #         logs_files.close()
-    #     data_report.write("\n\n\n")
-    # data_report.close()
-    #
-    # # Removes useless directory
-    # shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
+#     # List of interesting logs to make the report
+#     logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
+#     if config['UTR'] == "no":
+#         logs_names = logs_names[:-1]
+#
+#     # File for the statistical report
+#     data_report=open("/data/RESULTS/Analysis_Report.txt","w")
+#
+#     for sample in SAMPLES:
+#         # Data treatment report creation
+#         data_report.write("##################\n## NEXT SAMPLE ##\n##################\n\n" + sample + "\n")
+#
+#         for log in logs_names:
+#             data_report.write("\n" + ("#" * (len(log)+6)) + "\n## " + log + " ##\n" + ("#" * (len(log)+6)) + "\n")
+#             logs_files=open("/data/logsTmp/" + sample + "_" + log + ".log","r")
+#
+#             # Keep only lines of interest from cutadapt report
+#             i=-1
+#             if log=="adapt_trimming":
+#                 if int(config['threads']) > 1:
+#                     lines_to_read = range(22)
+#                 else:
+#                     lines_to_read = range(20)
+#                 for position, line in enumerate(logs_files):
+#                     if position in lines_to_read:
+#                         data_report.write(line)
+#                     else:
+#                         break
+#             else:
+#                 for line in logs_files:
+#                     data_report.write(line)
+#
+#             logs_files.close()
+#         data_report.write("\n\n\n")
+#     data_report.close()
+#
+#     # Removes useless directory
+#     shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
 
 
 
@@ -441,41 +442,13 @@ rule DESeq2_analysis:
         complete="/data/RESULTS/DESeq2/complete.txt",
         up="/data/RESULTS/DESeq2/up.txt",
         down="/data/RESULTS/DESeq2/down.txt",
-        # wtf="/data/wtf.txt",
         report="/data/RESULTS/Final_report.html"
     log:
-        # cp="/data/logs/DESeq2_analysis/cp.log",
-        # test="/data/logs/DESeq2_analysis/test.log",
         deseq2="/data/logs/DESeq2_analysis/DESeq2_analysis.log"
     params:
         reportPath="/data/RESULTS/"
+        reportName="Final_report.html"
     shell:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
-        "head {input} ;"
-        # "echo 'YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' ;"
-        # "cat 'blabla' > {output.wtf} 2> {log.test} ;"
-        # # "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', 'html_document', run_pandoc = FALSE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', 'html_document', run_pandoc = TRUE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "cat `ls /TRiP/tools/` >> {output.wtf} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "cat `ls /data/` >> {output.wtf} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "cp /TRiP/tools/DESeq2_analysis.html {output.report} 2> {log.cp} ;"
-        # "cat `ls /TRiP/` >> {output.wtf} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "cat `ls /TRiP/tools/` >> {output.wtf} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "cat `ls /data/` >> {output.wtf} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "cat `ls /data/RESULTS/` >> {output.wtf} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "cat `ls /data/DESeq2/` >> {output.wtf} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "cat `ls /` >> {output.wtf} ;"
-        # "cat 'a' >> {output.wtf} ;"
-        # "find / -iname pandoc >> {output.wtf} ;"
-        # "cat 'a' >> /data/wtf.txt ;"
-
-        # "Rscript /TRiP/tools/DE_SEQ2_Analyse.R " + config['reference_condition'] + " ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', 'html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
