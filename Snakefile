@@ -439,12 +439,12 @@ rule DESeq2_analysis:
         complete="/data/RESULTS/DESeq2/complete.txt",
         up="/data/RESULTS/DESeq2/up.txt",
         down="/data/RESULTS/DESeq2/down.txt",
-        wtf="/data/wtf.txt",
+        # wtf="/data/wtf.txt",
         report="/data/RESULTS/Final_report.html"
     log:
-        deseq2="/data/logs/DESeq2_analysis/DESeq2_analysis.log",
-        cp="/data/logs/DESeq2_analysis/cp.log",
-        test="/data/logs/DESeq2_analysis/test.log"
+        # cp="/data/logs/DESeq2_analysis/cp.log",
+        # test="/data/logs/DESeq2_analysis/test.log",
+        deseq2="/data/logs/DESeq2_analysis/DESeq2_analysis.log"
     params:
         reportPath="/data/RESULTS/"
     shell:
