@@ -442,7 +442,7 @@ rule DESeq2_analysis:
         up="/data/RESULTS/DESeq2/up.txt",
         down="/data/RESULTS/DESeq2/down.txt",
         # wtf="/data/wtf.txt",
-        # report="/data/RESULTS/Final_report.html"
+        report="/data/RESULTS/Final_report.html"
     log:
         # cp="/data/logs/DESeq2_analysis/cp.log",
         # test="/data/logs/DESeq2_analysis/test.log",
@@ -452,10 +452,11 @@ rule DESeq2_analysis:
     shell:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
+        "head {input} ;"
         # "echo 'YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' ;"
         # "cat 'blabla' > {output.wtf} 2> {log.test} ;"
         # # "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', 'html_document', run_pandoc = FALSE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', c('html_document','pdf_document'), run_pandoc = TRUE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', 'html_document', run_pandoc = TRUE, output_file='Final_report.html', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
         # "cat 'a' >> {output.wtf} ;"
         # "cat `ls /TRiP/tools/` >> {output.wtf} ;"
         # "cat 'a' >> {output.wtf} ;"
