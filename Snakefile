@@ -446,7 +446,7 @@ rule DESeq2_analysis:
     log:
         deseq2="/data/logs/DESeq2_analysis/DESeq2_analysis.log"
     params:
-        reportPath="/data/RESULTS/"
+        reportPath="/data/RESULTS/",
         reportName="Final_report.html"
     shell:
         # bioconductor-deseq2 1.30.0
