@@ -427,6 +427,7 @@ rule count_matrix_creation:
         tmp_file="/data/RESULTS/DESeq2/tmp.txt"
     run:
         shell("cat {input} > {output} ;")
+        shell("head {output} ;")
         for sample in SAMPLES:
             shell("join --nocheck-order -t $'\t' -j 1 /data/RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2> {log} ;")
             shell("cat {params.tmp_file} > {output} ;")
