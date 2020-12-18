@@ -12,7 +12,7 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm Miniconda3-latest-Linux-x86_64.sh
 
-RUN echo "dkfjggdfjihdfsddfsgrskfg"
+RUN echo "dkfjggdfjihsxsxfsddfsgrskfg"
 RUN git clone https://github.com/HugoAi2bc/TRiP.git \
     && cat /TRiP/all_TRiP_env.yml
 
@@ -23,13 +23,10 @@ ENV PATH=/root/miniconda3/envs/all_TRiP/bin:$PATH
 
 SHELL ["/bin/bash", "-c"]
 
-RUN echo "qqsdkfjggfdfstdfsddfsgrskfg"
 RUN conda env create -f /TRiP/all_TRiP_env.yml
 RUN conda init bash
 RUN echo "conda activate all_TRiP" >> /root/.bashrc \
     && conda info --envs \
     && conda list --name all_TRiP
 
-RUN echo "dkfjgsgdfjihdfsddfsgrskfg"
-RUN git clone https://github.com/HugoAi2bc/TRiP.git
 CMD ["bash","-i","/TRiP/TRiP.sh"]
