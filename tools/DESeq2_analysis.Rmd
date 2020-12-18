@@ -22,8 +22,8 @@ rm(list=ls())
 
 
 ```{r packages}
-writeLines(paste(packageVersion("DESeq2")), '/data/DESeq2.version.txt')
-writeLines(paste(packageVersion("S4Vectors")), '/data/S4Vectors.version.txt')
+writeLines(packageVersion("DESeq2"), '/data/DESeq2/DESeq2.version.txt')
+writeLines(packageVersion("S4Vectors"), '/data/DESeq2/S4Vectors.version.txt')
 library(DESeq2)
 library(stringr)
 ```
