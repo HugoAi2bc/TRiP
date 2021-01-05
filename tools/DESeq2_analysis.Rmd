@@ -4,7 +4,7 @@ author: "LES GST"
 date: "`r format (Sys.time(), '%B %d, %Y')`"
 output: "html_document"
 params:
-    refCond: "CT"
+    refCond: "W1_RIBOSEQ"
     logFC: 0
     pval: 0.01
 ---
@@ -73,8 +73,6 @@ nb_col_condB <- table(factor(Cond))[[2]]
 if (Cond[1] != params$refCond) {
         Ord <- c( (1:nb_col_condB)+nb_col_condA , (1:nb_col_condA) )
         expData_Sorted <- expData_Sorted[, Ord]
-
-writeLines(Cond[1], "/data/TEST_COND1.txt")
 
 # inversion des 2 valeurs nb_col_condA et B sans passer par une 3eme variable
         nb_col_condA <- nb_col_condA + nb_col_condB
