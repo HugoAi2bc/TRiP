@@ -49,59 +49,59 @@ else:
 rule all:
     input:
         #call of make_fastqc rule
-        expand("/data/RESULTS/fastqc/{sample}_fastqc.html", sample=SAMPLES),
-        #call of quality_controls_periodicity rule
-        expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt", sample=SAMPLES),
-        expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt", sample=SAMPLES),
-        #call of quality_controls_kmerRepartition rule
-        expand("/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt", sample=SAMPLES),
-        #call of htseqcount_transcript_utr or htseqcount_transcript rule (depends on UTR="True"|"False" in config file)
-        expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
+        # expand("/data/RESULTS/fastqc/{sample}_fastqc.html", sample=SAMPLES),
+        # #call of quality_controls_periodicity rule
+        # expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt", sample=SAMPLES),
+        # expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt", sample=SAMPLES),
+        # #call of quality_controls_kmerRepartition rule
+        # expand("/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt", sample=SAMPLES),
+        # #call of htseqcount_transcript_utr or htseqcount_transcript rule (depends on UTR="True"|"False" in config file)
+        # expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
+        #
+        # # Count matrix for DESeq2
+        # "/data/RESULTS/Final_report.html"
 
-        # Count matrix for DESeq2
-        "/data/RESULTS/Final_report.html"
 
+When the jobs are all done
+onsuccess:
+    # List of interesting logs to make the report
+    logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
+    if config['UTR'] == "no":
+        logs_names = logs_names[:-1]
 
-# When the jobs are all done
-# onsuccess:
-#     # List of interesting logs to make the report
-#     logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
-#     if config['UTR'] == "no":
-#         logs_names = logs_names[:-1]
-#
-#     # File for the statistical report
-#     data_report=open("/data/RESULTS/Analysis_Report.txt","w")
-#
-#     for sample in SAMPLES:
-#         # Data treatment report creation
-#         data_report.write("##################\n## NEXT SAMPLE ##\n##################\n\n" + sample + "\n")
-#
-#         for log in logs_names:
-#             data_report.write("\n" + ("#" * (len(log)+6)) + "\n## " + log + " ##\n" + ("#" * (len(log)+6)) + "\n")
-#             logs_files=open("/data/logsTmp/" + sample + "_" + log + ".log","r")
-#
-#             # Keep only lines of interest from cutadapt report
-#             i=-1
-#             if log=="adapt_trimming":
-#                 if int(config['threads']) > 1:
-#                     lines_to_read = range(22)
-#                 else:
-#                     lines_to_read = range(20)
-#                 for position, line in enumerate(logs_files):
-#                     if position in lines_to_read:
-#                         data_report.write(line)
-#                     else:
-#                         break
-#             else:
-#                 for line in logs_files:
-#                     data_report.write(line)
-#
-#             logs_files.close()
-#         data_report.write("\n\n\n")
-#     data_report.close()
-#
-#     # Removes useless directory
-#     shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
+    # File for the statistical report
+    data_report=open("/data/RESULTS/Analysis_Report.txt","w")
+
+    for sample in SAMPLES:
+        # Data treatment report creation
+        data_report.write("##################\n## NEXT SAMPLE ##\n##################\n\n" + sample + "\n")
+
+        for log in logs_names:
+            data_report.write("\n" + ("#" * (len(log)+6)) + "\n## " + log + " ##\n" + ("#" * (len(log)+6)) + "\n")
+            logs_files=open("/data/logsTmp/" + sample + "_" + log + ".log","r")
+
+            # Keep only lines of interest from cutadapt report
+            i=-1
+            if log=="adapt_trimming":
+                if int(config['threads']) > 1:
+                    lines_to_read = range(22)
+                else:
+                    lines_to_read = range(20)
+                for position, line in enumerate(logs_files):
+                    if position in lines_to_read:
+                        data_report.write(line)
+                    else:
+                        break
+            else:
+                for line in logs_files:
+                    data_report.write(line)
+
+            logs_files.close()
+        data_report.write("\n\n\n")
+    data_report.close()
+
+    # Removes useless directory
+    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
 
 
 

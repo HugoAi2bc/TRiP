@@ -166,9 +166,11 @@ pairs(expData_Sorted[,1:4], pch = 19, cex = 0.1)
 # La valeur +1 est ajoutÃ Ã  tous les gÃ¨nes, pour toutes les conditions,
 # afin d'Ã©viter les Ã©ventuelles divisions par 0.
 normCountData = normCountData + 1
+
 # Moyenne du contrÃ´le
 CT_Mean<- data.frame(apply(normCountData[,1:(nb_col_condA)],1,mean))
-Mut_Mean<- data.frame(apply(normCountData[,(nb_col_condA+1):(nb_col_condB)],1,mean))
+Mut_Mean<- data.frame(apply(normCountData[,(nb_col_condA+1):dim(normCountData)[2]],1,mean))
+#Mut_Mean<- data.frame(apply(normCountData[,(nb_col_condA+1):(nb_col_condB)],1,mean))
 
 logFC = log2(Mut_Mean / CT_Mean)
 colnames(logFC) = paste("logFC")
