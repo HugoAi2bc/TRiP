@@ -43,8 +43,11 @@ library(stringr)
 
 #Var_log2FC <- as.numeric(args[2])
 #Var_padj <- as.numeric(args[3])
-Var_log2FC <- as.numeric(params$logFC)
-Var_padj <- as.numeric(params$pval)
+CT = "W1_RIBOSEQ"
+Var_log2FC <- 0
+Var_padj <- 0.01
+#Var_log2FC <- as.numeric(params$logFC)
+#Var_padj <- as.numeric(params$pval)
 ```
 \
 
@@ -70,7 +73,8 @@ nb_col_condB <- table(factor(Cond))[[2]]
 
 
 #if (Cond[1] != args[1]) {
-if (Cond[1] != params$refCond) {
+if (Cond[1] != CT) {
+#if (Cond[1] != params$refCond) {
         Ord <- c( (1:nb_col_condB)+nb_col_condA , (1:nb_col_condA) )
         expData_Sorted <- expData_Sorted[, Ord]
 
@@ -247,8 +251,8 @@ hist(resDESeq[,"padj"], nclass = 100, xlab = "padj",
 
 #### Volcano plot
 ```{r, volcano plot global}
-myColors <- ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange > params$logFC), "green" ,
-                   ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange < params$logFC), "red" ,
+myColors <- ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange > Var_log2FC), "green" ,
+                   ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < Var_log2FC), "red" ,
                           "black" ) )
 
 plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
