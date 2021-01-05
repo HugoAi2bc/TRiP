@@ -32,7 +32,7 @@ library(stringr)
 
 
 ```{r Arguments, include=FALSE}
-args = commandArgs(trailingOnly=TRUE)
+#args = commandArgs(trailingOnly=TRUE)
 
 #if (is.na(args[1])) {args[1] <- "CT"}
 #if (is.na(args[2])) {args[2] <- 0}
