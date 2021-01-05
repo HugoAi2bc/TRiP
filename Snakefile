@@ -46,20 +46,25 @@ else:
 
 
 # snakemake 5.30.2
-# rule all:
-    # input:
-        #call of make_fastqc rule
-        # expand("/data/RESULTS/fastqc/{sample}_fastqc.html", sample=SAMPLES),
+rule all:
+    input:
+        # call of make_fastqc rule
+        expand("/data/RESULTS/fastqc/{sample}_fastqc.html", sample=SAMPLES),
+
         # #call of quality_controls_periodicity rule
         # expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt", sample=SAMPLES),
         # expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt", sample=SAMPLES),
         # #call of quality_controls_kmerRepartition rule
         # expand("/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt", sample=SAMPLES),
-        # #call of htseqcount_transcript_utr or htseqcount_transcript rule (depends on UTR="True"|"False" in config file)
-        # expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
-        #
-        # # Count matrix for DESeq2
-        # "/data/RESULTS/Final_report.html"
+        #call for graph generation
+        expand("/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg", sample=SAMPLES),
+        expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg", sample=SAMPLES, taille=KMER),
+        expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg", sample=SAMPLES, taille=KMER),
+
+        #call of htseqcount_transcript_utr or htseqcount_transcript rule (depends on UTR="True"|"False" in config file)
+        expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
+        # Count matrix for DESeq2
+        "/data/RESULTS/Final_report.html"
 
 
 # When the jobs are all done
@@ -402,6 +407,24 @@ rule quality_controls_periodicity:
     shell:
         "/TRiP/tools/periodicity.sh -N {params.sample_names} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
         "/TRiP/tools/periodicity.sh -N {params.sample_names} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
+
+rule graphs_length:
+    input:
+        length=rules.quality_controls_kmerRepartition.output
+    output:
+        length="/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg"
+    shell:
+        "/TRiP/tools/generationGraph_length.sh ;"
+
+rule graphs_periodicity:
+    input:
+        perio=rules.quality_controls_periodicity.output
+    output:
+        perioStart="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg",
+        perioStop="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg"
+    shell:
+        # r-base
+        "/TRiP/tools/generationGraph_perio.sh ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
 rule count_matrix_initialization:
