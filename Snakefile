@@ -46,8 +46,8 @@ else:
 
 
 # snakemake 5.30.2
-rule all:
-    input:
+# rule all:
+    # input:
         #call of make_fastqc rule
         # expand("/data/RESULTS/fastqc/{sample}_fastqc.html", sample=SAMPLES),
         # #call of quality_controls_periodicity rule
@@ -62,7 +62,7 @@ rule all:
         # "/data/RESULTS/Final_report.html"
 
 
-When the jobs are all done
+# When the jobs are all done
 onsuccess:
     # List of interesting logs to make the report
     logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
