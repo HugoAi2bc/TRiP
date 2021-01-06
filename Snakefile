@@ -375,7 +375,7 @@ rule quality_controls_bedcount:
 # Outputs the number of reads on each kmer
 rule quality_controls_kmerRepartition:
     input:
-        expand(rules.quality_controls_bedcount.output.bed, taille=KMER)
+        expand(rules.quality_controls_bedcount.output.bed, sample=SAMPLES, taille=KMER)
     output:
         "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt"
     params:
