@@ -4,7 +4,7 @@ author: "LES GST"
 date: "`r format (Sys.time(), '%B %d, %Y')`"
 output: "html_document"
 params:
-    refCond: "W1_RIBOSEQ"
+    refCond: "CT"
     logFC: 0
     pval: 0.01
 ---
@@ -43,7 +43,7 @@ library(stringr)
 
 #Var_log2FC <- as.numeric(args[2])
 #Var_padj <- as.numeric(args[3])
-CT = "W1_RIBOSEQ"
+CT = "WT_FIX"
 Var_log2FC <- 0
 Var_padj <- 0.01
 #Var_log2FC <- as.numeric(params$logFC)
@@ -217,7 +217,7 @@ meanExp = apply(normCountData, 1, mean)
 #### Application du package DESeq2, pour le calcul des statistiques
 ```{r, include = FALSE}
 ddsEstim = DESeq(ddsObjet)
-resDESeq = results(ddsEstim, contrast = c("condition", "CondA", "CondB"))
+resDESeq = results(ddsEstim, contrast = c("condition", "CondB", "CondA"))
 ```
 \
 
@@ -266,30 +266,27 @@ plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
 
 #### Volcano plot (zoom)
 ```{r, volcano plot zoom}
-myColors <- ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange > params$logFC), "green" ,
-                   ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange < params$logFC), "red" ,
-                          "black" ) )
-
-Valeurs_Limite_Y <- ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange > params$logFC), params$pval ,
-               ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange < params$logFC), params$pval ,
-               resDESeq$padj) )
-
-Forme_Pixel_Y <- ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange > params$logFC), 17 ,
-                           ifelse((resDESeq$padj < params$pval & resDESeq$log2FoldChange < params$logFC), 17 ,
-                                  20) )
-
-
-
-plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
-     pch = Forme_Pixel_Y,
-     col=myColors,
-     xlab = "log2 FC", ylab = "-log10(padj)",
-     ylim = c(0,2),
-
-     main = paste0("Volcano plot - ",Cond[nb_col_condB+1]," vs ",Cond[1])
-
-
-     )
+#myColors <- ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange > Var_log2FC), "green" ,
+#                   ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < Var_log2FC), "red" ,
+#                          "black" ) )
+#
+#Valeurs_Limite_Y <- ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange > Var_log2FC), Var_padj ,
+#               ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < Var_log2FC), Var_padj ,
+#               resDESeq$padj) )
+#
+#Forme_Pixel_Y <- ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange > Var_log2FC), 17 ,
+#                           ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < Var_log2FC), 17 ,
+#                                  20) )
+#
+#
+#
+#plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
+#     pch = Forme_Pixel_Y,
+#     col=myColors,
+#     xlab = "log2 FC", ylab = "-log10(padj)",
+#     ylim = c(0,2),
+#     main = paste0("Volcano plot - ",Cond[nb_col_condB+1]," vs ",Cond[1])
+#     )
 ```
 \
 
@@ -298,11 +295,11 @@ Bruts_Norm <- cbind(expData_Sorted, normCountData )
 
 Table_Complete <- data.frame(cbind(row.names(Bruts_Norm) , Bruts_Norm, CT_Mean,Mut_Mean , resDESeq) )
 colnames(Table_Complete) = col.names = c("genes" ,
-                               paste("CT", 1:nb_col_condA, sep = "_"),
-                               paste("Mut", 1:nb_col_condB, sep = "_"),
-                               paste("norm.CT", 1:nb_col_condA, sep = "_"),
-                               paste("norm.Mut", 1:nb_col_condB, sep = "_"),
-                               "CT_Mean", "Mut_Mean",
+                               paste("WT", 1:nb_col_condA, sep = "_"),
+                               paste("CO", 1:nb_col_condB, sep = "_"),
+                               paste("norm.WT", 1:nb_col_condA, sep = "_"),
+                               paste("norm.CO", 1:nb_col_condB, sep = "_"),
+                               "WT_Mean", "CO_Mean",
                                colnames(resDESeq))
 
 
