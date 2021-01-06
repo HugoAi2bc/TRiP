@@ -1,5 +1,7 @@
 configfile: "/data/config.yaml"
 
+#Docker version 19.03.12
+
 # conda create --name all_TRiP -c conda-forge python=3.8.6 r-base=4.0.2 (for bowtie2-2.2.1 and r-base for r-rmarkdown )
 # OR on existing env
 # mamba install --name all_TRiP -c conda-forge python=3.8.6 (python for bowtie2-2.2.1)
@@ -373,7 +375,7 @@ rule quality_controls_bedcount:
 # Outputs the number of reads on each kmer
 rule quality_controls_kmerRepartition:
     input:
-        "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}." + KMER[len(KMER)-1] + ".bed"
+        rules.quality_controls_bedcount.output.bed
     output:
         "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt"
     params:
@@ -392,9 +394,12 @@ rule quality_controls_kmerRepartition:
 # Looks how many reads start on each base to find if there is a periodicity signal
 rule quality_controls_periodicity:
     input:
-        sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}." + KMER[len(KMER)-1] + ".count.sequence.bed",
-        kmerRepartitionBed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}." + KMER[len(KMER)-1] + ".bed",
-        bed="/data/RESULTS/qualitativeAnalysis/bedCount/{sample}." + KMER[len(KMER)-1] + ".count.bed",
+        sequenceBedCount=rules.quality_controls_bedcount.output.sequenceBedCount,
+        #sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}." + KMER[len(KMER)-1] + ".count.sequence.bed",
+        kmerRepartitionBed=rules.quality_controls_bedcount.output.kmerRepartitionBed,
+        #kmerRepartitionBed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}." + KMER[len(KMER)-1] + ".bed",
+        bed=rules.quality_controls_bedcount.output.bed,
+        #bed="/data/RESULTS/qualitativeAnalysis/bedCount/{sample}." + KMER[len(KMER)-1] + ".count.bed",
         gff="/data/database/" + config['gff_transcriptome']
     output:
         start="/data/RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt",
