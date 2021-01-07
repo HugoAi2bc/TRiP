@@ -342,7 +342,8 @@ rule htseqcount_transcript_utr:
 # Divisions of SAM file according to kmer length and turns it into BAM
 rule quality_controls_bamDivision:
     input:
-        sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
+        sam=rules.quality_controls_bedcount.output.samuniq,
+        # sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
         gff="/data/database/" + config['gff_transcriptome']
     output:
         bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
@@ -360,8 +361,10 @@ rule quality_controls_bamDivision:
 # Creates bed files from fasta files
 rule quality_controls_bedcount:
     input:
-        bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
-        bai="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai",
+        bam=rules.quality_controls_bedcount.output.bam,
+        bai=rules.quality_controls_bedcount.output.bai,
+        # bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
+        # bai="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai",
         fasta="/data/database/" + config['fasta_transcriptome']
     output:
         sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}.{taille}.count.sequence.bed",
@@ -378,7 +381,8 @@ rule quality_controls_bedcount:
 # Outputs the number of reads on each kmer
 rule quality_controls_kmerRepartition:
     input:
-        expand(rules.quality_controls_bedcount.output.bed, sample=SAMPLES, taille=KMER)
+        expand(rules.quality_controls_bedcount.output.kmerRepartitionBed, sample=SAMPLES, taille=KMER)
+        # "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}." + KMER[len(KMER)-1] + ".bed"
     output:
         "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt"
     params:
@@ -397,9 +401,9 @@ rule quality_controls_kmerRepartition:
 # Looks how many reads start on each base to find if there is a periodicity signal
 rule quality_controls_periodicity:
     input:
-        sequenceBedCount=rules.quality_controls_bedcount.output.sequenceBedCount,
+        #sequenceBedCount=rules.quality_controls_bedcount.output.sequenceBedCount,
+        #kmerRepartitionBed=rules.quality_controls_bedcount.output.kmerRepartitionBed,
         #sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}." + KMER[len(KMER)-1] + ".count.sequence.bed",
-        kmerRepartitionBed=rules.quality_controls_bedcount.output.kmerRepartitionBed,
         #kmerRepartitionBed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}." + KMER[len(KMER)-1] + ".bed",
         bed=rules.quality_controls_bedcount.output.bed,
         #bed="/data/RESULTS/qualitativeAnalysis/bedCount/{sample}." + KMER[len(KMER)-1] + ".count.bed",
