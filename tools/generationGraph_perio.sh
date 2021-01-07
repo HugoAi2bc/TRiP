@@ -7,10 +7,8 @@ path="/data/RESULTS/qualitativeAnalysis"
 # do
 	# cd ${path}/
 	# cd ${path}/${direct}
-	mkdir ${path}/graphes
-
+	
 	########### Periodicity ###########
-	mkdir ${path}/graphes/periodicity
 
 	for file in `ls ${path}/periodicity`
 	do

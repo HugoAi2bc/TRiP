@@ -426,6 +426,8 @@ rule graphs_length:
     output:
         length="/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg"
     shell:
+        # r-base 4.0.2
+        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ ;"
         "/TRiP/tools/generationGraph_length.sh ;"
 
 rule graphs_periodicity:
@@ -435,7 +437,8 @@ rule graphs_periodicity:
         perioStart="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg",
         perioStop="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg"
     shell:
-        # r-base
+        # r-base 4.0.2
+        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
         "/TRiP/tools/generationGraph_perio.sh ;"
 
 # Creates the row names (genes/transcript names) of the count matrix

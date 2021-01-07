@@ -6,10 +6,8 @@ path="/data/RESULTS/qualitativeAnalysis"
 # do
 	# cd ${path}/
 	# cd ${path}/${direct}
-	mkdir ${path}/graphes
-
+	
 	########### Kmer repartition ###########
-	mkdir ${path}/graphes/kmerRepartition
 
 	for file in `ls ${path}/kmerRepartition | grep kmerRepartition`
 	do
