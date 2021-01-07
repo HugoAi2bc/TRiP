@@ -351,7 +351,7 @@ rule quality_controls_bamDivision:
     params:
         sample_names="{sample}"
     log:
-        "/data/logs/quality_controls_bamDivision/{sample}.{taille}.BamDivision.log"
+        "/data/logs/quality_controls_bamDivision/{sample}.BamDivision.log"
     shell:
         # samtools 1.11
         # gawk 5.1.0
@@ -414,8 +414,8 @@ rule quality_controls_periodicity:
     params:
         sample_names="{sample}"
     log:
-        start="/data/logs/quality_controls_periodicity/{sample}.{taille}.log",
-        stop="/data/logs/quality_controls_periodicity/{sample}.{taille}.log"
+        start="/data/logs/quality_controls_periodicity/{sample}.log",
+        stop="/data/logs/quality_controls_periodicity/{sample}.log"
     shell:
         "/TRiP/tools/periodicity.sh -N {params.sample_names} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
         "/TRiP/tools/periodicity.sh -N {params.sample_names} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"

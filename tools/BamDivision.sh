@@ -1,7 +1,7 @@
 #! /bin/bash
 
 ###
-###This script allowed the division of SAM file according to kmer length and turns it into BAM
+###This script allowed the division of SAM file according to read length and turns it into BAM
 ###
 
 usage() { echo "Usage: $0 -m <Shortest kmer length> -M <Longest kmer length> -S <SAM file> -T <Threads> -N <sample name> -O <output dir>" 1>&2 ; echo -e "\n -S\tSAM files (with path) without multimapping and unalign reads\n -m\tShorter kmer (reads) length\n -M\tLongest kmer (reads) length\n -T\tThreads number allows (default value : 4)\n -N\tSample name\n -O\tOutput directory" ; exit 1; }
