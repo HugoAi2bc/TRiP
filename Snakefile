@@ -54,14 +54,14 @@ rule all:
         expand("/data/RESULTS/fastqc/{sample}_fastqc.html", sample=SAMPLES),
 
         # #call of quality_controls_periodicity rule
-        # expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt", sample=SAMPLES),
-        # expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt", sample=SAMPLES),
+        expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt", sample=SAMPLES),
+        expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt", sample=SAMPLES),
         # #call of quality_controls_kmerRepartition rule
-        # expand("/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt", sample=SAMPLES),
-        #call for graph generation
-        expand("/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg", sample=SAMPLES),
-        expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg", sample=SAMPLES, taille=KMER),
-        expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg", sample=SAMPLES, taille=KMER),
+        expand("/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt", sample=SAMPLES),
+        # #call for graph generation
+        # expand("/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg", sample=SAMPLES),
+        # expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg", sample=SAMPLES, taille=KMER),
+        # expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg", sample=SAMPLES, taille=KMER),
 
         #call of htseqcount_transcript_utr or htseqcount_transcript rule (depends on UTR="True"|"False" in config file)
         expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
@@ -75,6 +75,11 @@ onsuccess:
     logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
     if config['UTR'] == "no":
         logs_names = logs_names[:-1]
+
+    shell("mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ ;")
+    shell("/TRiP/tools/generationGraph_length.sh ;")
+    shell("mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;")
+    shell("/TRiP/tools/generationGraph_perio.sh ;")
 
     # File for the statistical report
     data_report=open("/data/RESULTS/Analysis_Report.txt","w")
@@ -421,29 +426,34 @@ rule quality_controls_periodicity:
         start="/data/logs/quality_controls_periodicity/{sample}.{taille}.log",
         stop="/data/logs/quality_controls_periodicity/{sample}.{taille}.log"
     shell:
+        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
         "/TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
         "/TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
 
-rule graphs_length:
-    input:
-        length=rules.quality_controls_kmerRepartition.output
-    output:
-        length="/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg"
-    shell:
-        # r-base 4.0.2
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ ;"
-        "/TRiP/tools/generationGraph_length.sh ;"
-
-rule graphs_periodicity:
-    input:
-        perio=rules.quality_controls_periodicity.output
-    output:
-        perioStart="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg",
-        perioStop="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg"
-    shell:
-        # r-base 4.0.2
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
-        "/TRiP/tools/generationGraph_perio.sh ;"
+# rule graphs_length:
+#     input:
+#         length=rules.quality_controls_kmerRepartition.output
+#     output:
+#         length="/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg"
+#     log:
+#         "/data/logs/graphs_length/{sample}.generationGraph_length.log
+#     shell:
+#         # r-base 4.0.2
+#         "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ ;"
+#         "/TRiP/tools/generationGraph_length.sh 2> {log} ;"
+#
+# rule graphs_periodicity:
+#     input:
+#         perio=rules.quality_controls_periodicity.output
+#     output:
+#         perioStart="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg",
+#         perioStop="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg"
+#     log:
+#         "/data/logs/graphs_periodicity/{sample}.generationGraph_perio.log
+#     shell:
+#         # r-base 4.0.2
+#         "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
+#         "/TRiP/tools/generationGraph_perio.sh 2> {log} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
 rule count_matrix_initialization:

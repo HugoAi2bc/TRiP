@@ -66,9 +66,8 @@ elif [ "${p}" = "stop" ]; then
 fi
 
 if [ "${r}" = "metagene" ]; then
-	mkdir -p ${O}periodicity
 	#Periodicity calcul
-	for samp in `ls ${D} | grep ${N} | grep ${l} | grep "bed"`;
+	for samp in `ls ${D} | grep "${N}.${l}" | grep "bed"`;
 	do
 		name="${samp%.*.*}"
 		sample_temp=$(mktemp /tmp/sampleTempo.periodicity.XXX);
