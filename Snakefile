@@ -342,7 +342,7 @@ rule htseqcount_transcript_utr:
 # Divisions of SAM file according to kmer length and turns it into BAM
 rule quality_controls_bamDivision:
     input:
-        sam=rules.quality_controls_bedcount.output.samuniq,
+        sam=rules.transcriptome_samtools.output.samuniq,
         # sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
         gff="/data/database/" + config['gff_transcriptome']
     output:
@@ -361,8 +361,8 @@ rule quality_controls_bamDivision:
 # Creates bed files from fasta files
 rule quality_controls_bedcount:
     input:
-        bam=rules.quality_controls_bedcount.output.bam,
-        bai=rules.quality_controls_bedcount.output.bai,
+        bam=rules.quality_controls_bamDivision.output.bam,
+        bai=rules.quality_controls_bamDivision.output.bai,
         # bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
         # bai="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai",
         fasta="/data/database/" + config['fasta_transcriptome']
