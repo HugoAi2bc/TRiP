@@ -405,7 +405,8 @@ rule quality_controls_periodicity:
         #kmerRepartitionBed=rules.quality_controls_bedcount.output.kmerRepartitionBed,
         #sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}." + KMER[len(KMER)-1] + ".count.sequence.bed",
         #kmerRepartitionBed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}." + KMER[len(KMER)-1] + ".bed",
-        bed=rules.quality_controls_bedcount.output.bed,
+        bed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.{taille}.bed",
+        # bed=rules.quality_controls_bedcount.output.bed,
         #bed="/data/RESULTS/qualitativeAnalysis/bedCount/{sample}." + KMER[len(KMER)-1] + ".count.bed",
         gff="/data/database/" + config['gff_transcriptome']
     output:
