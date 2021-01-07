@@ -342,41 +342,43 @@ rule htseqcount_transcript_utr:
 # Divisions of SAM file according to kmer length and turns it into BAM
 rule quality_controls_bamDivision:
     input:
-        sam=rules.transcriptome_samtools.output.samuniq,
-        # sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
+        # sam=rules.transcriptome_samtools.output.samuniq,
+        sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
         gff="/data/database/" + config['gff_transcriptome']
     output:
         bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
         bai="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai"
     params:
-        sample_names="{sample}"
+        sample_names="{sample}",
+        read_length="{taille}"
     log:
         "/data/logs/quality_controls_bamDivision/{sample}.{taille}.BamDivision.log"
     shell:
         # samtools 1.11
         # gawk 5.1.0
-        "/TRiP/tools/BamDivision.sh -N {params.sample_names} -S {input.sam} -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log};"
+        "/TRiP/tools/BamDivision.sh -N {params.sample_names} -S {input.sam} -l {params.read_length} -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
         #"rm {input.sam};"
 
 # Creates bed files from fasta files
 rule quality_controls_bedcount:
     input:
-        bam=rules.quality_controls_bamDivision.output.bam,
-        bai=rules.quality_controls_bamDivision.output.bai,
-        # bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
-        # bai="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai",
+        # bam=rules.quality_controls_bamDivision.output.bam,
+        # bai=rules.quality_controls_bamDivision.output.bai,
+        bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
+        bai="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai",
         fasta="/data/database/" + config['fasta_transcriptome']
     output:
         sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}.{taille}.count.sequence.bed",
         kmerRepartitionBed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.{taille}.bed",
         bed="/data/RESULTS/qualitativeAnalysis/bedCount/{sample}.{taille}.count.bed",
     params:
-        sample_names="{sample}"
+        sample_names="{sample}",
+        read_length="{taille}"
     log:
         "/data/logs/quality_controls_bedcount/{sample}.{taille}.kmerRepartition.log"
     shell:
         # bedtools 2.29.2
-        "/TRiP/tools/kmerRepartition.sh -N {params.sample_names} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log}"
+        "/TRiP/tools/kmerRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Outputs the number of reads on each kmer
 rule quality_controls_kmerRepartition:
