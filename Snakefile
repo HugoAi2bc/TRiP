@@ -352,7 +352,7 @@ rule quality_controls_bamDivision:
         # samtools 1.11
         # gawk 5.1.0
         "/TRiP/tools/BamDivision.sh -N {params.sample_names} -S {input.sam} -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log};"
-        "rm {input.sam};"
+        #"rm {input.sam};"
 
 # Creates bed files from fasta files
 rule quality_controls_bedcount:
