@@ -105,6 +105,9 @@ onsuccess:
 
             logs_files.close()
         data_report.write("\n\n\n")
+
+        shell("rm -f /data/RESULTS/BAM_transcriptome/" + sample + frag_length_L + ".uniq.sam ;")
+
     data_report.close()
 
     # Removes useless directory
