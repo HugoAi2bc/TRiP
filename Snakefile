@@ -353,15 +353,15 @@ rule quality_controls_bamDivision:
     output:
         bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
         bai="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai"
-    params:
-        sample_names="{sample}",
-        read_length="{taille}"
+    # params:
+    #     sample_names="{sample}",
+    #     read_length="{taille}"
     log:
         "/data/logs/quality_controls_bamDivision/{sample}.{taille}.BamDivision.log"
     shell:
         # samtools 1.11
         # gawk 5.1.0
-        "/TRiP/tools/BamDivision.sh -N {params.sample_names} -S {input.sam} -l {params.read_length} -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
+        "/TRiP/tools/BamDivision.sh -N {sample} -l {taille} -S {input.sam} -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
         #"rm {input.sam};"
 
 # Creates bed files from fasta files
@@ -376,14 +376,14 @@ rule quality_controls_bedcount:
         sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}.{taille}.count.sequence.bed",
         kmerRepartitionBed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.{taille}.bed",
         bed="/data/RESULTS/qualitativeAnalysis/bedCount/{sample}.{taille}.count.bed",
-    params:
-        sample_names="{sample}",
-        read_length="{taille}"
+    # params:
+    #     sample_names="{sample}",
+    #     read_length="{taille}"
     log:
         "/data/logs/quality_controls_bedcount/{sample}.{taille}.kmerRepartition.log"
     shell:
         # bedtools 2.29.2
-        "/TRiP/tools/kmerRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
+        "/TRiP/tools/kmerRepartition.sh -N {sample} -l {taille} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Outputs the number of reads on each kmer
 rule quality_controls_kmerRepartition:
@@ -393,8 +393,8 @@ rule quality_controls_kmerRepartition:
     output:
         "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt"
     params:
-        path="/data/RESULTS/qualitativeAnalysis/kmerRepartition/",
-        sample_names="{sample}"
+        path="/data/RESULTS/qualitativeAnalysis/kmerRepartition/"
+        # sample_names="{sample}"
     log:
         wc="/data/logs/quality_controls_kmerRepartition/{sample}.wc.log",
         sed1="/data/logs/quality_controls_kmerRepartition/{sample}.sed1.log",
@@ -403,7 +403,7 @@ rule quality_controls_kmerRepartition:
         head="/data/logs/quality_controls_kmerRepartition/{sample}.head.log"
     shell:
         "set +o pipefail ;"
-        "wc -l {params.path}{params.sample_names}* 2> {log.wc} | sed 's/\./ /g' 2> {log.sed1} | awk -F ' ' '{{print $(NF-1),$1}}' 2> {log.awk} | sed 's/ /\t/g' 2> {log.sed2} | head -n -1 2> {log.head}  > {output} ;"
+        "wc -l {params.path}{sample}* 2> {log.wc} | sed 's/\./ /g' 2> {log.sed1} | awk -F ' ' '{{print $(NF-1),$1}}' 2> {log.awk} | sed 's/ /\t/g' 2> {log.sed2} | head -n -1 2> {log.head}  > {output} ;"
 
 # Looks how many reads start on each base to find if there is a periodicity signal
 rule quality_controls_periodicity:
@@ -419,16 +419,16 @@ rule quality_controls_periodicity:
     output:
         start="/data/RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt",
         stop="/data/RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt"
-    params:
-        sample_names="{sample}",
-        read_length="{taille}"
+    # params:
+    #     sample_names="{sample}",
+    #     read_length="{taille}"
     log:
         start="/data/logs/quality_controls_periodicity/{sample}.{taille}.log",
         stop="/data/logs/quality_controls_periodicity/{sample}.{taille}.log"
     shell:
         "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
-        "/TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
-        "/TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
+        "/TRiP/tools/periodicity.sh -N {sample} -l {taille} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
+        "/TRiP/tools/periodicity.sh -N {sample} -l {taille} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
 
 # rule graphs_length:
 #     input:
