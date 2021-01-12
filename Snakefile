@@ -66,7 +66,7 @@ rule all:
         #call of htseqcount_transcript_utr or htseqcount_transcript rule (depends on UTR="True"|"False" in config file)
         expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
         # Count matrix for DESeq2
-        "/data/RESULTS/Final_report.html"
+        "/data/RESULTS/" + config['project_name'] + ".Final_report.html"
 
 
 # When the jobs are all done
@@ -77,7 +77,7 @@ onsuccess:
         logs_names = logs_names[:-1]
 
     # File for the statistical report
-    data_report=open("/data/RESULTS/Analysis_Report.txt","w")
+    data_report=open("/data/RESULTS/" + config['project_name'] + ".Analysis_Report.txt","w")
 
     for sample in SAMPLES:
         # Data treatment report creation
@@ -491,7 +491,7 @@ rule DESeq2_analysis:
         deseq2="/data/logs/DESeq2_analysis/DESeq2_analysis.log"
     params:
         reportPath="/data/RESULTS/",
-        reportName="Final_report.html"
+        reportName=config['project_name'] + ".Final_report.html"
     shell:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
