@@ -43,7 +43,7 @@ library(stringr)
 
 #Var_log2FC <- as.numeric(args[2])
 #Var_padj <- as.numeric(args[3])
-CT = "WT_FIX"
+CT = "Control"
 Var_log2FC <- 0
 Var_padj <- 0.01
 #Var_log2FC <- as.numeric(params$logFC)
