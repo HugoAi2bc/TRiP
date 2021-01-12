@@ -1,6 +1,6 @@
 configfile: "/data/config.yaml"
-
-#Docker version 19.03.12
+# Docker 19.03.12
+# Conda 4.9.2
 
 # conda create --name all_TRiP -c conda-forge python=3.8.6 r-base=4.0.2 (for bowtie2-2.2.1 and r-base for r-rmarkdown )
 # OR on existing env
@@ -76,11 +76,6 @@ onsuccess:
     if config['UTR'] == "no":
         logs_names = logs_names[:-1]
 
-    shell("mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ ;")
-    shell("bash /TRiP/tools/generationGraph_length.sh ;")
-    shell("mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;")
-    shell("bash /TRiP/tools/generationGraph_perio.sh ;")
-
     # File for the statistical report
     data_report=open("/data/RESULTS/Analysis_Report.txt","w")
 
@@ -116,7 +111,8 @@ onsuccess:
     data_report.close()
 
     # Removes useless directory
-    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
+    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ ;")
+    # shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
 
 
 
@@ -297,7 +293,6 @@ rule htseqcount_transcript_utr:
         counts_CDS="/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA.htseqcountCDS.txt",
         counts_threeprime="/data/RESULTS/htseqcount_threeprime/{sample}" + frag_length_L + ".no-outRNA.htseqcountUTR.txt",
         counts_fiveprime="/data/RESULTS/htseqcount_fiveprime/{sample}" + frag_length_L + ".no-outRNA.htseqcountUTR.txt"
-        # files_ready=touch("/data/logs/htseqcount_transcript_utr/{sample}.htseqcountUTR.mytask.done")
     log:
         view="/data/logs/htseqcount_transcript_utr/{sample}.view.log",
         htseqcount_CDS="/data/logs/htseqcount_transcript_utr/{sample}.htseqcount_CDS.log",
@@ -344,10 +339,9 @@ rule htseqcount_transcript_utr:
         "echo '3prime : '$RPKMmoyen3prime 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
 
 # Quality controls :
-# Divisions of SAM file according to kmer length and turns it into BAM
+# Divisions of SAM file according to read length and turns it into BAM
 rule quality_controls_bamDivision:
     input:
-        # sam=rules.transcriptome_samtools.output.samuniq,
         sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
         gff="/data/database/" + config['gff_transcriptome']
     output:
@@ -367,8 +361,6 @@ rule quality_controls_bamDivision:
 # Creates bed files from fasta files
 rule quality_controls_bedcount:
     input:
-        # bam=rules.quality_controls_bamDivision.output.bam,
-        # bai=rules.quality_controls_bamDivision.output.bai,
         bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
         bai="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai",
         fasta="/data/database/" + config['fasta_transcriptome']
@@ -383,13 +375,13 @@ rule quality_controls_bedcount:
         "/data/logs/quality_controls_bedcount/{sample}.{taille}.kmerRepartition.log"
     shell:
         # bedtools 2.29.2
+        "mkdir -p /data/RESULTS/qualitativeAnalysis/kmerRepartition /data/RESULTS/qualitativeAnalysis/bedCount /data/RESULTS/qualitativeAnalysis/sequenceBedCount"
         "bash /TRiP/tools/kmerRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Outputs the number of reads on each kmer
 rule quality_controls_kmerRepartition:
     input:
         expand(rules.quality_controls_bedcount.output.kmerRepartitionBed, sample=SAMPLES, taille=KMER)
-        # "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}." + KMER[len(KMER)-1] + ".bed"
     output:
         "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt"
     params:
@@ -408,13 +400,7 @@ rule quality_controls_kmerRepartition:
 # Looks how many reads start on each base to find if there is a periodicity signal
 rule quality_controls_periodicity:
     input:
-        #sequenceBedCount=rules.quality_controls_bedcount.output.sequenceBedCount,
-        #kmerRepartitionBed=rules.quality_controls_bedcount.output.kmerRepartitionBed,
-        #sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}." + KMER[len(KMER)-1] + ".count.sequence.bed",
-        #kmerRepartitionBed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}." + KMER[len(KMER)-1] + ".bed",
         bed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.{taille}.bed",
-        # bed=rules.quality_controls_bedcount.output.bed,
-        #bed="/data/RESULTS/qualitativeAnalysis/bedCount/{sample}." + KMER[len(KMER)-1] + ".count.bed",
         gff="/data/database/" + config['gff_transcriptome']
     output:
         start="/data/RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt",
@@ -426,6 +412,7 @@ rule quality_controls_periodicity:
         start="/data/logs/quality_controls_periodicity/{sample}.{taille}.log",
         stop="/data/logs/quality_controls_periodicity/{sample}.{taille}.log"
     shell:
+        # gawk 5.1.0
         "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
         "bash /TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
         "bash /TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
@@ -460,31 +447,6 @@ rule graphs_periodicity:
         # r-base 4.0.2
         "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
         "bash tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log} ;"
-
-# rule graphs_length:
-#     input:
-#         length=rules.quality_controls_kmerRepartition.output
-#     output:
-#         length="/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg"
-#     log:
-#         "/data/logs/graphs_length/{sample}.generationGraph_length.log
-#     shell:
-#         # r-base 4.0.2
-#         "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ ;"
-#         "/TRiP/tools/generationGraph_length.sh 2> {log} ;"
-#
-# rule graphs_periodicity:
-#     input:
-#         perio=rules.quality_controls_periodicity.output
-#     output:
-#         perioStart="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg",
-#         perioStop="/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg"
-#     log:
-#         "/data/logs/graphs_periodicity/{sample}.generationGraph_perio.log
-#     shell:
-#         # r-base 4.0.2
-#         "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
-#         "/TRiP/tools/generationGraph_perio.sh 2> {log} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
 rule count_matrix_initialization:

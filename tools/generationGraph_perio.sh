@@ -27,27 +27,16 @@ if [ -z "${N}" ] || [ -z "${l}" ] || [ -z "${m}" ] || [ -z "${M}" ]; then
 fi
 
 path="/data/RESULTS/qualitativeAnalysis/"
-# directory=`ls ${path}`
-
-# for direct in ${directory}
-# do
-	# cd ${path}/
-	# cd ${path}/${direct}
 
 	########### Periodicity ###########
 for pos in start stop
-# for file in `ls ${path}periodicity/`
 do
 	if [ ${pos} = "start" ]; then
 		file="${N}.${l}.periodicity.start.CDS.-${m}+${M}"
-	# fi
 	else
-	# if [${pos}=='stop']; then
 		file="${N}.${l}.periodicity.stop.CDS.-${M}+${m}"
 	fi
 
-	#Nom de l'échantillon
-	# sample="${file%.*}"kmerRepartition
 	echo "#! bin/R" > ${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R
 	echo "perio<-read.table(file = '"${path}"periodicity/"${file}".txt')" >> ${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R
 	echo "jpeg(filename = '"${path}"graphes/periodicity/"${file}".jpeg')" >> ${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R
@@ -56,4 +45,3 @@ do
 	R CMD BATCH ${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R
 	rm -f ${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R
 done
-# done

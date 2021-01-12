@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 usage() { echo "Usage: $0 -N <sample name> -l <read length> -m <before start position> -M <after start position> -G <GFF3 file> -D <path to bed count> -p <position> -t <feature type in GFF3 annotation> -r <by row> -O <output dir>" 1>&2 ; echo "\n -G <string>\tgff3 file with all annotations\n -D <string>\tbed count directory path\n -N <string>\tSample name\n -l <string>\tRead length of interest\n -p <string>\tcodon of interest (start or stop)\n -m <int>\tnumber of base before start codon\n -M <int>\tnumber of base after start codon\n -t <string>\tSpecify feature type in GFF3 annotation. ('CDS','five_prime_UTR','three_prime_UTR')\n -r <string>\tTwo option : 'metagene' (default value) to have all GFF3 genes in the same table ; 'byrow' to have a table by GFF3 gene\n -O\tOutput directory" ; exit 1; }
 

@@ -24,9 +24,11 @@
 
 # conda activate all_TRiP;
 
+nproc --all
+
 # conda list;
-snakemake -s /TRiP/Snakefile -j --dag -np |  dot -Tsvg > /data/dag_last-run.svg;
-snakemake -s /TRiP/Snakefile -j --dag -np --forceall |  dot -Tsvg > /data/dag_all.svg;
+snakemake -s /TRiP/Snakefile -j --dag -np |  dot -Tsvg > /data/RESULTS/dag_last-run.svg;
+snakemake -s /TRiP/Snakefile -j --dag -np --forceall |  dot -Tsvg > /data/RESULTS/dag_all.svg;
 snakemake -s /TRiP/Snakefile -j 4;
 
 # conda deactivate;

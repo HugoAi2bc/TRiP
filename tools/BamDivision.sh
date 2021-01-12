@@ -46,17 +46,10 @@ fi
 #testing if SAM file header is correct
 head -n 1 ${S} | gawk '{if($0 !~ /^@/){print "Warning : File in -S option is not a SAM format file"}}'
 
-##Division by k-mer length
-# #Sample name
-# sample=${N}
-# #Read length
-# length=${l}
-
 #output directory creation
 mkdir -p ${O}"bamDivision"
 
 #Bam Division
-
 #division of read depending of read length
 gawk -v l=${l} '{if($1 !~ /^ *@/){if(length($10)==l){print $0}}else{print $0}}' ${S} > ${O}bamDivision/${N}.${l}.sam;
 #Conversion as bam
@@ -65,18 +58,6 @@ samtools view -@ ${T} -F 268 -b ${O}bamDivision/${N}.${l}.sam > ${O}bamDivision/
 samtools sort -@ ${T} ${O}bamDivision/${N}.${l}.uniq.bam -o ${O}bamDivision/${N}.${l}.uniq.sort.bam ;
 #index bam file
 samtools index ${O}bamDivision/${N}.${l}.uniq.sort.bam;
-
-# for kmer in `seq ${m} ${M}`;
-# do
-#     #division of read depending of read length
-# 	gawk -v l=${kmer} '{if($1 !~ /^ *@/){if(length($10)==l){print $0}}else{print $0}}' ${S} > ${O}bamDivision/${sample}.${kmer}.sam;
-#     #Conversion as bam
-# 	samtools view -@ ${T} -F 268 -b ${O}bamDivision/${sample}.${kmer}.sam > ${O}bamDivision/${sample}.${kmer}.uniq.bam ;
-#     #sorting bam file
-# 	samtools sort -@ ${T} ${O}bamDivision/${sample}.${kmer}.uniq.bam -o ${O}bamDivision/${sample}.${kmer}.uniq.sort.bam ;
-#     #index bam file
-# 	samtools index ${O}bamDivision/${sample}.${kmer}.uniq.sort.bam;
-# done
 
 #remove temporary file
 rm -rf ${O}bamDivision/${N}.${l}.uniq.bam ${O}bamDivision/${N}.${l}.sam

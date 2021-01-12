@@ -18,20 +18,8 @@ if [ -z "${N}" ]; then
 fi
 
 path="/data/RESULTS/qualitativeAnalysis/"
-# directory=`ls ${path}`
-# for direct in ${directory}
-# do
-	# cd ${path}/
-	# cd ${path}/${direct}
 
 	########### Kmer repartition ###########
-
-# file="${N}.kmerRepartition"
-# for file in `ls ${path}kmerRepartition | grep kmerRepartition`
-# do
-# #Nom de l'échantillon
-# sample=${N}
-# sample="${file%.*.*}"
 echo "#! bin/R" > ${path}graphes/kmerRepartition/${N}.tempoR.R
 echo "kmer<-read.table(file = '"${path}"kmerRepartition/"${N}".kmerRepartition.txt')" >> ${path}graphes/kmerRepartition/${N}.tempoR.R
 echo "jpeg(filename = '"${path}"graphes/kmerRepartition/"${N}".kmerRepartition.jpeg')" >> ${path}graphes/kmerRepartition/${N}.tempoR.R
@@ -39,5 +27,3 @@ echo "barplot(kmer\$V2,names.arg = kmer\$V1)" >> ${path}graphes/kmerRepartition/
 echo "dev.off()" >> ${path}graphes/kmerRepartition/${N}.tempoR.R
 R CMD BATCH ${path}graphes/kmerRepartition/${N}.tempoR.R
 rm -f ${path}graphes/kmerRepartition/${N}.tempoR.R
-# done
-# done
