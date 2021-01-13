@@ -376,7 +376,6 @@ rule quality_controls_bedcount:
         "/data/logs/quality_controls_bedcount/{sample}.{taille}.kmerRepartition.log"
     shell:
         # bedtools 2.29.2
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/kmerRepartition /data/RESULTS/qualitativeAnalysis/bedCount /data/RESULTS/qualitativeAnalysis/sequenceBedCount ;"
         "bash /TRiP/tools/kmerRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Outputs the number of reads on each kmer
@@ -414,7 +413,6 @@ rule quality_controls_periodicity:
         stop="/data/logs/quality_controls_periodicity/{sample}.{taille}.log"
     shell:
         # gawk 5.1.0
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
         "bash /TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
         "bash /TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
 
@@ -426,11 +424,9 @@ rule graphs_length:
     params:
         sample_name="{sample}"
     log:
-        dir="logs/graphs_length/{sample}.dir-creat.log",
         bash="logs/graphs_length/{sample}.generationGraph_length.log"
     shell:
         # r-base 4.0.2
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ 2> {log.dir};"
         "bash tools/generationGraph_length.sh -N {params.sample_name} 2> {log.bash} ;"
 
 rule graphs_periodicity:
@@ -446,7 +442,6 @@ rule graphs_periodicity:
         "logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
     shell:
         # r-base 4.0.2
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ ;"
         "bash tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
