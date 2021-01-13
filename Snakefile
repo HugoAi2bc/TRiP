@@ -427,7 +427,7 @@ rule graphs_length:
         bash="logs/graphs_length/{sample}.generationGraph_length.log"
     shell:
         # r-base 4.0.2
-        "bash tools/generationGraph_length.sh -N {params.sample_name} 2> {log.bash} ;"
+        "bash /TRiP/tools/generationGraph_length.sh -N {params.sample_name} 2> {log.bash} ;"
 
 rule graphs_periodicity:
     input:
@@ -442,7 +442,7 @@ rule graphs_periodicity:
         bash="logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
     shell:
         # r-base 4.0.2
-        "bash tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log.bash} ;"
+        "bash /TRiP/tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log.bash} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
 rule count_matrix_initialization:
