@@ -128,7 +128,7 @@ rule bowtie2_build_outRNA:
         "/data/logs/bowtie2_build_outRNA/bowtie2_build_outRNA.log"
     shell:
         # bowtie2 2.4.2
-        "bowtie2-build {input} {params.outNames} &> {log}"
+        "bowtie2-build {input} {params.outNames} &> {log} ;"
 
 # Builds the index of bowtie2 mapping for all RNA
 rule bowtie2_build_transcriptome:
@@ -142,7 +142,7 @@ rule bowtie2_build_transcriptome:
         "/data/logs/bowtie2_build_transcriptome/bowtie2_build_transcriptome.log"
     shell:
         # bowtie2 2.4.2
-        "bowtie2-build {input} {params.outNames} &> {log}"
+        "bowtie2-build {input} {params.outNames} &> {log} ;"
 
 # Builds the index of hisat2 mapping for all RNA
 rule hisat2_build_transcriptome:
@@ -156,7 +156,7 @@ rule hisat2_build_transcriptome:
         "/data/logs/hisat2_build_transcriptome/hisat2_build_transcriptome.log"
     shell:
         # hisat2 2.2.1
-        "hisat2-build {input} {params.outNames} &> {log}"
+        "hisat2-build {input} {params.outNames} &> {log} ;"
 
 # Quality control of data : build of the fastqc
 rule make_fastqc:
@@ -171,7 +171,7 @@ rule make_fastqc:
         "/data/logs/make_fastqc/{sample}.log"
     shell:
         # fastqc 0.11.9
-        "fastqc {input} --outdir {params.outdir} 2> {log}"
+        "fastqc {input} --outdir {params.outdir} 2> {log} ;"
 
 # Removes/cuts potential adapters on the reads
 rule adapt_trimming:
@@ -186,7 +186,7 @@ rule adapt_trimming:
         sample_names="{sample}"
     shell:
         # cutadapt 3.1
-        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 --trimmed-only --max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt}"
+        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 --trimmed-only --max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
 
 # Mapping of non-coding RNA
 rule bowtie2_run_outRNA:
@@ -376,7 +376,7 @@ rule quality_controls_bedcount:
         "/data/logs/quality_controls_bedcount/{sample}.{taille}.kmerRepartition.log"
     shell:
         # bedtools 2.29.2
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/kmerRepartition /data/RESULTS/qualitativeAnalysis/bedCount /data/RESULTS/qualitativeAnalysis/sequenceBedCount"
+        "mkdir -p /data/RESULTS/qualitativeAnalysis/kmerRepartition /data/RESULTS/qualitativeAnalysis/bedCount /data/RESULTS/qualitativeAnalysis/sequenceBedCount ;"
         "bash /TRiP/tools/kmerRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Outputs the number of reads on each kmer
