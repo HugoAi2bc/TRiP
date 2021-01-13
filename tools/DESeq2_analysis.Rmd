@@ -48,7 +48,7 @@ Var_padj <- as.numeric(rmarkdown::metadata$params$refCond)
 ```{r data , echo=FALSE}
 expData = read.table("/data/RESULTS/DESeq2/count_matrix.txt", header = T, row.names = 1)
 ```
-##### *`/data/RESULTS/DESeq2/count_matrix.txt`*
+##### *`RESULTS/DESeq2/count_matrix.txt`*
 \
 
 ####  Visualisation donnees brutes

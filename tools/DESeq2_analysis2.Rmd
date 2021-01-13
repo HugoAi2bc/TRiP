@@ -59,9 +59,9 @@ Var_padj <- as.numeric(params$pval)
 
 #### Data reading.
 ```{r data , echo=FALSE}
-expData = read.table("../RESULTS/DESeq2/count_matrix.txt", header = T, row.names = 1)
+expData = read.table("/data/RESULTS/DESeq2/count_matrix.txt", header = T, row.names = 1)
 ```
-##### *`"/data/RESULTS/DESeq2/count_matrix.txt" `*
+##### *`"RESULTS/DESeq2/count_matrix.txt" `*
 \
 
 
@@ -358,24 +358,24 @@ repressedGenes <- repressedGenes[(order(repressedGenes[,"padj"])),]
 #### Writing of results
 ```{r, include= FALSE}
 write.table(Table_Complete,
-            file = paste0("../RESULTS/DESeq2/complete.txt"),
+            file = paste0("/data/RESULTS/DESeq2/complete.txt"),
             quote = F, sep = "\t", row.names = F)
 
 
 write.table(inducedGenes,
-            file = paste0("../RESULTS/DESeq2/up.txt"),
+            file = paste0("/data/RESULTS/DESeq2/up.txt"),
             quote = F, sep = "\t", row.names = F)
 
 write.table(repressedGenes,
-            file = paste0("../RESULTS/DESeq2/down.txt"),
+            file = paste0("/data/RESULTS/DESeq2/down.txt"),
             quote = F, sep = "\t", row.names = F)
 
 ```
 
 
 
-`r paste0("../RESULTS/DESeq2/complete.txt")`
+`r paste0("/data/RESULTS/DESeq2/complete.txt")`
 \
-`r paste0("../RESULTS/DESeq2/up.txt")  `
+`r paste0("/data/RESULTS/DESeq2/up.txt")  `
 \
-`r paste0("../RESULTS/DESeq2/down.txt")  `
+`r paste0("/data/RESULTS/DESeq2/down.txt")  `
