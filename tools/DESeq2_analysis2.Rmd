@@ -10,7 +10,7 @@ params:
 ---
 
 #Sys.getenv("RSTUDIO_PANDOC")
-```{r Sys, echo=FALSE}
+```{r Sys}
 Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/bin/pandoc")
 ```
 
@@ -58,19 +58,24 @@ Var_padj <- as.numeric(params$pval)
 
 
 #### Data reading.
-```{r data , echo=FALSE}
+```{r data}
 expData = read.table("/data/RESULTS/DESeq2/count_matrix.txt", header = T, row.names = 1)
 ```
 ##### *`"RESULTS/DESeq2/count_matrix.txt" `*
 \
 
+#### Pairwise scatter plot
+```{r pairwiseScatter}
+pairs(expData, pch = 19, cex = 0.1)
+```
+
 
 ####  Raw data Visualization.
-```{r  results = 'asis', echo = FALSE}
+```{r  results = 'asis'}
 knitr::kable(head(expData[,]))
 ```
 
-```{r Determination du nombre des echantillons , include=FALSE }
+```{r Determination du nombre des echantillons , include=FALSE}
 expData_Sorted <- expData[,sort(colnames(expData))]
 Names_Col <- colnames(expData_Sorted)
 Cond <- str_replace(Names_Col,regex("[[:digit:]]{1,}$"),"")
@@ -100,7 +105,7 @@ if (Cond[1] != CT) {
 
 
 #### Comparison of library sizes.
-```{r Library sizes, fig.height = 3, fig.width = 4, echo=FALSE}
+```{r Library sizes, fig.height = 3, fig.width = 4}
 barplot(colSums(expData_Sorted), ylab = "Total read number",
         main = "Library sizes", col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
         names = colnames(expData_Sorted),
@@ -110,7 +115,7 @@ barplot(colSums(expData_Sorted), ylab = "Total read number",
 \
 
 #### Normalization with DEseq2.
-```{r, echo=FALSE}
+```{r}
 conds    = factor(c(rep("CondA", nb_col_condA), rep("CondB", nb_col_condB)))
 colData  = data.frame(condition = conds)
 ddsObjet = DESeqDataSetFromMatrix(countData = expData_Sorted,
@@ -123,7 +128,7 @@ normCountData = counts(ddsObjet, normalized = TRUE)
 \
 
 #### Comparison of library sizes (after normalization).
-```{r , fig.height = 3, fig.width = 4, echo=FALSE}
+```{r , fig.height = 3, fig.width = 4}
 barplot(colSums(normCountData), ylab = "Total read number",
         main = "Library sizes (after normalization)",
         col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
@@ -134,7 +139,7 @@ barplot(colSums(normCountData), ylab = "Total read number",
 
 
 #### library sizes Boxplot.
-```{r Boxplot, echo=FALSE}
+```{r Boxplot}
 row_sub_1 = apply(expData_Sorted, 1, function(row) all(row != 0 ))
 row_sub_2 = apply(normCountData, 1, function(row) all(row != 0 ))
 par(mfrow = c(1,2))
@@ -166,19 +171,12 @@ par(mfrow = c(1,1))
 ```
 \
 
-#### Pairwise scatter plot
-```{r pairwiseScatter, echo = FALSE}
-pairs(normCountData[,], pch = 19, cex = 0.1)
-```
-
-
 
 #### PCA
-```{r PCA, echo = FALSE}
+```{r PCA}
 res.pca <- PCA(normCountData, graph = FALSE)
 #res.pca <- prcomp(normCountData, scale = TRUE)
-plot(res.pca, choix ="var", autoLab = "yes"
-             )
+plot(res.pca, choix ="var", autoLab = "yes")
 
 ```
 
@@ -200,7 +198,7 @@ colnames(logFC) = paste("logFC")
 \
 
 #### Histogram Frequency / LogFC
-```{r , echo=FALSE}
+```{r}
 
 vec_logFC <- as.vector(t(logFC))
 hist(vec_logFC,
@@ -242,12 +240,12 @@ resDESeq = results(ddsEstim, contrast = c("condition", "CondB", "CondA"))
 \
 
 #### MA plot
-```{r, echo=FALSE}
+```{r, include=FALSE}
 mcols(resDESeq, use.names = TRUE)
 dds = estimateDispersions(ddsObjet)
 ```
 
-```{r, Echo= FALSE}
+```{r MA-plot}
 plotMA(resDESeq)
 
 
@@ -256,21 +254,21 @@ plotDispEsts(dds)
 \
 
 #### Histogram of p-Values.
-```{r , echo=FALSE}
+```{r p-val histogram}
 hist(resDESeq[,"pvalue"], nclass = 100, xlab = "p-values",
      main = "Histogram of p-values (DESeq2)")
 ```
 \
 
 #### Histogram adjusted p-Values 
-```{r, echo=FALSE }
+```{r}
 hist(resDESeq[,"padj"], nclass = 100, xlab = "padj",
      main = "Histogram adjusted p-values (DESeq2)")
 ```
 \
 
 #### Volcano plot
-```{r, volcano plot global, echo=FALSE}
+```{r, volcano plot global}
 myColors <- ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange > Var_log2FC), "green" ,
                    ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < Var_log2FC), "red" ,
                           "black" ) )
@@ -285,7 +283,7 @@ plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
 \
 
 
-```{r, volcano plot zoom, echo=FALSE}
+```{r, volcano plot zoom}
 #### Volcano plot (zoom)
 
 
