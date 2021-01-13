@@ -497,4 +497,4 @@ rule DESeq2_analysis:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
         # "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis2.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"

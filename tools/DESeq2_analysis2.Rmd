@@ -6,7 +6,7 @@ output: "html_document"
 params:
     refCond: "CT"
     logFC: 0
-    pval: 0.01
+    pval: 0.05
 ---
 
 #Sys.getenv("RSTUDIO_PANDOC")
@@ -177,7 +177,6 @@ par(mfrow = c(1,1))
 res.pca <- PCA(normCountData, graph = FALSE)
 #res.pca <- prcomp(normCountData, scale = TRUE)
 plot(res.pca, choix ="var", autoLab = "yes")
-
 ```
 
 
