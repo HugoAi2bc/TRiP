@@ -247,7 +247,8 @@ rule transcriptome_samtools:
         view3="/data/logs/transcriptome_samtools/{sample}.samtools_view3.log",
         sort3="/data/logs/transcriptome_samtools/{sample}.samtools_sort3.log",
         index1="/data/logs/transcriptome_samtools/{sample}.samtools_index1.log",
-        index2="/data/logs/transcriptome_samtools/{sample}.samtools_index2.log"
+        index2="/data/logs/transcriptome_samtools/{sample}.samtools_index2.log",
+        rm="/data/logs/transcriptome_samtools/{sample}.rm.log"
     params:
         sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".sam"
     shell:
@@ -260,7 +261,7 @@ rule transcriptome_samtools:
         "samtools view -@ " + config['threads'] + " -T {input.fasta} -C {output.samuniq}  2> {log.view3} | samtools sort -@ " + config['threads'] + " -o {output.cram}  2> {log.sort3} ;"
         "samtools index {output.bam} 2> {log.index1} ;"
         "samtools index {output.cram} 2> {log.index2} ;"
-        "rm {params.sam} {input.sam_hisat2} {input.sam_bowtie2};"
+        "rm {params.sam} {input.sam_hisat2} {input.sam_bowtie2} 2> {log.rm};"
 
 # Counts reads on each transcript
 rule htseqcount_transcript:

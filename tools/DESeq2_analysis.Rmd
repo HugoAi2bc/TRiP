@@ -12,6 +12,12 @@ params:
 #Sys.getenv("RSTUDIO_PANDOC")
 Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/bin/pandoc")
 
+#Test include from snakemake `r params$printcode`.
+#Test include from snakemake `r params$rmd`.
+#Test include from snakemake `r params$refCond`.
+#Test include from snakemake `r params$logFC`.
+#Test include from snakemake `r params$pval`.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(include = TRUE, message = FALSE, warning = FALSE)
@@ -43,9 +49,13 @@ library(stringr)
 
 #Var_log2FC <- as.numeric(args[2])
 #Var_padj <- as.numeric(args[3])
-CT = "Control"
-Var_log2FC <- 0
-Var_padj <- 0.01
+
+CT <- as.character(rmarkdown::metadata$params$refCond)
+Var_log2FC <- as.numeric(rmarkdown::metadata$params$logFC)
+Var_padj <- as.numeric(rmarkdown::metadata$params$refCond)
+#CT = "Control"
+#Var_log2FC <- 0
+#Var_padj <- 0.01
 #Var_log2FC <- as.numeric(params$logFC)
 #Var_padj <- as.numeric(params$pval)
 ```
