@@ -439,10 +439,10 @@ rule graphs_periodicity:
         sample_name="{sample}",
         read_length="{taille}"
     log:
-        "logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
+        bash="logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
     shell:
         # r-base 4.0.2
-        "bash tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log} ;"
+        "bash tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log.bash} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
 rule count_matrix_initialization:

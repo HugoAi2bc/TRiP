@@ -20,10 +20,10 @@ fi
 path="/data/RESULTS/qualitativeAnalysis/"
 
 	########### Kmer repartition ###########
-echo "#! bin/R" > ${path}graphes/kmerRepartition/${N}.tempoR.R
-echo "kmer<-read.table(file = '"${path}"kmerRepartition/"${N}".kmerRepartition.txt')" >> ${path}graphes/kmerRepartition/${N}.tempoR.R
-echo "jpeg(filename = '"${path}"graphes/kmerRepartition/"${N}".kmerRepartition.jpeg')" >> ${path}graphes/kmerRepartition/${N}.tempoR.R
-echo "barplot(kmer\$V2,names.arg = kmer\$V1)" >> ${path}graphes/kmerRepartition/${N}.tempoR.R
-echo "dev.off()" >> ${path}graphes/kmerRepartition/${N}.tempoR.R
-R CMD BATCH ${path}graphes/kmerRepartition/${N}.tempoR.R
-rm -f ${path}graphes/kmerRepartition/${N}.tempoR.R
+echo "#! bin/R" > "${path}graphes/kmerRepartition/${N}.tempoR.R"
+echo "kmer<-read.table(file = '"${path}"kmerRepartition/"${N}".kmerRepartition.txt')" >> "${path}graphes/kmerRepartition/${N}.tempoR.R"
+echo "jpeg(filename = '"${path}"graphes/kmerRepartition/"${N}".kmerRepartition.jpeg')" >> "${path}graphes/kmerRepartition/${N}.tempoR.R"
+echo "barplot(kmer\$V2,names.arg = kmer\$V1)" >> "${path}graphes/kmerRepartition/${N}.tempoR.R"
+echo "dev.off()" >> "${path}graphes/kmerRepartition/${N}.tempoR.R"
+R CMD BATCH "${path}graphes/kmerRepartition/${N}.tempoR.R"
+rm -f "${path}graphes/kmerRepartition/${N}.tempoR.R"
