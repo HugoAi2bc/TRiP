@@ -1,4 +1,4 @@
-name: all_TRiP_factomineR
+name: all_TRiP
 channels:
   - bioconda
   - conda-forge
@@ -48,7 +48,7 @@ dependencies:
   - ca-certificates=2020.12.8=h06a4308_0
   - cachetools=4.2.0=pyhd3eb1b0_0
   - cairo=1.16.0=h488836b_1006
-  - certifi=2020.12.5=py38h578d9bd_0
+  - certifi=2020.12.5=py38h578d9bd_1
   - cffi=1.14.4=py38ha65f79e_1
   - chardet=3.0.4=py38h924ce5b_1008
   - coincbc=2.10.5=hab63836_1
@@ -205,6 +205,7 @@ dependencies:
   - python_abi=3.8=1_cp38
   - pytz=2020.4=pyhd8ed1ab_0
   - pyyaml=5.3.1=py38h8df0ef7_1
+  - r-abind=1.4_5=r40h6115d3f_1003
   - r-askpass=1.1=r40hcdcec82_2
   - r-assertthat=0.2.1=r40h6115d3f_2
   - r-backports=1.2.1=r40hcfec24a_0
@@ -215,76 +216,128 @@ dependencies:
   - r-bit64=4.0.5=r40hcdcec82_0
   - r-bitops=1.0_6=r40hcdcec82_1004
   - r-blob=1.2.1=r40h6115d3f_1
+  - r-boot=1.3_25=r40h6115d3f_1
   - r-brio=1.1.0=r40h9e2df91_1
+  - r-broom=0.7.3=r40hc72bb7e_0
   - r-callr=3.5.1=r40h142f84f_0
+  - r-car=3.0_10=r40h6115d3f_0
+  - r-cardata=3.0_4=r40h6115d3f_0
+  - r-cellranger=1.1.0=r40h6115d3f_1003
   - r-cli=2.2.0=r40hc72bb7e_0
+  - r-clipr=0.7.1=r40h142f84f_0
+  - r-cluster=2.1.0=r40h31ca83e_4
   - r-colorspace=2.0_0=r40h9e2df91_0
+  - r-conquer=1.0.2=r40hed939d5_1
+  - r-cpp11=0.2.5=r40hc72bb7e_0
   - r-crayon=1.3.4=r40h6115d3f_1003
+  - r-crosstalk=1.1.1=r40hc72bb7e_0
   - r-curl=4.3=r40hcdcec82_1
+  - r-data.table=1.13.6=r40hcfec24a_0
   - r-dbi=1.1.0=r40h6115d3f_1
   - r-desc=1.2.0=r40h6115d3f_1003
   - r-diffobj=0.3.2=r40h9e2df91_1
   - r-digest=0.6.27=r40h1b71b39_0
+  - r-dplyr=1.0.2=r40h0357c0b_0
+  - r-dt=0.17=r40hc72bb7e_0
+  - r-ellipse=0.4.2=r40h6115d3f_0
   - r-ellipsis=0.3.1=r40hcdcec82_0
   - r-evaluate=0.14=r40h6115d3f_2
+  - r-factominer=2.4=r40hc72bb7e_0
   - r-fansi=0.4.1=r40hcdcec82_1
   - r-farver=2.0.3=r40h0357c0b_1
+  - r-flashclust=1.01_2=r40h31ca83e_1006
+  - r-forcats=0.5.0=r40h6115d3f_1
+  - r-foreign=0.8_81=r40hcfec24a_0
   - r-formatr=1.7=r40h6115d3f_2
   - r-futile.logger=1.4.3=r40h6115d3f_1003
   - r-futile.options=1.0.1=r40h6115d3f_1002
+  - r-generics=0.1.0=r40hc72bb7e_0
   - r-ggplot2=3.3.2=r40hc72bb7e_1
+  - r-ggrepel=0.9.0=r40h03ef668_0
   - r-glue=1.4.2=r40hcdcec82_0
   - r-gtable=0.3.0=r40h6115d3f_3
+  - r-haven=2.3.1=r40hde08347_0
   - r-highr=0.8=r40h6115d3f_2
+  - r-hms=0.5.3=r40h6115d3f_1
   - r-htmltools=0.5.0=r40h0357c0b_0
+  - r-htmlwidgets=1.5.3=r40hc72bb7e_0
   - r-httr=1.4.2=r40h6115d3f_0
   - r-isoband=0.2.3=r40h03ef668_0
   - r-jsonlite=1.7.2=r40hcfec24a_0
   - r-knitr=1.30=r40h6115d3f_0
   - r-labeling=0.4.2=r40h142f84f_0
   - r-lambda.r=1.2.4=r40h6115d3f_1
+  - r-later=1.1.0.1=r40h0357c0b_0
   - r-lattice=0.20_41=r40hcdcec82_2
+  - r-lazyeval=0.2.2=r40hcdcec82_2
+  - r-leaps=3.1=r40h31ca83e_2
   - r-lifecycle=0.2.0=r40h6115d3f_1
+  - r-lme4=1.1_26=r40h03ef668_0
   - r-locfit=1.5_9.4=r40hcdcec82_1
   - r-magrittr=2.0.1=r40h9e2df91_1
+  - r-maptools=1.0_2=r40hcdcec82_0
   - r-markdown=1.1=r40hcdcec82_1
   - r-mass=7.3_53=r40hcdcec82_0
   - r-matrix=1.2_18=r40h7fa42b6_3
+  - r-matrixmodels=0.4_1=r40h6115d3f_1003
   - r-matrixstats=0.57.0=r40hcfec24a_0
   - r-memoise=1.1.0=r40h6115d3f_1004
   - r-mgcv=1.8_33=r40h7fa42b6_0
   - r-mime=0.9=r40hcdcec82_1
+  - r-minqa=1.2.4=r40h43222d4_1006
   - r-munsell=0.5.0=r40h6115d3f_1003
   - r-nlme=3.1_150=r40h31ca83e_0
+  - r-nloptr=1.2.2.2=r40h0357c0b_0
+  - r-nnet=7.3_14=r40hcdcec82_1
+  - r-numderiv=2016.8_1.1=r40h6115d3f_3
   - r-openssl=1.4.3=r40he5c4762_0
+  - r-openxlsx=4.2.3=r40h1b71b39_0
+  - r-pbkrtest=0.5_0.1=r40hc72bb7e_0
   - r-pillar=1.4.7=r40hc72bb7e_0
   - r-pkgbuild=1.2.0=r40hc72bb7e_0
   - r-pkgconfig=2.0.3=r40h6115d3f_1
   - r-pkgload=1.1.0=r40h0357c0b_0
   - r-plogr=0.2.0=r40h6115d3f_1003
+  - r-plyr=1.8.6=r40h0357c0b_1
   - r-praise=1.0.0=r40h6115d3f_1004
   - r-prettyunits=1.1.1=r40h6115d3f_1
   - r-processx=3.4.5=r40hcfec24a_0
+  - r-progress=1.2.2=r40h6115d3f_2
+  - r-promises=1.1.1=r40h0357c0b_0
   - r-ps=1.5.0=r40hcfec24a_0
+  - r-purrr=0.3.4=r40hcdcec82_1
+  - r-quantreg=5.75=r40hc3f0d1c_0
   - r-r6=2.5.0=r40hc72bb7e_0
   - r-rcolorbrewer=1.1_2=r40h6115d3f_1003
   - r-rcpp=1.0.5=r40he524a50_0
   - r-rcpparmadillo=0.10.1.2.0=r40hfbb317b_0
+  - r-rcppeigen=0.3.3.9.1=r40h306847c_0
   - r-rcurl=1.98_1.2=r40hcdcec82_1
+  - r-readr=1.4.0=r40h1b71b39_0
+  - r-readxl=1.3.1=r40hde08347_4
+  - r-rematch=1.0.1=r40h6115d3f_1003
   - r-rematch2=2.1.2=r40h6115d3f_1
+  - r-reshape2=1.4.4=r40h0357c0b_1
+  - r-rio=0.5.16=r40h6115d3f_1002
   - r-rlang=0.4.9=r40hcfec24a_0
   - r-rmarkdown=2.6=r40hc72bb7e_0
   - r-rprojroot=2.0.2=r40hc72bb7e_0
   - r-rsqlite=2.2.1=r40h1b71b39_0
   - r-rstudioapi=0.13=r40hc72bb7e_0
   - r-scales=1.1.1=r40h6115d3f_0
+  - r-scatterplot3d=0.3_41=r40h6115d3f_1003
   - r-snow=0.4_3=r40h6115d3f_1002
+  - r-sp=1.4_5=r40hcfec24a_0
+  - r-sparsem=1.78=r40h31ca83e_2
+  - r-statmod=1.4.35=r40h6e990d7_1
   - r-stringi=1.5.3=r40h604b29c_0
   - r-stringr=1.4.0=r40h6115d3f_2
   - r-survival=3.2_7=r40hcdcec82_0
   - r-sys=3.4=r40hcdcec82_0
   - r-testthat=3.0.0=r40he524a50_0
   - r-tibble=3.0.4=r40h0eb13af_0
+  - r-tidyr=1.1.2=r40h0357c0b_0
+  - r-tidyselect=1.1.0=r40h6115d3f_0
   - r-tinytex=0.28=r40hc72bb7e_0
   - r-utf8=1.1.4=r40hcdcec82_1003
   - r-vctrs=0.3.5=r40h9e2df91_0
@@ -296,6 +349,7 @@ dependencies:
   - r-xtable=1.8_4=r40h6115d3f_3
   - r-yaml=2.2.1=r40hcdcec82_1
   - r-zeallot=0.1.0=r40h6115d3f_1002
+  - r-zip=2.1.1=r40hcdcec82_0
   - ratelimiter=1.2.0=py38h32f6830_1001
   - readline=8.0=he28a2e2_2
   - requests=2.25.1=pyhd3deb0d_0
@@ -351,4 +405,4 @@ dependencies:
   - zipp=3.4.0=py_0
   - zlib=1.2.11=h516909a_1010
   - zstd=1.4.5=h6597ccf_2
-prefix: /home/hugo.arbes/miniconda3/envs/all_TRiP_env
+prefix: /home/hugo.arbes/miniconda3/envs/all_TRiP_factomineR
