@@ -7,10 +7,7 @@ configfile: "/data/config.yaml"
 # mamba install --name all_TRiP -c conda-forge python=3.8.6 (python for bowtie2-2.2.1)
 # mamba install --name all_TRiP -c conda-forge r-base=4.0.2 (for r-rmarkdown 2.6)
 
-# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools bioconductor-deseq2 r-rmarkdown
-
-# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools
-# mamba install --name all_TRiP_env -c anaconda -c conda-forge gawk
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge snakemake bowtie2 hisat2 fastqc cutadapt samtools htseq gawk bedtools bioconductor-deseq2 r-rmarkdown r-stringr r-factominer
 
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge bioconductor-deseq2
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge r-rmarkdown
@@ -23,6 +20,8 @@ configfile: "/data/config.yaml"
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge htseq
 # mamba install --name all_TRiP_env -c anaconda -c conda-forge gawk
 # mamba install --name all_TRiP_env -c bioconda -c conda-forge bedtools
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge r-stringr
+# mamba install --name all_TRiP_env -c bioconda -c conda-forge r-factominer
 
 
 # Imports
@@ -424,9 +423,11 @@ rule graphs_length:
     params:
         sample_name="{sample}"
     log:
+        dir="logs/graphs_length/{sample}.mkdir.log",
         bash="logs/graphs_length/{sample}.generationGraph_length.log"
     shell:
         # r-base 4.0.2
+        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ 2> {log.dir} ;"
         "bash /TRiP/tools/generationGraph_length.sh -N {params.sample_name} 2> {log.bash} ;"
 
 rule graphs_periodicity:
@@ -439,9 +440,11 @@ rule graphs_periodicity:
         sample_name="{sample}",
         read_length="{taille}"
     log:
+        dir="logs/graphs_length/{sample}.{taille}.mkdir.log",
         bash="logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
     shell:
         # r-base 4.0.2
+        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ 2> {log.dir} ;"
         "bash /TRiP/tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log.bash} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
@@ -491,5 +494,9 @@ rule DESeq2_analysis:
     shell:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
+        # r-factominer 2.4
+        # bioconductor-deseq2 1.30.0
+        # r-stringr 1.4.0
+        #
         # "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
         "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis2.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"
