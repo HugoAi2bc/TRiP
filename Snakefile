@@ -423,11 +423,11 @@ rule graphs_length:
     params:
         sample_name="{sample}"
     log:
-        dir="logs/graphs_length/{sample}.mkdir.log",
-        bash="logs/graphs_length/{sample}.generationGraph_length.log"
+        #dir="/data/logs/graphs_length/{sample}.mkdir.log",
+        bash="/data/logs/graphs_length/{sample}.generationGraph_length.log"
     shell:
         # r-base 4.0.2
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ 2> {log.dir} ;"
+        #"mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ 2> {log.dir} ;"
         "bash /TRiP/tools/generationGraph_length.sh -N {params.sample_name} 2> {log.bash} ;"
 
 rule graphs_periodicity:
@@ -440,11 +440,11 @@ rule graphs_periodicity:
         sample_name="{sample}",
         read_length="{taille}"
     log:
-        dir="logs/graphs_length/{sample}.{taille}.mkdir.log",
-        bash="logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
+        #dir="/data/logs/graphs_length/{sample}.{taille}.mkdir.log",
+        bash="/data/logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
     shell:
         # r-base 4.0.2
-        "mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ 2> {log.dir} ;"
+        #"mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ 2> {log.dir} ;"
         "bash /TRiP/tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log.bash} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
