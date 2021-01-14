@@ -17,8 +17,6 @@ Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/bin/pandoc")
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(include = TRUE, message = FALSE, warning = FALSE)
-#knitr::opts_chunk$set(root.dir = "/data/")
-#knitr::opts_knit$set(root.dir = paste0("/data/RESULTS/DESeq2/"))
 ```
 
 
@@ -67,9 +65,7 @@ nb_col_condA <- table(factor(Cond))[[1]]
 nb_col_condB <- table(factor(Cond))[[2]]
 sample <- Cond[nb_col_condA+1]
 
-#if (Cond[1] != args[1]) {
 if (Cond[1] != CT) {
-#if (Cond[1] != params$refCond) {
         Ord <- c( (1:nb_col_condB)+nb_col_condA , (1:nb_col_condA) )
         expData_Sorted <- expData_Sorted[, Ord]
 
@@ -159,7 +155,6 @@ par(mfrow = c(1,1))
 #### PCA
 ```{r PCA}
 res.pca <- PCA(normCountData, graph = FALSE)
-#res.pca <- prcomp(normCountData, scale = TRUE)
 plot(res.pca, choix ="var", autoLab = "yes")
 ```
 

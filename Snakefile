@@ -52,11 +52,6 @@ rule all:
         # call of make_fastqc rule
         expand("/data/RESULTS/fastqc/{sample}_fastqc.html", sample=SAMPLES),
 
-        # #call of quality_controls_periodicity rule
-        # expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt", sample=SAMPLES),
-        # expand("/data/RESULTS/qualitativeAnalysis/periodicity/{sample}" + frag_length_S + ".periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt", sample=SAMPLES),
-        # #call of quality_controls_kmerRepartition rule
-        # expand("/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt", sample=SAMPLES),
         #call for graph generation
         expand("/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg", sample=SAMPLES),
         expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg", sample=SAMPLES, taille=KMER),
@@ -64,7 +59,8 @@ rule all:
 
         #call of htseqcount_transcript_utr or htseqcount_transcript rule (depends on UTR="True"|"False" in config file)
         expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
-        # Count matrix for DESeq2
+
+        #call for count matrix creation for DESeq2 dans final report
         "/data/RESULTS/" + config['project_name'] + ".Final_report.html"
 
 
@@ -423,11 +419,9 @@ rule graphs_length:
     params:
         sample_name="{sample}"
     log:
-        #dir="/data/logs/graphs_length/{sample}.mkdir.log",
         bash="/data/logs/graphs_length/{sample}.generationGraph_length.log"
     shell:
         # r-base 4.0.2
-        #"mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/ 2> {log.dir} ;"
         "bash /TRiP/tools/generationGraph_length.sh -N {params.sample_name} 2> {log.bash} ;"
 
 rule graphs_periodicity:
@@ -440,11 +434,9 @@ rule graphs_periodicity:
         sample_name="{sample}",
         read_length="{taille}"
     log:
-        #dir="/data/logs/graphs_length/{sample}.{taille}.mkdir.log",
         bash="/data/logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
     shell:
         # r-base 4.0.2
-        #"mkdir -p /data/RESULTS/qualitativeAnalysis/graphes/periodicity/ 2> {log.dir} ;"
         "bash /TRiP/tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log.bash} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
