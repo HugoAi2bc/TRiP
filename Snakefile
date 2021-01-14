@@ -111,7 +111,7 @@ onsuccess:
     data_report.close()
 
     # Removes useless directory
-    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ ;")
+    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/*tempoR.Rout /data/RESULTS/qualitativeAnalysis/*tempo* ;")
     # shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
 
 
