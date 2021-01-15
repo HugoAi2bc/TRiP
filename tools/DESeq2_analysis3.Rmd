@@ -6,16 +6,16 @@ output: "html_document"
 params:
     refCond: "CT"
     logFC: 0
-    pval: 0.05
+    pval: 0.01
 ---
 
+```{r Sys, echo=FALSE}
 #Sys.getenv("RSTUDIO_PANDOC")
-```{r Sys}
-Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/bin/pandoc")
+#Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/bin/pandoc")
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(include = TRUE, message = FALSE, warning = FALSE)
 ```
 
@@ -40,24 +40,22 @@ Var_padj <- as.numeric(rmarkdown::metadata$params$pval)
 
 
 #### Data reading.
-```{r data}
+```{r data , echo=FALSE}
 expData = read.table("/data/RESULTS/DESeq2/count_matrix.txt", header = T, row.names = 1)
 ```
-##### *`"RESULTS/DESeq2/count_matrix.txt" `*
+##### *`"/RESULTS/DESeq2/count_matrix.txt" `*
 \
-
-#### Pairwise scatter plot
-```{r pairwiseScatter}
-pairs(expData, pch = 19, cex = 0.1)
-```
 
 
 ####  Raw data Visualization.
-```{r  results = 'asis'}
-knitr::kable(head(expData[,]))
+```{r  results = 'asis', echo = FALSE}
+
+
+#knitr::kable(head(expData[,]))
+
 ```
 
-```{r Determination du nombre des echantillons , include=FALSE}
+```{r Determination du nombre des echantillons , include=FALSE }
 expData_Sorted <- expData[,sort(colnames(expData))]
 Names_Col <- colnames(expData_Sorted)
 Cond <- str_replace(Names_Col,regex("[[:digit:]]{1,}$"),"")
@@ -85,7 +83,7 @@ if (Cond[1] != CT) {
 
 
 #### Comparison of library sizes.
-```{r Library sizes, fig.height = 3, fig.width = 4}
+```{r Library sizes, fig.height = 3, fig.width = 4, echo=FALSE}
 barplot(colSums(expData_Sorted), ylab = "Total read number",
         main = "Library sizes", col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
         names = colnames(expData_Sorted),
@@ -95,20 +93,20 @@ barplot(colSums(expData_Sorted), ylab = "Total read number",
 \
 
 #### Normalization with DEseq2.
-```{r}
+```{r, echo=FALSE}
 conds    = factor(c(rep("CondA", nb_col_condA), rep("CondB", nb_col_condB)))
 colData  = data.frame(condition = conds)
-ddsObjet = DESeqDataSetFromMatrix(countData = expData_Sorted,
+ddsObject = DESeqDataSetFromMatrix(countData = expData_Sorted,
                                   colData   = colData, formula(~ condition))
-ddsObjet = estimateSizeFactors(ddsObjet)
-Size_Factors <- sizeFactors(ddsObjet)
+ddsObject = estimateSizeFactors(ddsObject)
+Size_Factors <- sizeFactors(ddsObject)
 # Donnees de comptage normalisÃ©es :
-normCountData = counts(ddsObjet, normalized = TRUE)
+normCountData = counts(ddsObject, normalized = TRUE)
 ```
 \
 
 #### Comparison of library sizes (after normalization).
-```{r , fig.height = 3, fig.width = 4}
+```{r , fig.height = 3, fig.width = 4, echo=FALSE}
 barplot(colSums(normCountData), ylab = "Total read number",
         main = "Library sizes (after normalization)",
         col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
@@ -119,11 +117,11 @@ barplot(colSums(normCountData), ylab = "Total read number",
 
 
 #### library sizes Boxplot.
-```{r Boxplot}
+```{r Boxplot, echo=FALSE}
 row_sub_1 = apply(expData_Sorted, 1, function(row) all(row != 0 ))
 row_sub_2 = apply(normCountData, 1, function(row) all(row != 0 ))
-par(mfrow = c(1,2))
 
+par(mfrow = c(1,2))
 boxplot((expData_Sorted[row_sub_1,]),
         #ylab = "Total read number",
         main = "Library sizes",
@@ -143,6 +141,29 @@ boxplot((normCountData[row_sub_2,]), ylab = "Total read number",
         las =2,
         yaxt = "n",
         ylim = c(1,max(expData_Sorted[,]) ))
+
+tiff(filename = "/data/RESULTS/DESeq2/normalization_box_plot.tiff")
+  par(mfrow = c(1,2))
+  boxplot((expData_Sorted[row_sub_1,]),
+          #ylab = "Total read number",
+          main = "Library sizes",
+          log = "y",
+          col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
+          names = colnames(expData_Sorted),
+          cex.names = 0.6,
+          las =2
+          ,ylim = c(1,max(expData_Sorted[,]) )
+          )
+  boxplot((normCountData[row_sub_2,]), ylab = "Total read number",
+          main = "Library sizes (after normalization)",
+          log = "y",
+          col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
+          names = colnames(expData_Sorted),
+          cex.names = 0.6,
+          las =2,
+          yaxt = "n",
+          ylim = c(1,max(expData_Sorted[,]) ))
+dev.off()
 ```
 
 
@@ -151,11 +172,46 @@ par(mfrow = c(1,1))
 ```
 \
 
+#### Pairwise scatter plot
+```{r pairwiseScatter, echo = FALSE}
+
+
+panel.cor <- function(x, y){
+   r <- round(cor(10^x, 10^y), digits=4 )
+    txt <- paste0("R = ", r)
+   text(2, 2, txt, cex = 1)
+}
+
+upper.panel<-function(x, y){
+ points((x),(y), pch = ".", cex =1, col = 1)}
+
+tiff(filename = "/data/RESULTS/DESeq2/pearson_pairwise_scatter_plot.tiff")
+  pairs(log10(normCountData), 
+        lower.panel= panel.cor,
+        upper.panel = upper.panel
+        )
+dev.off()
+
+pairs(log10(normCountData), 
+      lower.panel= panel.cor,
+      upper.panel = upper.panel
+      )
+```
+
+
 
 #### PCA
-```{r PCA}
-res.pca <- PCA(normCountData, graph = FALSE)
-plot(res.pca, choix ="var", autoLab = "yes")
+```{r PCA, echo = FALSE}
+ncp_num <- estim_ncp(t(normCountData), scale=FALSE)
+
+res.pca <- PCA(t(normCountData), scale.unit = FALSE, ncp = ncp_num, graph = FALSE)
+
+##res.pca <- prcomp(normCountData, scale = TRUE)
+plot(res.pca, choix ="ind", autoLab = "yes")
+
+tiff(filename = "/data/RESULTS/DESeq2/PCA.tiff")
+  plot(res.pca, choix ="var", autoLab = "yes")
+dev.off()
 ```
 
 
@@ -176,8 +232,7 @@ colnames(logFC) = paste("logFC")
 \
 
 #### Histogram Frequency / LogFC
-```{r}
-
+```{r , echo=FALSE}
 vec_logFC <- as.vector(t(logFC))
 hist(vec_logFC,
      nclass = 200,
@@ -212,43 +267,46 @@ meanExp = apply(normCountData, 1, mean)
 
 
 ```{r Application du package DESeq2 pour le calcul des statistiques, include = FALSE}
-ddsEstim = DESeq(ddsObjet)
+ddsEstim = DESeq(ddsObject)
 resDESeq = results(ddsEstim, contrast = c("condition", "CondB", "CondA"))
 ```
 \
 
 #### MA plot
-```{r, include=FALSE}
+```{r, echo=FALSE}
 mcols(resDESeq, use.names = TRUE)
-dds = estimateDispersions(ddsObjet)
+dds = estimateDispersions(ddsObject)
 ```
 
-```{r MA-plot}
-plotMA(resDESeq)
+```{r, Echo= FALSE}
+tiff(filename = "/data/RESULTS/DESeq2/MA_plot.tiff")
+  plotMA(resDESeq)
+dev.off()
 
+plotMA(resDESeq)
 
 plotDispEsts(dds)
 ```
 \
 
 #### Histogram of p-Values.
-```{r p-val histogram}
+```{r , echo=FALSE}
 hist(resDESeq[,"pvalue"], nclass = 100, xlab = "p-values",
      main = "Histogram of p-values (DESeq2)")
 ```
 \
 
 #### Histogram adjusted p-Values 
-```{r}
+```{r, echo=FALSE }
 hist(resDESeq[,"padj"], nclass = 100, xlab = "padj",
      main = "Histogram adjusted p-values (DESeq2)")
 ```
 \
 
 #### Volcano plot
-```{r, volcano plot global}
+```{r, volcano plot global, echo=FALSE}
 myColors <- ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange > Var_log2FC), "green" ,
-                   ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < Var_log2FC), "red" ,
+                   ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < -Var_log2FC), "red" ,
                           "black" ) )
 
 plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
@@ -257,37 +315,36 @@ plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
      xlab = "log2 FC", ylab = "-log10(padj)",
      main = paste0("Volcano plot - ",Cond[nb_col_condB+1]," vs ",Cond[1])
      )
+
+tiff(filename = "/data/RESULTS/DESeq2/volcano_plot.tiff")
+  plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
+       pch = 20, cex = 1,
+       col=myColors,
+       xlab = "log2 FC", ylab = "-log10(padj)",
+       main = paste0("Volcano plot - ",Cond[nb_col_condB+1]," vs ",Cond[1])
+       )
+dev.off()
 ```
 \
 
 
-```{r, volcano plot zoom}
+```{r, volcano plot zoom, echo=FALSE}
 #### Volcano plot (zoom)
 
 
 limite <- quantile(resDESeq$padj, probs = seq(0, 1, 0.05), na.rm = TRUE)
 
 myColors <- ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange > Var_log2FC), "green" ,
-                   
-                   
-                  ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < Var_log2FC), "red" ,
+                  ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < -Var_log2FC), "red" ,
                          "black" ) )
 
-
-
 Valeurs_Limite_Y <- ifelse((resDESeq$padj < limite[2] & resDESeq$log2FoldChange > Var_log2FC), limite[2] ,
-              ifelse((resDESeq$padj < limite[2] & resDESeq$log2FoldChange < Var_log2FC), limite[2] ,
+              ifelse((resDESeq$padj < limite[2] & resDESeq$log2FoldChange < -Var_log2FC), limite[2] ,
               resDESeq$padj) )
 
-
-
-
-
 Forme_Pixel_Y <- ifelse((resDESeq$padj < limite[2] & resDESeq$log2FoldChange > Var_log2FC), 17 ,
-                          ifelse((resDESeq$padj < limite[2] & resDESeq$log2FoldChange < Var_log2FC), 17 ,
+                          ifelse((resDESeq$padj < limite[2] & resDESeq$log2FoldChange < -Var_log2FC), 17 ,
                                  20) )
-
-
 
 plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
     pch = Forme_Pixel_Y,
@@ -296,20 +353,30 @@ plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
     ylim = c(0,-log10(limite[2])),
     main = paste0("Volcano plot - ",Cond[nb_col_condB+1]," vs ",Cond[1])
     )
+
+tiff(filename = "/data/RESULTS/DESeq2/volcano_plot_zoom.tiff")
+  plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
+      pch = Forme_Pixel_Y,
+      col=myColors,
+      xlab = "log2 FC", ylab = "-log10(padj)",
+      ylim = c(0,-log10(limite[2])),
+      main = paste0("Volcano plot - ",Cond[nb_col_condB+1]," vs ",Cond[1])
+      )
+dev.off()
 ```
 \
 
 ```{r Creation Tables finales, include = FALSE}
 Bruts_Norm <- cbind(expData_Sorted, normCountData )
 
-Table_Complete <- data.frame(cbind(row.names(Bruts_Norm) , Bruts_Norm, CT_Mean,Mut_Mean , resDESeq) )
+Table_Complete <- data.frame(cbind(row.names(Bruts_Norm) , Bruts_Norm, CT_Mean, Mut_Mean , resDESeq) )
 
 
 colnames(Table_Complete) =  c("genes" ,
                                Names_Col,
                                paste("norm", Names_Col, sep = "_"),
-                               paste(CT,"_Mean"),
-                               paste(sample, "_Mean"),
+                               paste0(CT,"_Mean"),
+                               paste0(sample, "_Mean"),
                                colnames(resDESeq))
 
 

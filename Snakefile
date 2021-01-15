@@ -106,7 +106,7 @@ onsuccess:
     data_report.close()
 
     # Removes useless directory
-    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/*tempoR.Rout /data/RESULTS/qualitativeAnalysis/*tempo* ;")
+    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/*tempoR.Rout /data/RESULTS/qualitativeAnalysis/*tempoR.Rout ;")
     # shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
 
 
@@ -491,4 +491,4 @@ rule DESeq2_analysis:
         # r-stringr 1.4.0
         #
         # "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis2.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis3.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"

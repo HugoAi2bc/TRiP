@@ -22,14 +22,14 @@
 
 
 # Take infos of : Gene_name logFC lfcSE pval padj
-awk '{print $1"\t"$13"\t"$14"\t"$16"\t"$17;}' ./RESULTS/DESeq2/up.txt > ./RESULTS/DESeq2/tmp.txt
+awk '{print $1"\t"$17"\t"$18"\t"$20"\t"$21;}' ./RESULTS/DESeq2/up.txt > ./RESULTS/DESeq2/tmp.txt
 # Sort on padj
 (head -n 1 ./RESULTS/DESeq2/tmp.txt && tail -n +2 ./RESULTS/DESeq2/tmp.txt | sort -k5) > ./RESULTS/DESeq2/gene_logFC_pval_padj_UP.txt
 rm ./RESULTS/DESeq2/tmp.txt
-awk '{print $1"\t"$13"\t"$14"\t"$16"\t"$17;}' ./RESULTS/DESeq2/down.txt > ./RESULTS/DESeq2/tmp.txt
+awk '{print $1"\t"$17"\t"$18"\t"$20"\t"$21;}' ./RESULTS/DESeq2/down.txt > ./RESULTS/DESeq2/tmp.txt
 (head -n 1 ./RESULTS/DESeq2/tmp.txt && tail -n +2 ./RESULTS/DESeq2/tmp.txt | sort -k5) > ./RESULTS/DESeq2/gene_logFC_pval_padj_DOWN.txt
 rm ./RESULTS/DESeq2/tmp.txt
-awk '{print $1"\t"$13"\t"$14"\t"$16"\t"$17;}' ./RESULTS/DESeq2/complete.txt > ./RESULTS/DESeq2/tmp.txt
+awk '{print $1"\t"$17"\t"$18"\t"$20"\t"$21;}' ./RESULTS/DESeq2/complete.txt > ./RESULTS/DESeq2/tmp.txt
 (head -n 1 ./RESULTS/DESeq2/tmp.txt && tail -n +2 ./RESULTS/DESeq2/tmp.txt | sort -k5) > ./RESULTS/DESeq2/gene_logFC_pval_padj_ALL.txt
 rm ./RESULTS/DESeq2/tmp.txt
 
