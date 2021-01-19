@@ -28,4 +28,4 @@ RUN echo "conda activate all_TRiP" >> /root/.bashrc \
     && conda info --envs \
     && conda list --name all_TRiP
 
-CMD ["bash","/TRiP/TRiP.sh"]
+CMD ["bash","/TRiP/TRiP/TRiP.sh"]

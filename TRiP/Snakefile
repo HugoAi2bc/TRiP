@@ -354,7 +354,7 @@ rule quality_controls_bamDivision:
     shell:
         # samtools 1.11
         # gawk 5.1.0
-        "bash /TRiP/tools/BamDivision.sh -N {params.sample_names} -l {params.read_length} -S {input.sam} -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
+        "bash /TRiP/TRiP/tools/BamDivision.sh -N {params.sample_names} -l {params.read_length} -S {input.sam} -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Creates bed files from fasta files
 rule quality_controls_bedcount:
@@ -373,7 +373,7 @@ rule quality_controls_bedcount:
         "/data/logs/quality_controls_bedcount/{sample}.{taille}.kmerRepartition.log"
     shell:
         # bedtools 2.29.2
-        "bash /TRiP/tools/kmerRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
+        "bash /TRiP/TRiP/tools/kmerRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Outputs the number of reads on each kmer
 rule quality_controls_kmerRepartition:
@@ -410,8 +410,8 @@ rule quality_controls_periodicity:
         stop="/data/logs/quality_controls_periodicity/{sample}.{taille}.log"
     shell:
         # gawk 5.1.0
-        "bash /TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
-        "bash /TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
+        "bash /TRiP/TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
+        "bash /TRiP/TRiP/tools/periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
 
 rule graphs_length:
     input:
@@ -424,7 +424,7 @@ rule graphs_length:
         bash="/data/logs/graphs_length/{sample}.generationGraph_length.log"
     shell:
         # r-base 4.0.2
-        "bash /TRiP/tools/generationGraph_length.sh -N {params.sample_name} 2> {log.bash} ;"
+        "bash /TRiP/TRiP/tools/generationGraph_length.sh -N {params.sample_name} 2> {log.bash} ;"
 
 rule graphs_periodicity:
     input:
@@ -439,7 +439,7 @@ rule graphs_periodicity:
         bash="/data/logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
     shell:
         # r-base 4.0.2
-        "bash /TRiP/tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log.bash} ;"
+        "bash /TRiP/TRiP/tools/generationGraph_perio.sh -N {params.sample_name} -l {params.read_length} -m " + config['window_bf'] + " -M " + config['window_af'] + " 2> {log.bash} ;"
 
 # Creates the row names (genes/transcript names) of the count matrix
 rule count_matrix_initialization:
@@ -492,5 +492,5 @@ rule DESeq2_analysis:
         # bioconductor-deseq2 1.30.0
         # r-stringr 1.4.0
         #
-        # "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
-        "Rscript -e \"rmarkdown::render('/TRiP/tools/DESeq2_analysis3.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"
+        # "Rscript -e \"rmarkdown::render('/TRiP/TRiP/tools/DESeq2_analysis.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/TRiP/tools/DESeq2_analysis3.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"
