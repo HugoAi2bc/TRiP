@@ -106,7 +106,8 @@ onsuccess:
     data_report.close()
 
     # Removes useless directory
-    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/*tempoR.Rout /data/RESULTS/qualitativeAnalysis/*tempoR.Rout ;")
+    shell("rm -f -r /data/RESULTS/qualitativeAnalysis/bedCount/ /data/RESULTS/qualitativeAnalysis/kmerRepartition/*.bed /data/RESULTS/qualitativeAnalysis/sequenceBedCount/ ;")
+    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/database/*t2 /data/database/*.fai /data/*tempoR.Rout /data/RESULTS/qualitativeAnalysis/*tempoR.Rout ;")
     # shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
 
 
@@ -352,7 +353,6 @@ rule quality_controls_bamDivision:
         # samtools 1.11
         # gawk 5.1.0
         "bash /TRiP/tools/BamDivision.sh -N {params.sample_names} -l {params.read_length} -S {input.sam} -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
-        #"rm {input.sam};"
 
 # Creates bed files from fasta files
 rule quality_controls_bedcount:
