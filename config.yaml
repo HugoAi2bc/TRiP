@@ -1,0 +1,41 @@
+# Name for the experiment
+project_name: "LRRK2"
+
+# Names of the files in the "database/" directory :
+# Name of the genome or transcriptome fasta file to align on
+fasta_transcriptome: ""
+# Name of the gff file with genome or transcriptome annotations
+gff_transcriptome: ""
+# Fasta file with not interesting sequences
+fasta_outRNA: ""
+
+# Does UTR covering has to be calculated : "yes" or "no" (you need the corresponding length files for it)
+UTR: "no"
+# File with CDS lengths
+CDSlength: ""
+# File with 5' UTR lengths
+5primelength: ""
+# File with 3' UTR lengths
+3primelength: ""
+
+# Adaptator sequence
+adapt_sequence: ""
+
+# Name of the reference condition
+reference_condition: ""
+# Parameters to adjust for differential expression analysis :
+p-val: "0.01"
+logFC: "0"
+
+# Minimum read length kept for ribosome profiling
+kmer_min: "25"
+# Maximum read length kept for ribosome profiling
+kmer_max: "35"
+
+# Number of bases to look before the start and after the stop for periodicity (relative positions)
+window_bf: "50"
+# Number of bases to look after the start and before the stop for periodicity (relative positions)
+window_af: "100"
+
+# Number of threads to be used
+threads: "2"
