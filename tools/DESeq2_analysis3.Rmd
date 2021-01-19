@@ -210,7 +210,7 @@ res.pca <- PCA(t(normCountData), scale.unit = FALSE, ncp = ncp_num$ncp, graph = 
 plot(res.pca, choix ="ind", autoLab = "yes")
 
 tiff(filename = "/data/RESULTS/DESeq2/PCA.tiff")
-  plot(res.pca, choix ="var", autoLab = "yes")
+  plot(res.pca, choix ="ind", autoLab = "yes")
 dev.off()
 ```
 
