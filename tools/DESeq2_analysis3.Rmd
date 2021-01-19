@@ -204,7 +204,7 @@ pairs(log10(normCountData),
 ```{r PCA, echo = FALSE}
 ncp_num <- estim_ncp(t(normCountData), scale=FALSE)
 
-res.pca <- PCA(t(normCountData), scale.unit = FALSE, ncp = ncp_num, graph = FALSE)
+res.pca <- PCA(t(normCountData), scale.unit = FALSE, ncp = ncp_num$ncp, graph = FALSE)
 
 ##res.pca <- prcomp(normCountData, scale = TRUE)
 plot(res.pca, choix ="ind", autoLab = "yes")

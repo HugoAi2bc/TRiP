@@ -25,6 +25,7 @@
 # conda activate all_TRiP;
 
 cpu=`nproc --all`;
+echo "Total CPU available : "${cpu};
 cpu_use=$((${cpu}/4));
 echo "Minimum CPU used for the analysis : "${cpu_use};
 
