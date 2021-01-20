@@ -1,5 +1,5 @@
 # Name for the experiment
-project_name: "LRRK2"
+project_name: ""
 
 # Names of the files in the "database/" directory :
 # Name of the genome or transcriptome fasta file to align on
