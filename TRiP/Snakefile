@@ -33,6 +33,12 @@ BOWTIE2 = ["1","2","3","4","rev.1","rev.2"]
 HISAT2 = ["1","2","3","4","5","6","7","8"]
 KMER = list(map(str,range(int(config['kmer_min']),int(config['kmer_max'])+1)))
 
+# Change cutadapt options, depending on data given
+if config['already_trimmed'] == "no":
+    trim = "--trimmed-only "
+else:
+    trim = ""
+
 # Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
     counts = "htseqcountCDS"
@@ -184,7 +190,7 @@ rule adapt_trimming:
         sample_names="{sample}"
     shell:
         # cutadapt 3.1
-        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 --trimmed-only --max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
+        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 " + trim + " --max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
 
 # Mapping of non-coding RNA
 rule bowtie2_run_outRNA:
@@ -199,7 +205,7 @@ rule bowtie2_run_outRNA:
         sample_names="{sample}"
     shell:
         # bowtie2 2.4.2
-        "bowtie2 -x /data/database/outRNA_bowtie2 -p " + config['threads'] + " -U {input.fastq} --un-gz {output} > /dev/null 2>> {log.bt2} ;"
+        "bowtie2 -x /data/database/outRNA_bowtie2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output} > /dev/null 2>> {log.bt2} ;"
         "rm {input.fastq} ;"
 
 # Mapping of all RNA by bowtie2 and hisat2
@@ -220,8 +226,8 @@ rule run_transcriptome:
     shell:
         # bowtie2 2.4.2
         # hisat2 2.2.1
-        "hisat2 -x /data/database/transcriptome_hisat2 -p " + config['threads'] + " -U {input.fastq} --un-gz {output.fastq} -S {output.sam_hisat2} 2>> {log.hisat2_out} ;"
-        "bowtie2 -x /data/database/transcriptome_bowtie2 -p " + config['threads'] + " -U {output.fastq} -S {output.sam_bowtie2} 2>> {log.bowtie2_out};"
+        "hisat2 -x /data/database/transcriptome_hisat2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output.fastq} -S {output.sam_hisat2} 2>> {log.hisat2_out} ;"
+        "bowtie2 -x /data/database/transcriptome_bowtie2 --threads " + config['threads'] + " -U {output.fastq} -S {output.sam_bowtie2} 2>> {log.bowtie2_out};"
 
 # Creates cram, bam and sam files
 rule transcriptome_samtools:
@@ -276,7 +282,7 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i 'ID' {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
+        "htseq-count -f bam -t 'CDS' -i 'ID' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
         "rm {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
@@ -452,7 +458,7 @@ rule count_matrix_initialization:
         "/data/logs/count_matrix_initialization/cut_sort.log"
     shell:
         "set +o pipefail ;"
-        "echo Genes\\\t > {output} ;"
+        # "echo Genes\\\t > {output} ;"
         "cut -f1 {input.counts} | sort >> {output} 2> {log} ;"
 
 # Adds the read counts of each sample to the matrix
@@ -491,6 +497,4 @@ rule DESeq2_analysis:
         # r-factominer 2.4
         # bioconductor-deseq2 1.30.0
         # r-stringr 1.4.0
-        #
-        # "Rscript -e \"rmarkdown::render('/TRiP/TRiP/tools/DESeq2_analysis.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
-        "Rscript -e \"rmarkdown::render('/TRiP/TRiP/tools/DESeq2_analysis3.Rmd', output_format='html_document', run_pandoc = TRUE, output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('/TRiP/TRiP/tools/DESeq2_analysis4.Rmd', output_format='html_document', output_file='{params.reportName}', output_dir='{params.reportPath}', params = list(refCond='" + config['reference_condition'] + "', logFC=" + config['logFC'] + ", pval=" + config['p-val'] + "))\" 2> {log.deseq2} ;"
