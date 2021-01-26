@@ -19,20 +19,19 @@ CDSlength: ""
 3primelength: ""
 
 # Are the sequencing adapters already removed in fastq files ? "yes" or "no"
-already_trimmed: "no"
-# Adaptator sequence
+already_trimmed: ""
+# Adapter sequence
 adapt_sequence: ""
-
-# Name of the reference condition
-reference_condition: ""
-# Parameters to adjust for differential expression analysis :
-p-val: "0.01"
-logFC: "0"
-
 # Minimum read length kept for ribosome profiling
 kmer_min: "25"
 # Maximum read length kept for ribosome profiling
 kmer_max: "35"
+
+# Name of the reference condition
+reference_condition: ""
+# Thresholds to adjust for differential expression analysis :
+p-val: "0.01"
+logFC: "0"
 
 # Number of bases to look before the start and after the stop for periodicity (relative positions)
 window_bf: "50"
