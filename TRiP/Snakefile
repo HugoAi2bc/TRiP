@@ -458,7 +458,7 @@ rule count_matrix_initialization:
         "/data/logs/count_matrix_initialization/cut_sort.log"
     shell:
         "set +o pipefail ;"
-        # "echo Genes\\\t > {output} ;"
+        "echo Genes\\\t > {output} ;"
         "cut -f1 {input.counts} | sort >> {output} 2> {log} ;"
 
 # Adds the read counts of each sample to the matrix
@@ -472,6 +472,7 @@ rule count_matrix_creation:
     params:
         tmp_file="/data/RESULTS/DESeq2/tmp.txt"
     run:
+        shell("cat {input} > {output} ;")
         shell("cat {input} > {output} ;")
         for sample in SAMPLES:
             shell("join --nocheck-order -t $'\t' -j 1 /data/RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2> {log} ;")
