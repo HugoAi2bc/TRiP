@@ -3,22 +3,18 @@ title: "DEseq2 analysis report"
 author: "GST team"
 date: "`r format (Sys.time(), '%B %d, %Y')`"
 output: "html_document"
-params:
-    refCond: "CT"
-    logFC: 0
-    pval: 0.05
 ---
 
 ```{r Sys, echo=FALSE}
 #Sys.getenv("RSTUDIO_PANDOC")
 Sys.setenv(RSTUDIO_PANDOC="/root/miniconda3/envs/all_TRiP/bin/pandoc")
 ```
-```{r mkdir, echo=FALSE, include = FALSE}
+```{r mkdir, echo = FALSE, include = FALSE}
 dir.create("/data/RESULTS/DESeq2/Images/")
 ```
 
-```{r setup, echo=FALSE, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(include = TRUE, message = FALSE, warning = FALSE)
 knitr::opts_chunk$set(fig.path = "/data/RESULTS/DESeq2/Images/", dev=c('png','tiff'))
 ```
@@ -28,7 +24,7 @@ knitr::opts_chunk$set(fig.path = "/data/RESULTS/DESeq2/Images/", dev=c('png','ti
 rm(list=ls())
 ```
 
-```{r packages}
+```{r packages, echo = FALSE}
 library(DESeq2)
 library(stringr)
 library(FactoMineR)
@@ -36,23 +32,21 @@ library(FactoMineR)
 
 
 ```{r Arguments, include=FALSE}
-parameters <- scan(file = "/data/config.yaml",
+params <- scan(file = "/data/config.yaml",
                    what = "character",
                    sep = ":"
                    )
-CT <- parameters[which(parameters=="reference_condition")+1]
-Var_log2FC <- parameters[which(parameters=="logFC")+1]
-Var_padj <- parameters[which(parameters=="p-val")+1]
 
-#CT <- as.character(rmarkdown::metadata$params$refCond)
-#Var_log2FC <- as.numeric(rmarkdown::metadata$params$logFC)
-#Var_padj <- as.numeric(rmarkdown::metadata$params$pval)
+CT <- gsub(" ", "", params[which(params=="reference_condition")+1], fixed = TRUE)
+Var_log2FC <- as.numeric(gsub(" ", "", params[which(params=="logFC")+1], fixed = TRUE))
+Var_padj <- as.numeric(gsub(" ", "", params[which(params=="p-val")+1], fixed = TRUE))
 ```
 \
 
 
-```{r data}
-expData = read.table("/data/RESULTS/DESeq2/count_matrix.txt", header = T, row.names = 1)
+```{r data , echo=FALSE}
+pathway = "/data/RESULTS/DESeq2/count_matrix.txt"
+expData = read.table(pathway, header = T, row.names = 1)
 ```
 
 
@@ -69,12 +63,11 @@ First of all, the count matrix obtained with TRiP tool is loaded in R. It contai
 
 \
 *Table 1 : Header of the count matrix*
-```{r  results = 'asis'}
+```{r  results = 'asis', echo = FALSE}
 knitr::kable(head(expData[,]))
-
 ```
 
-```{r Determination of the number of samples , include=FALSE}
+```{r Determination of the number of samples , include=FALSE }
 expData_Sorted <- expData[,sort(colnames(expData))]
 Names_Col <- colnames(expData_Sorted)
 Cond <- str_replace(Names_Col,regex("[[:digit:]]{1,}$"),"")
@@ -82,9 +75,7 @@ nb_col_condA <- table(factor(Cond))[[1]]
 nb_col_condB <- table(factor(Cond))[[2]]
 sample <- Cond[nb_col_condA+1]
 
-#if (Cond[1] != args[1]) {
 if (Cond[1] != CT) {
-#if (Cond[1] != params$refCond) {
         Ord <- c( (1:nb_col_condB)+nb_col_condA , (1:nb_col_condA) )
         expData_Sorted <- expData_Sorted[, Ord]
 
@@ -99,10 +90,10 @@ if (Cond[1] != CT) {
 ##### *`r paste0("Samples : ",nb_col_condB," ",Cond[1]," vs ",nb_col_condA," ",Cond[nb_col_condB+1])`*
  \
  \
-Figure 1 shows the library sizes. That is the total number of reads counts in each sample. Size may be as similar as possible within conditions.  
+Figure 1 shows the library sizes. That is the total number of reads count in each sample. Size must be as similar as possible within conditions.  
 \
 *Figure 1 : Number of raw reads counts per sample. One color by biological condition.*
-```{r Library sizes, fig.height = 3, fig.width = 4}
+```{r Library sizes, fig.height = 3, fig.width = 4, echo=FALSE, dev=c('png','tiff')}
 barplot(colSums(expData_Sorted/1000000), ylab = "Total read number (million)",
         main = "Library sizes", col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
         names = colnames(expData_Sorted),
@@ -116,7 +107,7 @@ barplot(colSums(expData_Sorted/1000000), ylab = "Total read number (million)",
 Quantitative analysis is realized in order to highlight the variability between two (or more) biological conditions. To assess this variability, replicats have to be as close as possible. To check this, a pairwise scatter plot (figure 2) and a PCA (figure 3) are produced. The first one, thanks to a Pearson correlation, measures the statistical relationship between two samples. The value must be as close as possible to 1 between replicates and move towards 0 between biological conditions. In the same way, the PCA allows us to visualize variability. The first component (figure 3, x-axe) is expected to clearly separate samples between the different biological conditions and bring together replicats.  
 \
 *Figure 2 : Pairwise scatter plot for variation analysis*
-```{r pairwiseScatter}
+```{r pairwiseScatter, echo = FALSE ,dev=c('png', 'tiff') }
 panel.cor <- function(x, y){
    r <- round(cor(10^x, 10^y), digits=4 )
     txt <- paste0("R = ", r)
@@ -133,7 +124,7 @@ pairs(log10(expData_Sorted),
 ```
 \
 *Figure 3 : PCA for variation analysis*  
-```{r PCA}
+```{r PCA,  echo=FALSE  }
 par(mfrow = c(2,1))
 res.pca <- PCA(t(expData_Sorted) , ncp = 3, graph = FALSE)
 
@@ -143,6 +134,7 @@ plot(res.pca, choix ="ind", autoLab = "yes", axes = c(1,2),width=3, height=3
 plot(res.pca, choix ="ind", autoLab = "yes", axes = c(1,3)
            )
 par(mfrow = c(1,1))
+
 ```
 \
 \
@@ -156,20 +148,20 @@ To check that normalization went well, we realized two graphs. The first one (fi
 *Figure 4 : Number of normalized reads counts per sample.*  
 
 
-```{r}
+```{r, echo=FALSE}
 conds    = factor(c(rep("CondA", nb_col_condA), rep("CondB", nb_col_condB)))
 colData  = data.frame(condition = conds)
 ddsObjet = DESeqDataSetFromMatrix(countData = expData_Sorted,
                                   colData   = colData, formula(~ condition))
 ddsObjet = estimateSizeFactors(ddsObjet)
 Size_Factors <- sizeFactors(ddsObjet)
-# Donnees de comptage normalisÃ©es :
+# Normalized counts data
 normCountData = counts(ddsObjet, normalized = TRUE)
 ```
 \
 
 
-```{r Library Sizes Norm, fig.height = 3, fig.width =4}
+```{r Library Sizes Norm, fig.height = 3, fig.width =4, echo=FALSE}
 barplot(colSums(normCountData/1000000), ylab = "Total read number (million)",
         main = "Library sizes (after normalization)",
         col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
@@ -180,13 +172,12 @@ barplot(colSums(normCountData/1000000), ylab = "Total read number (million)",
 ```
 \
 *Figure 5 : Boxplots of reads distribution. Raw (left) vs normalized (right).*
-```{r Boxplot}
+```{r Boxplot, echo=FALSE}
 row_sub_1 = apply(expData_Sorted, 1, function(row) all(row != 0 ))
 row_sub_2 = apply(normCountData, 1, function(row) all(row != 0 ))
 par(mfrow = c(1,2))
 
 boxplot((expData_Sorted[row_sub_1,]),
-        #ylab = "Total read number",
         main = "Library sizes",
         log = "y",
         col = c(rep("yellow", nb_col_condA), rep("blue", nb_col_condB)),
@@ -216,23 +207,20 @@ par(mfrow = c(1,1))
 
 **DIFFERENTIAL ANALYSIS** :  
 The DESeq2 function can be run now on the DDS object. First, the estimateSizeFactors sub-function calculates the relative library depth of each sample. Then, estimateDispersions sub-function estimates the dispersion of counts for each feature. Finally nbinomWaldTest sub-function calculates the significance of coefficients in a Negative Binomial GLM using the size and dispersion outputs.
-Results are presented in six graphs. Figure 6 represented the dispersion estimate with the mean of normalized counts by the estimated dispersion. Dots can have three colors : i) black which shows the dispersion estimates by feature. ii) red for representing the fitted dispersion value estimated by model (i.e. the mean-variance relationship function) iii) Blue exhibits the final estimates retained for the statistical test. Outliers are shown with a black dot with a blue circle.  
+Results are presented in seven graphs. Figure 6 represented the dispersion estimate with the mean of normalized counts by the estimated dispersion. Dots can have three colors : i) black which shows the dispersion estimates by feature. ii) red for representing the fitted dispersion value estimated by model (i.e. the mean-variance relationship function) iii) Blue exhibits the final estimates retained for the statistical test. Outliers are shown with a black dot with a blue circle.  
 \
 *Figure 6 : Dispersion estimates*
-```{r, include = FALSE}
+```{r , echo=FALSE, include = FALSE}
 ddsEstim = DESeq(ddsObjet)
 resDESeq = results(ddsEstim, contrast = c("condition", "CondB", "CondA"))
 
 mcols(resDESeq, use.names = TRUE)
 dds = estimateDispersions(ddsObjet)
-
-
-
 ```
 
 
 
-```{r Dispersion, fig.height = 5, fig.width = 5}
+```{r Dispersion, fig.height = 5, fig.width = 5, echo=FALSE}
 plotDispEsts(dds)
 ```
 
@@ -242,10 +230,10 @@ plotDispEsts(dds)
 
 
   
-*Figure 7 : XXXX*
-```{r, include = FALSE}
-# La valeur +1 est ajoutÃ Ã  tous les gÃ¨nes, pour toutes les conditions,
-# afin d'Ã©viter les Ã©ventuelles divisions par 0.
+*Figure 7 : shows the distribution of logFC frequency. The highest frequency is expected on 0. In fact, the large majority of features must not be differentially expressed.*
+```{r ,  echo=FALSE, include = FALSE}
+# La valeur +1 est ajoutÃ Ã  tous les genes, pour toutes les conditions,
+# afin d'eviter les eventuelles divisions par 0.
 normCountData1 = normCountData + 1
 
 # control mean
@@ -257,7 +245,7 @@ logFC = log2(Mut_Mean / CT_Mean)
 colnames(logFC) = paste("logFC")
 vec_logFC <- as.vector(t(logFC))
 ```
-```{r, fig.height = 3, fig.width =4}
+```{r logFC frequency, fig.height = 3, fig.width =4, echo=FALSE}
 hist(vec_logFC,
      nclass = 200,
      xlab = "logFC values",
@@ -266,30 +254,36 @@ abline(v = 2, col = "red")
 abline(v = -2, col = "red")
 ```
 \
-Figures 8 represent the raw and adjusted p-values distribution respectively. The peak around 0 corresponds to the differentially expressed genes. Graphs are expected to be a uniform distribution between 0 to 1.  
+Figures 8 and 9 represent the raw and adjusted p-values distribution respectively. The peak around 0 corresponds to the differentially expressed genes. Graphs are expected to be a uniform distribution between 0 to 1.  
 
-*Figure 8 : Distribution of raw p-values (left) vs adjusted (right)*
+*Figure 8 : Distribution of raw p-values*
 
-```{r pValue, fig.height = 4, fig.width =4}
+```{r pValue, fig.height = 4, fig.width =4, echo=FALSE}
 hist(resDESeq[,"pvalue"], nclass = 100, xlab = "p-values",
      main = "Histogram of p-values (DESeq2)")
+
+```
+  
+*Figure 9 : Distribution of adjusted p-values*  
+
+```{r adjusted pValue, fig.height = 4, fig.width =4, echo=FALSE}
 
 hist(resDESeq[,"padj"], nclass = 100, xlab = "padj",
      main = "Histogram adjusted p-values")
 ```
 \
-Figure 9 is the MA-plot which shows the mean of normalized counts for each feature by the log ratio of differential expression. Differentially expressed features are represented by red dots. Triangles correspond to features with a too high/low log2FC to be shown on graph.    
+Figure 10 is the MA-plot which shows the mean of normalized counts for each feature by the log ratio of differential expression. Differentially expressed features are represented by red dots. Triangles correspond to features with a too high/low log2FC to be shown on graph.    
    
-*Figure 9 : MA-plot*   
-```{r MA-plot, fig.height = 4, fig.width =4}
+*Figure 10 : MA-plot*   
+```{r MA-plot, fig.height = 4, fig.width =4, echo=FALSE}
 plotMA(resDESeq, ylab = "log2 FC", colSig = rgb(1,0,0,0.5))
 ```
 
 
-Figures 10 is the volcano-plot and its zoom respectively. They represent each feature by its log2FC and its adjusted p-value. Differentially expressed features are still red dots and triangles correspond to outliers features.   
-*Figure 10 : Volcano-plot (left) Zoom of the previous volcano-plot (right)*
+Figures 11 and 12 are the volcano-plot and its zoom respectively. They represent each feature by its log2FC and its adjusted p-value. Differentially expressed features are still red dots and triangles correspond to outliers features.   
+*Figure 11 : Volcano-plot*
 
-```{r volcano plot global, fig.height = 4, fig.width =4}
+```{r volcano plot global, fig.height = 4, fig.width =4, echo=FALSE}
 myColors <- ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange > Var_log2FC), rgb(1, 0, 0, 0.25) ,
                    ifelse((resDESeq$padj < Var_padj & resDESeq$log2FoldChange < -Var_log2FC), rgb(1, 0, 0, 0.25) ,
                           rgb(0, 0, 0, 0.25) ) )
@@ -301,9 +295,11 @@ plot(resDESeq[, "log2FoldChange"], -log10(resDESeq[, "padj"]),
      main = paste0("Volcano plot - ",Cond[nb_col_condB+1]," vs ",Cond[1])
      )
 
+```
+  
+*Figure 12 : Zoom of the previous volcano-plot*  
 
-
-
+```{r ZOOM volcano plot , fig.height = 4, fig.width =4, echo=FALSE}
 
 limite <- quantile(resDESeq$padj, probs = seq(0, 1, 0.05), na.rm = TRUE)[2]
 if (limite >= 0.001) {limite <-0.001}
@@ -338,7 +334,7 @@ Table_Complete <- data.frame(cbind(row.names(Bruts_Norm) , Bruts_Norm, CT_Mean,M
 colnames(Table_Complete) =  c("genes" ,
                                Names_Col,
                                paste("norm", Names_Col, sep = "_"),
-                               paste0(CT,"_Mean"),
+                               paste0(CT, "_Mean"),
                                paste0(sample, "_Mean"),
                                colnames(resDESeq))
 
@@ -362,7 +358,7 @@ repressedGenes <- repressedGenes[(order(repressedGenes[,"padj"])),]
 
 
 
-```{r}
+```{r, echo = FALSE}
 write.table(Table_Complete,
             file = paste0("/data/RESULTS/DESeq2/complete.txt"),
             quote = F, sep = "\t", row.names = F)
@@ -380,9 +376,9 @@ write.table(repressedGenes,
 \
 **OUTPUT FILES** :  
 All the output files can be found in the directory “RESULTS/DESeq2/”   
-`r paste0("/data/RESULTS/DESeq2/complete.txt")`  
-`r paste0("/data/RESULTS/DESeq2/up.txt")  `  
-`r paste0("/data/RESULTS/DESeq2/down.txt")  `   
+`r paste0("RESULTS/DESeq2/complete.txt")`  
+`r paste0("RESULTS/DESeq2/up.txt")  `  
+`r paste0("RESULTS/DESeq2/down.txt")  `   
 \
 *Explanation of each column* :  
 
@@ -394,14 +390,3 @@ All the output files can be found in the directory “RESULTS/DESeq2/”
 * log2FoldChange: log^2^(FC) reflects the differential expression between Test and Ref
 * pvalue: raw p-value from the statistical test  
 * padj: adjusted p-value on which the cut-off α is applied  
-   
-      
-**R SESSION INFORMATIONS** :
-
-```{r infos}
-sI <- sessionInfo()
-
-
-```
-
-
