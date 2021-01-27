@@ -109,7 +109,7 @@ onsuccess:
             logs_files.close()
         data_report.write("\n\n\n")
 
-        shell("rm -f /data/RESULTS/BAM_transcriptome/" + sample + frag_length_L + ".uniq.sam ;")
+        shell("rm -f /data/RESULTS/CRAM_transcriptome/" + sample + frag_length_L + ".uniq.sam ;")
 
     data_report.close()
 
@@ -216,8 +216,8 @@ rule run_transcriptome:
         fastq="/data/RESULTS/no-outRNA/{sample}" + frag_length_L + ".no-outRNA.fastq.gz"
     output:
         fastq="/data/RESULTS/no-outRNA/{sample}" + frag_length_L + ".no-outRNA.notAlign.fastq.gz",
-        sam_hisat2="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".hisat2.sam",
-        sam_bowtie2="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".bowtie2.sam"
+        sam_hisat2="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".hisat2.sam",
+        sam_bowtie2="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bowtie2.sam"
     log:
         hisat2_out="/data/logsTmp/{sample}_run_transcriptome_hisat2.log",
         bowtie2_out="/data/logsTmp/{sample}_run_transcriptome_bowtie2.log"
@@ -232,15 +232,15 @@ rule run_transcriptome:
 # Creates cram, bam and sam files
 rule transcriptome_samtools:
     input:
-        sam_hisat2="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".hisat2.sam",
-        sam_bowtie2="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".bowtie2.sam",
+        sam_hisat2="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".hisat2.sam",
+        sam_bowtie2="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bowtie2.sam",
         fasta="/data/database/" + config['fasta_transcriptome']
     output:
-        samuniq="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
-        cram="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".cram",
-        crai="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".cram.crai",
-        bam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".bam",
-        bai="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".bam.bai"
+        samuniq="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
+        cram="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".cram",
+        crai="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".cram.crai",
+        bam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam",
+        bai="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam.bai"
     log:
         egrep1="/data/logs/transcriptome_samtools/{sample}.egrep1.log",
         grep="/data/logs/transcriptome_samtools/{sample}.grep.log",
@@ -254,7 +254,7 @@ rule transcriptome_samtools:
         index2="/data/logs/transcriptome_samtools/{sample}.samtools_index2.log",
         rm="/data/logs/transcriptome_samtools/{sample}.rm.log"
     params:
-        sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".sam"
+        sam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".sam"
     shell:
         # samtools 1.11
         "set +o pipefail ;"
@@ -270,8 +270,8 @@ rule transcriptome_samtools:
 # Counts reads on each transcript
 rule htseqcount_transcript:
     input:
-        bam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".bam",
-        bai="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".bam.bai",
+        bam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam",
+        bai="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam.bai",
         gff="/data/database/" + config['gff_transcriptome'],
         CDS="/data/database/" + config['CDSlength']
     output:
@@ -288,8 +288,8 @@ rule htseqcount_transcript:
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
 rule htseqcount_transcript_utr:
     input:
-        bam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".bam",
-        bai="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".bam.bai",
+        bam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam",
+        bai="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam.bai",
         gff="/data/database/" + config['gff_transcriptome'],
         CDS="/data/database/" + config['CDSlength'],
         five_prime="/data/database/" + config['5primelength'],
@@ -347,7 +347,7 @@ rule htseqcount_transcript_utr:
 # Divisions of SAM file according to read length and turns it into BAM
 rule quality_controls_bamDivision:
     input:
-        sam="/data/RESULTS/BAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
+        sam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
         gff="/data/database/" + config['gff_transcriptome']
     output:
         bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
