@@ -362,16 +362,16 @@ repressedGenes <- repressedGenes[(order(repressedGenes[,"padj"])),]
 
 ```{r, echo = FALSE}
 write.table(Table_Complete,
-            file = paste0("/data/RESULTS/DESeq2/complete-64.txt"),
+            file = paste0("/data/RESULTS/DESeq2/complete.txt"),
             quote = F, sep = "\t", row.names = F)
 
 
 write.table(inducedGenes,
-            file = paste0("/data/RESULTS/DESeq2/up-64.txt"),
+            file = paste0("/data/RESULTS/DESeq2/up.txt"),
             quote = F, sep = "\t", row.names = F)
 
 write.table(repressedGenes,
-            file = paste0("/data/RESULTS/DESeq2/down-64.txt"),
+            file = paste0("/data/RESULTS/DESeq2/down.txt"),
             quote = F, sep = "\t", row.names = F)
 ```
 \
