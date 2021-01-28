@@ -42,7 +42,8 @@ Var_log2FC <- as.numeric(gsub(" ", "", params[which(params=="logFC")+1], fixed =
 Var_padj <- as.numeric(gsub(" ", "", params[which(params=="p-val")+1], fixed = TRUE))
 ```
 \
-
+##### *`r paste0("Reference condition : ", refCond)`*
+\
 
 ```{r data , echo=FALSE}
 pathway = "/data/RESULTS/DESeq2/count_matrix.txt"
