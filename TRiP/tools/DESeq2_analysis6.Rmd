@@ -1,5 +1,5 @@
 ---
-title: "DEseq2 analysis report"
+title: "Differential analysis report"
 author: "GST team"
 date: "`r format (Sys.time(), '%B %d, %Y')`"
 output: "html_document"
@@ -377,9 +377,9 @@ write.table(repressedGenes,
 \
 **OUTPUT FILES** :  
 All the output files can be found in the directory “RESULTS/DESeq2/”   
-`r paste0("/data/RESULTS/DESeq2/complete-64.txt")`  
-`r paste0("/data/RESULTS/DESeq2/up-64.txt")  `  
-`r paste0("/data/RESULTS/DESeq2/down-64.txt")  `   
+`r paste0("/RESULTS/DESeq2/complete.txt")`  
+`r paste0("/RESULTS/DESeq2/up.txt")  `  
+`r paste0("/RESULTS/DESeq2/down.txt")  `   
 \
 *Explanation of each column* :  
 
@@ -391,29 +391,3 @@ All the output files can be found in the directory “RESULTS/DESeq2/”
 * log2FoldChange: log^2^(FC) reflects the differential expression between Test and Ref
 * pvalue: raw p-value from the statistical test  
 * padj: adjusted p-value on which the cut-off α is applied  
-
-```{r tests}
-#CDS=c(37.4108,37.6248,48.9115,38.538,37.5247)
-#CDS_mean=mean(CDS)
-#five_prime=c(11.3104,10.5024,5.38341,9.44476,9.62386)
-#five_prime_mean=mean(five_prime)
-#three_prime=c(1.94673,1.34227,0.769487,1.47058,2.35131)
-#three_prime_mean=mean(three_prime)
-#
-#jpeg(filename = "/home/hugo.arbes//Hugo/GST/TRiP/article/data_to_test/LRRK2/RESULTS_isogenic_transcriptome/CDS_vs_UTR.jpeg")
-#  barplot(c(CDS_mean,five_prime_mean,three_prime_mean),
-#          names.arg = c("CDS","5primeUTR","3primeUTR"),
-#          xlab = "mRNA regions",
-#          ylab = "RPKM mean"
-#          )
-#dev.off()
-
-
-#local = read.table("/home/hugo.arbes/Hugo/GST/TRiP/article/data_to_test/LRRK2/gene_list_local.txt",
-#                   header = F,
-#                   row.names = 1,
-#                   col.names = c("iso_MC.1","iso_MC.2","iso_GS.1","iso_GS.2")
-#                   )
-
-
-```
