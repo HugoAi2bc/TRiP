@@ -42,10 +42,10 @@ else:
 # Change cutadapt options to keep or not multi-mapped reads
 if config['uniquely_mapped'] == "yes":
     mapped_samtools = "3332 -q 1 "
-    mapped_htseq = ""
+    mapped_htseq = "score "
 else:
     mapped_samtools = "1028 "
-    mapped_htseq = "--secondary-alignments --supplementary-alignments "
+    mapped_htseq = "ignore "
 
 # Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
@@ -290,7 +290,7 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i 'ID' " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
+        "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
         "rm {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
@@ -326,7 +326,7 @@ rule htseqcount_transcript_utr:
         "set +o pipefail ;"
         "totalReads=`samtools view -c {input.bam} 2> {log.view}` ;"
 
-        "htseq-count -f bam -t 'CDS' -i 'ID' " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
         "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} /data/RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_CDS} ;"
         "cat /data/RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
