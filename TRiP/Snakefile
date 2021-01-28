@@ -41,9 +41,11 @@ else:
 
 # Change cutadapt options to keep or not multi-mapped reads
 if config['uniquely_mapped'] == "yes":
-    mapped = "3332 -q 1 "
+    mapped_samtools = "3332 -q 1 "
+    mapped_htseq = ""
 else:
-    mapped = "1028 "
+    mapped_samtools = "1028 "
+    mapped_htseq = "--secondary-alignments --supplementary-alignments "
 
 # Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
@@ -266,7 +268,7 @@ rule transcriptome_samtools:
         "set +o pipefail ;"
         "egrep -i 'XM:i:2|XM:i:0|XM:i:1|@' {input.sam_hisat2} 1> {params.sam} 2> {log.egrep1} ;"
         "grep -v '@' {input.sam_bowtie2} 2> {log.grep} | egrep -i 'XM:i:2|XM:i:0|XM:i:1' 1>> {params.sam} 2> {log.egrep2} ;"
-        "samtools view -@ " + config['threads'] + " -F " + mapped + "-h {params.sam} 1> {output.samuniq}  2> {log.view1} ;"
+        "samtools view -@ " + config['threads'] + " -F " + mapped_samtools + "-h {params.sam} 1> {output.samuniq}  2> {log.view1} ;"
         "samtools view -@ " + config['threads'] + " -b {output.samuniq}  2> {log.view2} | samtools sort -@ " + config['threads'] + " -o {output.bam}  2> {log.sort2} ;"
         "samtools view -@ " + config['threads'] + " -T {input.fasta} -C {output.samuniq}  2> {log.view3} | samtools sort -@ " + config['threads'] + " -o {output.cram}  2> {log.sort3} ;"
         "samtools index {output.bam} 2> {log.index1} ;"
@@ -288,7 +290,7 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i 'ID' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
+        "htseq-count -f bam -t 'CDS' -i 'ID' " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
         "rm {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
@@ -324,17 +326,17 @@ rule htseqcount_transcript_utr:
         "set +o pipefail ;"
         "totalReads=`samtools view -c {input.bam} 2> {log.view}` ;"
 
-        "htseq-count -f bam -t 'CDS' -i 'ID' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'CDS' -i 'ID' " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
         "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} /data/RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_CDS} ;"
         "cat /data/RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
 
-        "htseq-count -f bam -t 'three_prime_UTR' -i 'ID' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'three_prime_UTR' -i 'ID' " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
         "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_threeprime} ;"
         "cat /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt >> {output.counts_threeprime} ;"
 
-        "htseq-count -f bam -t 'five_prime_UTR' -i 'ID' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'five_prime_UTR' -i 'ID' " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
         "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_fiveprime} ;"
         "cat /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt >> {output.counts_fiveprime} ;"
