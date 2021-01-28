@@ -39,6 +39,12 @@ if config['already_trimmed'] == "no":
 else:
     trim = ""
 
+# Change cutadapt options to keep or not multi-mapped reads
+if config['uniquely_mapped'] == "yes":
+    max_map = "--max-n=1 "
+else:
+    max_map = ""
+
 # Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
     counts = "htseqcountCDS"
@@ -190,7 +196,7 @@ rule adapt_trimming:
         sample_names="{sample}"
     shell:
         # cutadapt 3.1
-        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 " + trim + "--max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
+        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 " + trim + max_map + "-m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
 
 # Mapping of non-coding RNA
 rule bowtie2_run_outRNA:

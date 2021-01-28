@@ -18,6 +18,8 @@ CDSlength: ""
 # File with 3' UTR lengths
 3primelength: ""
 
+# Keeps only uniquely mapped reads : "yes" or "no"
+uniquely_mapped: "yes"
 # Are the sequencing adapters already removed in fastq files ? "yes" or "no"
 already_trimmed: ""
 # Adapter sequence
