@@ -41,9 +41,9 @@ else:
 
 # Change cutadapt options to keep or not multi-mapped reads
 if config['uniquely_mapped'] == "yes":
-    max_map = "--max-n=1 "
+    mapped = "3332 -q 1 "
 else:
-    max_map = ""
+    mapped = "1028 "
 
 # Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
@@ -196,7 +196,7 @@ rule adapt_trimming:
         sample_names="{sample}"
     shell:
         # cutadapt 3.1
-        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 " + trim + max_map + "-m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
+        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 " + trim + "--max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
 
 # Mapping of non-coding RNA
 rule bowtie2_run_outRNA:
@@ -266,7 +266,7 @@ rule transcriptome_samtools:
         "set +o pipefail ;"
         "egrep -i 'XM:i:2|XM:i:0|XM:i:1|@' {input.sam_hisat2} 1> {params.sam} 2> {log.egrep1} ;"
         "grep -v '@' {input.sam_bowtie2} 2> {log.grep} | egrep -i 'XM:i:2|XM:i:0|XM:i:1' 1>> {params.sam} 2> {log.egrep2} ;"
-        "samtools view -@ " + config['threads'] + " -F 3332 -q 1 -h {params.sam} 1> {output.samuniq}  2> {log.view1} ;"
+        "samtools view -@ " + config['threads'] + " -F " + mapped + "-h {params.sam} 1> {output.samuniq}  2> {log.view1} ;"
         "samtools view -@ " + config['threads'] + " -b {output.samuniq}  2> {log.view2} | samtools sort -@ " + config['threads'] + " -o {output.bam}  2> {log.sort2} ;"
         "samtools view -@ " + config['threads'] + " -T {input.fasta} -C {output.samuniq}  2> {log.view3} | samtools sort -@ " + config['threads'] + " -o {output.cram}  2> {log.sort3} ;"
         "samtools index {output.bam} 2> {log.index1} ;"
