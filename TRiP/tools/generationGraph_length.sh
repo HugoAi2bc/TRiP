@@ -19,11 +19,11 @@ fi
 
 path="/data/RESULTS/qualitativeAnalysis/"
 
-	########### Kmer repartition ###########
-echo "#! bin/R" > "${path}graphes/kmerRepartition/${N}.tempoR.R"
-echo "kmer<-read.table(file = '"${path}"kmerRepartition/"${N}".kmerRepartition.txt')" >> "${path}graphes/kmerRepartition/${N}.tempoR.R"
-echo "jpeg(filename = '"${path}"graphes/kmerRepartition/"${N}".kmerRepartition.jpeg')" >> "${path}graphes/kmerRepartition/${N}.tempoR.R"
-echo "barplot(kmer\$V2,names.arg = kmer\$V1, xlab = 'Read lengths', ylab = 'Number of reads')" >> "${path}graphes/kmerRepartition/${N}.tempoR.R"
-echo "dev.off()" >> "${path}graphes/kmerRepartition/${N}.tempoR.R"
-R CMD BATCH "${path}graphes/kmerRepartition/${N}.tempoR.R"
-rm -f "${path}graphes/kmerRepartition/${N}.tempoR.R"
+########### Reads Length Repartition ###########
+echo "#! bin/R" > "${path}graphes/readsLengthRepartition/${N}.tempoR.R"
+echo "readsLength<-read.table(file = '"${path}"readsLengthRepartition/"${N}".readsLengthRepartition.txt')" >> "${path}graphes/readsLengthRepartition/${N}.tempoR.R"
+echo "jpeg(filename = '"${path}"graphes/readsLengthRepartition/"${N}".readsLengthRepartition.jpeg')" >> "${path}graphes/readsLengthRepartition/${N}.tempoR.R"
+echo "barplot(readsLength\$V2,names.arg = readsLength\$V1, xlab = 'Read lengths', ylab = 'Number of reads')" >> "${path}graphes/readsLengthRepartition/${N}.tempoR.R"
+echo "dev.off()" >> "${path}graphes/readsLengthRepartition/${N}.tempoR.R"
+R CMD BATCH "${path}graphes/readsLengthRepartition/${N}.tempoR.R"
+rm -f "${path}graphes/readsLengthRepartition/${N}.tempoR.R"
