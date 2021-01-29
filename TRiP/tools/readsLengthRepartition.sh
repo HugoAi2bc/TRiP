@@ -35,8 +35,8 @@ fi
 #Read length repartition
 
 echo "Analyse read length " ${l};
-bamToBed -i ${D}${N}.${l}.uniq.sort.bam > ${O}kmerRepartition/${N}.${l}.bed ;
-awk 'BEGIN{OFS="\t"}{print $1,$2,$3,$6}' ${O}kmerRepartition/${N}.${l}.bed | uniq -c | tr -s ' ' | awk '{print $2"\t"$3"\t"$4"\t"$1"\t"$2":"$3"-"$4"("$5")\t"$5}' | sort -k 5 > ${O}bedCount/${N}.${l}.count.bed;
+bamToBed -i ${D}${N}.${l}.uniq.sort.bam > ${O}readsLengthRepartition/${N}.${l}.bed ;
+awk 'BEGIN{OFS="\t"}{print $1,$2,$3,$6}' ${O}readsLengthRepartition/${N}.${l}.bed | uniq -c | tr -s ' ' | awk '{print $2"\t"$3"\t"$4"\t"$1"\t"$2":"$3"-"$4"("$5")\t"$5}' | sort -k 5 > ${O}bedCount/${N}.${l}.count.bed;
 bedtools getfasta -fi ${F} -bed ${O}bedCount/${N}.${l}.count.bed -s -tab -fullHeader -fo ${O}bedCount/${N}.${l}.fa;
 uniq ${O}bedCount/${N}.${l}.fa > ${O}bedCount/${N}.${l}.uniq.fa;
 join -1 5 -2 1 -o 1.1,1.2,1.3,1.4,2.2,1.6 ${O}bedCount/${N}.${l}.count.bed ${O}bedCount/${N}.${l}.uniq.fa | tr " " "\t" > ${O}sequenceBedCount/${N}.${l}.count.sequence.bed;
