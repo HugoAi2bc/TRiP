@@ -29,6 +29,7 @@ while getopts ":S:T:N:l:O:" option; do
             ;;
     esac
 done
+
 #testing if arguments are non-empty
 shift $((OPTIND-1))
 if [ -z "${S}" ] || [ -z "${l}" ] || [ -z "${N}" ] ; then
