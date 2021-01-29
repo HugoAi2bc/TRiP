@@ -11,9 +11,8 @@ RUN apt-get update \
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
     && bash Miniconda3-latest-Linux-x86_64.sh -b \
     && rm Miniconda3-latest-Linux-x86_64.sh
-RUN echo 'gfdddshgsfdfmlssdssdsf'
-RUN git clone https://github.com/HugoAi2bc/TRiP.git \
-    && cat /TRiP/TRiP/all_TRiP.yml
+
+RUN git clone https://github.com/HugoAi2bc/TRiP.git
 
 ENV BASH_ENV ~/.bashrc
 
