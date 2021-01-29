@@ -31,7 +31,7 @@ from optparse import OptionParser
 SAMPLES, = glob_wildcards("/data/fastq/{sample}.fastq.gz")
 BOWTIE2 = ["1","2","3","4","rev.1","rev.2"]
 HISAT2 = ["1","2","3","4","5","6","7","8"]
-KMER = list(map(str,range(int(config['kmer_min']),int(config['kmer_max'])+1)))
+LENGTHS = list(map(str,range(int(config['readsLength_min']),int(config['readsLength_max'])+1)))
 
 # Change cutadapt options, depending on data given
 if config['already_trimmed'] == "no":
@@ -58,10 +58,10 @@ else:
 # if config['RNAseq'] == "yes":
 #     frag_length_S = frag_length_L = ""
 # else:
-#     frag_length_S = "." + KMER[0]
-#     frag_length_L = "." + KMER[0] + "-" + KMER[len(KMER)-1]
-frag_length_S = "." + KMER[0]
-frag_length_L = "." + KMER[0] + "-" + KMER[len(KMER)-1]
+#     frag_length_S = "." + LENGTHS[0]
+#     frag_length_L = "." + LENGTHS[0] + "-" + LENGTHS[len(LENGTHS)-1]
+frag_length_S = "." + LENGTHS[0]
+frag_length_L = "." + LENGTHS[0] + "-" + LENGTHS[len(LENGTHS)-1]
 
 
 # snakemake 5.30.2
@@ -71,9 +71,9 @@ rule all:
         expand("/data/RESULTS/fastqc/{sample}_fastqc.html", sample=SAMPLES),
 
         #call for graph generation
-        expand("/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg", sample=SAMPLES),
-        expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg", sample=SAMPLES, taille=KMER),
-        expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg", sample=SAMPLES, taille=KMER),
+        expand("/data/RESULTS/qualitativeAnalysis/graphes/readsLengthRepartition/{sample}.readsLengthRepartition.jpeg", sample=SAMPLES),
+        expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg", sample=SAMPLES, taille=LENGTHS),
+        expand("/data/RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg", sample=SAMPLES, taille=LENGTHS),
 
         #call of htseqcount_transcript_utr or htseqcount_transcript rule (depends on UTR="True"|"False" in config file)
         expand("/data/RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
@@ -119,12 +119,12 @@ onsuccess:
             logs_files.close()
         data_report.write("\n\n\n")
 
-        shell("rm -f /data/RESULTS/CRAM_transcriptome/" + sample + frag_length_L + ".uniq.sam ;")
+        shell("rm -f /data/RESULTS/BAM/" + sample + frag_length_L + ".uniq.sam ;")
 
     data_report.close()
 
     # Removes useless directory
-    shell("rm -f -r /data/RESULTS/qualitativeAnalysis/bedCount/ /data/RESULTS/qualitativeAnalysis/kmerRepartition/*.bed /data/RESULTS/qualitativeAnalysis/sequenceBedCount/ ;")
+    shell("rm -f -r /data/RESULTS/qualitativeAnalysis/bedCount/ /data/RESULTS/qualitativeAnalysis/readsLengthRepartition/*.bed /data/RESULTS/qualitativeAnalysis/sequenceBedCount/ ;")
     shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/database/*t2 /data/database/*.fai /data/*tempoR.Rout /data/RESULTS/qualitativeAnalysis/*tempoR.Rout ;")
     # shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/logsTmp/ ;")
 
@@ -200,7 +200,7 @@ rule adapt_trimming:
         sample_names="{sample}"
     shell:
         # cutadapt 3.1
-        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 " + trim + "--max-n=1 -m " + config['kmer_min'] + " -M " + config['kmer_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
+        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 " + trim + "--max-n=1 -m " + config['readsLength_min'] + " -M " + config['readsLength_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
 
 # Mapping of non-coding RNA
 rule bowtie2_run_outRNA:
@@ -226,8 +226,8 @@ rule run_transcriptome:
         fastq="/data/RESULTS/no-outRNA/{sample}" + frag_length_L + ".no-outRNA.fastq.gz"
     output:
         fastq="/data/RESULTS/no-outRNA/{sample}" + frag_length_L + ".no-outRNA.notAlign.fastq.gz",
-        sam_hisat2="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".hisat2.sam",
-        sam_bowtie2="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bowtie2.sam"
+        sam_hisat2="/data/RESULTS/BAM/{sample}" + frag_length_L + ".hisat2.sam",
+        sam_bowtie2="/data/RESULTS/BAM/{sample}" + frag_length_L + ".bowtie2.sam"
     log:
         hisat2_out="/data/logsTmp/{sample}_run_transcriptome_hisat2.log",
         bowtie2_out="/data/logsTmp/{sample}_run_transcriptome_bowtie2.log"
@@ -239,18 +239,16 @@ rule run_transcriptome:
         "hisat2 -x /data/database/transcriptome_hisat2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output.fastq} -S {output.sam_hisat2} 2>> {log.hisat2_out} ;"
         "bowtie2 -x /data/database/transcriptome_bowtie2 --threads " + config['threads'] + " " + mapped_bowtie + " -U {output.fastq} -S {output.sam_bowtie2} 2>> {log.bowtie2_out};"
 
-# Creates cram, bam and sam files
+# Creates bam and sam files
 rule transcriptome_samtools:
     input:
-        sam_hisat2="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".hisat2.sam",
-        sam_bowtie2="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bowtie2.sam",
+        sam_hisat2="/data/RESULTS/BAM/{sample}" + frag_length_L + ".hisat2.sam",
+        sam_bowtie2="/data/RESULTS/BAM/{sample}" + frag_length_L + ".bowtie2.sam",
         fasta="/data/database/" + config['fasta_transcriptome']
     output:
-        samuniq="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
-        cram="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".cram",
-        crai="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".cram.crai",
-        bam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam",
-        bai="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam.bai"
+        samuniq="/data/RESULTS/BAM/{sample}" + frag_length_L + ".uniq.sam",
+        bam="/data/RESULTS/BAM/{sample}" + frag_length_L + ".bam",
+        bai="/data/RESULTS/BAM/{sample}" + frag_length_L + ".bam.bai"
     log:
         egrep1="/data/logs/transcriptome_samtools/{sample}.egrep1.log",
         grep="/data/logs/transcriptome_samtools/{sample}.grep.log",
@@ -264,7 +262,7 @@ rule transcriptome_samtools:
         index2="/data/logs/transcriptome_samtools/{sample}.samtools_index2.log",
         rm="/data/logs/transcriptome_samtools/{sample}.rm.log"
     params:
-        sam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".sam"
+        sam="/data/RESULTS/BAM/{sample}" + frag_length_L + ".sam"
     shell:
         # samtools 1.11
         "set +o pipefail ;"
@@ -272,16 +270,14 @@ rule transcriptome_samtools:
         "grep -v '@' {input.sam_bowtie2} 2> {log.grep} | egrep -i 'XM:i:2|XM:i:0|XM:i:1' 1>> {params.sam} 2> {log.egrep2} ;"
         "samtools view -@ " + config['threads'] + " -F " + mapped_samtools + "-h {params.sam} 1> {output.samuniq}  2> {log.view1} ;"
         "samtools view -@ " + config['threads'] + " -b {output.samuniq}  2> {log.view2} | samtools sort -@ " + config['threads'] + " -o {output.bam}  2> {log.sort2} ;"
-        "samtools view -@ " + config['threads'] + " -T {input.fasta} -C {output.samuniq}  2> {log.view3} | samtools sort -@ " + config['threads'] + " -o {output.cram}  2> {log.sort3} ;"
         "samtools index {output.bam} 2> {log.index1} ;"
-        "samtools index {output.cram} 2> {log.index2} ;"
         "rm -f {params.sam} {input.sam_hisat2} {input.sam_bowtie2} 2> {log.rm};"
 
 # Counts reads on each transcript
 rule htseqcount_transcript:
     input:
-        bam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam",
-        bai="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam.bai",
+        bam="/data/RESULTS/BAM/{sample}" + frag_length_L + ".bam",
+        bai="/data/RESULTS/BAM/{sample}" + frag_length_L + ".bam.bai",
         gff="/data/database/" + config['gff_transcriptome'],
         CDS="/data/database/" + config['CDSlength']
     output:
@@ -293,13 +289,12 @@ rule htseqcount_transcript:
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
         "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
-        "rm -f {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
 rule htseqcount_transcript_utr:
     input:
-        bam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam",
-        bai="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".bam.bai",
+        bam="/data/RESULTS/BAM/{sample}" + frag_length_L + ".bam",
+        bai="/data/RESULTS/BAM/{sample}" + frag_length_L + ".bam.bai",
         gff="/data/database/" + config['gff_transcriptome'],
         CDS="/data/database/" + config['CDSlength'],
         five_prime="/data/database/" + config['5primelength'],
@@ -346,7 +341,6 @@ rule htseqcount_transcript_utr:
         "rm -f /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
         "rm -f /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
         "rm -f /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
-        "rm -f {input.bam} {input.bai};"
 
         "echo 'RPKM moyen' 1>> {log.rpkm_out} 2> {log.rpkm} ;"
         "echo 'CDS : '$RPKMmoyenCDS 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
@@ -357,7 +351,7 @@ rule htseqcount_transcript_utr:
 # Divisions of SAM file according to read length and turns it into BAM
 rule quality_controls_bamDivision:
     input:
-        sam="/data/RESULTS/CRAM_transcriptome/{sample}" + frag_length_L + ".uniq.sam",
+        sam="/data/RESULTS/BAM/{sample}" + frag_length_L + ".uniq.sam",
         gff="/data/database/" + config['gff_transcriptome']
     output:
         bam="/data/RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
@@ -380,32 +374,32 @@ rule quality_controls_bedcount:
         fasta="/data/database/" + config['fasta_transcriptome']
     output:
         sequenceBedCount="/data/RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}.{taille}.count.sequence.bed",
-        kmerRepartitionBed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.{taille}.bed",
+        readsLengthRepartitionBed="/data/RESULTS/qualitativeAnalysis/readsLengthRepartition/{sample}.{taille}.bed",
         bed="/data/RESULTS/qualitativeAnalysis/bedCount/{sample}.{taille}.count.bed",
     params:
         sample_names="{sample}",
         read_length="{taille}"
     log:
-        "/data/logs/quality_controls_bedcount/{sample}.{taille}.kmerRepartition.log"
+        "/data/logs/quality_controls_bedcount/{sample}.{taille}.readsLengthRepartition.log"
     shell:
         # bedtools 2.29.2
-        "bash /TRiP/TRiP/tools/kmerRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
+        "bash /TRiP/TRiP/tools/readsLengthRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
-# Outputs the number of reads on each kmer
-rule quality_controls_kmerRepartition:
+# Outputs the number of reads on each reads length
+rule quality_controls_readsLengthRepartition:
     input:
-        expand(rules.quality_controls_bedcount.output.kmerRepartitionBed, sample=SAMPLES, taille=KMER)
+        expand(rules.quality_controls_bedcount.output.readsLengthRepartitionBed, sample=SAMPLES, taille=LENGTHS)
     output:
-        "/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.kmerRepartition.txt"
+        "/data/RESULTS/qualitativeAnalysis/readsLengthRepartition/{sample}.readsLengthRepartition.txt"
     params:
-        path="/data/RESULTS/qualitativeAnalysis/kmerRepartition/",
+        path="/data/RESULTS/qualitativeAnalysis/readsLengthRepartition/",
         sample_names="{sample}"
     log:
-        wc="/data/logs/quality_controls_kmerRepartition/{sample}.wc.log",
-        sed1="/data/logs/quality_controls_kmerRepartition/{sample}.sed1.log",
-        awk="/data/logs/quality_controls_kmerRepartition/{sample}.awk.log",
-        sed2="/data/logs/quality_controls_kmerRepartition/{sample}.sed2.log",
-        head="/data/logs/quality_controls_kmerRepartition/{sample}.head.log"
+        wc="/data/logs/quality_controls_readsLengthRepartition/{sample}.wc.log",
+        sed1="/data/logs/quality_controls_readsLengthRepartition/{sample}.sed1.log",
+        awk="/data/logs/quality_controls_readsLengthRepartition/{sample}.awk.log",
+        sed2="/data/logs/quality_controls_readsLengthRepartition/{sample}.sed2.log",
+        head="/data/logs/quality_controls_readsLengthRepartition/{sample}.head.log"
     shell:
         "set +o pipefail ;"
         "wc -l {params.path}{params.sample_names}* 2> {log.wc} | sed 's/\./ /g' 2> {log.sed1} | awk -F ' ' '{{print $(NF-1),$1}}' 2> {log.awk} | sed 's/ /\t/g' 2> {log.sed2} | head -n -1 2> {log.head}  > {output} ;"
@@ -413,7 +407,7 @@ rule quality_controls_kmerRepartition:
 # Looks how many reads start on each base to find if there is a periodicity signal
 rule quality_controls_periodicity:
     input:
-        bed="/data/RESULTS/qualitativeAnalysis/kmerRepartition/{sample}.{taille}.bed",
+        bed="/data/RESULTS/qualitativeAnalysis/readsLengthRepartition/{sample}.{taille}.bed",
         gff="/data/database/" + config['gff_transcriptome']
     output:
         start="/data/RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt",
@@ -431,9 +425,9 @@ rule quality_controls_periodicity:
 
 rule graphs_length:
     input:
-        length=rules.quality_controls_kmerRepartition.output
+        length=rules.quality_controls_readsLengthRepartition.output
     output:
-        length="/data/RESULTS/qualitativeAnalysis/graphes/kmerRepartition/{sample}.kmerRepartition.jpeg"
+        length="/data/RESULTS/qualitativeAnalysis/graphes/readsLengthRepartition/{sample}.readsLengthRepartition.jpeg"
     params:
         sample_name="{sample}"
     log:
