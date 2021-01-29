@@ -25,9 +25,9 @@ already_trimmed: ""
 # Adapter sequence
 adapt_sequence: ""
 # Minimum read length kept for ribosome profiling
-kmer_min: "25"
+readsLength_min: "25"
 # Maximum read length kept for ribosome profiling
-kmer_max: "35"
+readsLength_max: "35"
 
 # Name of the reference condition
 reference_condition: ""
