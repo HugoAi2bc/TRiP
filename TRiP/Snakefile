@@ -41,7 +41,7 @@ else:
 
 # Change cutadapt options to keep or not multi-mapped reads
 if config['uniquely_mapped'] == "yes":
-    mapped_samtools = "3332 -q 1 "
+    mapped_samtools = "3348 -q 1 "
     mapped_htseq = "score "
 else:
     mapped_samtools = "1028 "
@@ -214,7 +214,7 @@ rule bowtie2_run_outRNA:
     shell:
         # bowtie2 2.4.2
         "bowtie2 -x /data/database/outRNA_bowtie2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output} > /dev/null 2>> {log.bt2} ;"
-        "rm {input.fastq} ;"
+        "rm -f {input.fastq} ;"
 
 # Mapping of all RNA by bowtie2 and hisat2
 rule run_transcriptome:
@@ -273,7 +273,7 @@ rule transcriptome_samtools:
         "samtools view -@ " + config['threads'] + " -T {input.fasta} -C {output.samuniq}  2> {log.view3} | samtools sort -@ " + config['threads'] + " -o {output.cram}  2> {log.sort3} ;"
         "samtools index {output.bam} 2> {log.index1} ;"
         "samtools index {output.cram} 2> {log.index2} ;"
-        "rm {params.sam} {input.sam_hisat2} {input.sam_bowtie2} 2> {log.rm};"
+        "rm -f {params.sam} {input.sam_hisat2} {input.sam_bowtie2} 2> {log.rm};"
 
 # Counts reads on each transcript
 rule htseqcount_transcript:
@@ -291,7 +291,7 @@ rule htseqcount_transcript:
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
         "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
-        "rm {input.bam} {input.bai};"
+        "rm -f {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
 rule htseqcount_transcript_utr:
@@ -331,20 +331,20 @@ rule htseqcount_transcript_utr:
         "echo Genes\\\t{wildcards.sample} > {output.counts_CDS} ;"
         "cat /data/RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
 
-        "htseq-count -f bam -t 'three_prime_UTR' -i 'ID' " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'three_prime_UTR' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
         "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_threeprime} ;"
         "cat /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt >> {output.counts_threeprime} ;"
 
-        "htseq-count -f bam -t 'five_prime_UTR' -i 'ID' " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'five_prime_UTR' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
         "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_fiveprime} ;"
         "cat /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt >> {output.counts_fiveprime} ;"
 
-        "rm /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
-        "rm /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
-        "rm /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
-        "rm {input.bam} {input.bai};"
+        "rm -f /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "rm -f /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
+        "rm -f /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
+        "rm -f {input.bam} {input.bai};"
 
         "echo 'RPKM moyen' 1>> {log.rpkm_out} 2> {log.rpkm} ;"
         "echo 'CDS : '$RPKMmoyenCDS 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
@@ -484,7 +484,7 @@ rule count_matrix_creation:
         for sample in SAMPLES:
             shell("join --nocheck-order -t $'\t' -j 1 /data/RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
             shell("cat {params.tmp_file} > {output} ;")
-        shell("rm /data/RESULTS/DESeq2/gene_list.txt {params.tmp_file} ;")
+        shell("rm -f /data/RESULTS/DESeq2/gene_list.txt {params.tmp_file} ;")
 
 rule DESeq2_analysis:
     input:
