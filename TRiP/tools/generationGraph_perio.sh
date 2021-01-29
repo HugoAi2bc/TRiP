@@ -28,7 +28,7 @@ fi
 
 path="/data/RESULTS/qualitativeAnalysis/"
 
-	########### Periodicity ###########
+########### Periodicity ###########
 for pos in start stop
 do
 	if [ ${pos} = "start" ]; then
