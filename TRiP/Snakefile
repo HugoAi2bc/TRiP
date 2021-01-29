@@ -24,11 +24,11 @@ else:
 if config['uniquely_mapped'] == "yes":
     mapped_samtools = "3348 -q 1 "
     mapped_htseq = "score "
-    mapped_bowtie = "-a "
+    mapped_bowtie = ""
 else:
     mapped_samtools = "1028 "
     mapped_htseq = "ignore "
-    mapped_bowtie = ""
+    mapped_bowtie = "-a "
 
 # Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
@@ -210,7 +210,7 @@ rule run_transcriptome:
         # bowtie2 2.4.2
         # hisat2 2.2.1
         "hisat2 -x /data/database/transcriptome_hisat2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output.fastq} -S {output.sam_hisat2} 2>> {log.hisat2_out} ;"
-        "bowtie2 -x /data/database/transcriptome_bowtie2 --threads " + config['threads'] + " " + mapped_bowtie + " -U {output.fastq} -S {output.sam_bowtie2} 2>> {log.bowtie2_out};"
+        "bowtie2 -x /data/database/transcriptome_bowtie2 --threads " + config['threads'] + " " + mapped_bowtie + "-U {output.fastq} -S {output.sam_bowtie2} 2>> {log.bowtie2_out};"
 
 # Creates bam and sam files
 rule transcriptome_samtools:
