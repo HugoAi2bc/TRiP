@@ -42,7 +42,7 @@ Var_log2FC <- as.numeric(gsub(" ", "", params[which(params=="logFC")+1], fixed =
 Var_padj <- as.numeric(gsub(" ", "", params[which(params=="p-val")+1], fixed = TRUE))
 ```
 \
-##### *`r paste0("Reference condition : ", refCond)`*
+*`r paste0("Reference condition : ", refCond)`*
 \
 
 ```{r data , echo=FALSE}
