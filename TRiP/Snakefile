@@ -1,4 +1,4 @@
-configfile: "" + local_path + "config.yaml"
+configfile: "/data/config.yaml"
 # Docker 19.03.12
 # Conda 4.9.2
 
