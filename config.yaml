@@ -3,9 +3,9 @@ project_name: ""
 
 # Names of the files in the "database/" directory :
 # Name of the genome or transcriptome fasta file to align on
-fasta_transcriptome: ""
+fasta: ""
 # Name of the gff file with genome or transcriptome annotations
-gff_transcriptome: ""
+gff: ""
 # Fasta file with not interesting sequences
 fasta_outRNA: ""
 
@@ -18,8 +18,8 @@ CDSlength: ""
 # File with 3' UTR lengths
 3primelength: ""
 
-# Keeps only uniquely mapped reads : "yes" or "no"
-uniquely_mapped: "yes"
+# Sets number of sequences a reads maps on during alignment : "1" to keep only uniquely mapped reads and a higher number for multi-mapping
+times_mapped: "1"
 # Are the sequencing adapters already removed in fastq files ? "yes" or "no"
 already_trimmed: ""
 # Adapter sequence
