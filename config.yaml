@@ -18,8 +18,10 @@ CDSlength: ""
 # File with 3' UTR lengths
 3primelength: ""
 
-# Sets number of sequences a reads maps on during alignment : "1" to keep only uniquely mapped reads and a higher number for multi-mapping
-times_mapped: "1"
+# Sets number of genome sequences for multi-mapped reads during alignment :
+# "0" to take only uniquely mapped reads
+# "1" to keep only one multi-mapped reads and a higher number for more sequences corresponding to the same read
+times_mapped: "0"
 # Are the sequencing adapters already removed in fastq files ? "yes" or "no"
 already_trimmed: ""
 # Adapter sequence
