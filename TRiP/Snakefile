@@ -1,4 +1,4 @@
-configfile: "/data/config.yaml"
+configfile: "" + local_path + "config.yaml"
 # Docker 19.03.12
 # Conda 4.9.2
 
@@ -26,14 +26,16 @@ else:
     trim = ""
 
 # Change cutadapt options to keep or not multi-mapped reads
-if config['uniquely_mapped'] == "yes":
+if config['times_mapped'] == "1":
     mapped_samtools = "3348 -q 1 "
-    mapped_htseq = "score "
-    mapped_bowtie = ""
+    mapped_htseq_mode = "score "
+    mapped_htseq_mapq = "10 "
+    mapped_aligner = ""
 else:
     mapped_samtools = "1028 "
-    mapped_htseq = "ignore "
-    mapped_bowtie = "-a "
+    mapped_htseq_mode = "ignore "
+    mapped_htseq_mapq = "0 "
+    mapped_aligner = "-k " + config['times_mapped'] + " "
 
 # Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
@@ -66,7 +68,7 @@ rule all:
 # When the jobs are all done
 onsuccess:
     # List of interesting logs to make the report
-    logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_transcriptome_hisat2","run_transcriptome_bowtie2","rpkmMoyen"]
+    logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_mapping_hisat2","run_mapping_bowtie2","rpkmMoyen"]
     if config['UTR'] == "no":
         logs_names = logs_names[:-1]
 
@@ -100,13 +102,13 @@ onsuccess:
             logs_files.close()
         data_report.write("\n\n\n")
 
-        shell("rm -f /data/RESULTS/CRAM/" + sample + frag_length_L + ".uniq.sam ;")
+        shell("rm -f " + local_path + "RESULTS/CRAM/" + sample + frag_length_L + ".uniq.sam ;")
 
     data_report.close()
 
     # Removes useless directory
-    shell("rm -f -r /data/RESULTS/qualitativeAnalysis/bedCount/ /data/RESULTS/qualitativeAnalysis/readsLengthRepartition/*.bed /data/RESULTS/qualitativeAnalysis/sequenceBedCount/ /data/RESULTS/qualitativeAnalysis/*tempoR.Rout ;")
-    shell("rm -f -r /data/RESULTS/no-outRNA/ /data/RESULTS/cutadapt/ /data/database/*t2 /data/database/*.fai /data/*tempoR.Rout ;")
+    shell("rm -f -r " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ " + local_path + "RESULTS/qualitativeAnalysis/readsLengthRepartition/*.bed " + local_path + "RESULTS/qualitativeAnalysis/sequenceBedCount/ " + local_path + "RESULTS/qualitativeAnalysis/*tempoR.Rout ;")
+    shell("rm -f -r " + local_path + "RESULTS/no-outRNA/ " + local_path + "RESULTS/cutadapt/ " + local_path + "database/*t2 " + local_path + "database/*.fai " + local_path + "*tempoR.Rout ;")
 
 # Builds the index of bowtie2 mapping for non-coding RNA
 rule bowtie2_build_outRNA:
@@ -123,29 +125,29 @@ rule bowtie2_build_outRNA:
         "bowtie2-build --threads " + config['threads'] + " {input} {params.outNames} &> {log} ;"
 
 # Builds the index of bowtie2 mapping for all RNA
-rule bowtie2_build_transcriptome:
+rule bowtie2_build:
     input:
-        local_path + "database/" + config['fasta_transcriptome']
+        local_path + "database/" + config['fasta']
     output:
-        expand(local_path + "database/transcriptome_bowtie2.{extb}.bt2",extb=BOWTIE2)
+        expand(local_path + "database/index_bowtie2.{extb}.bt2",extb=BOWTIE2)
     params:
-        outNames = local_path + "database/transcriptome_bowtie2"
+        outNames = local_path + "database/index_bowtie2"
     log:
-        local_path + "logs/bowtie2_build_transcriptome/bowtie2_build_transcriptome.log"
+        local_path + "logs/bowtie2_build/bowtie2_build.log"
     shell:
         # bowtie2 2.4.2
         "bowtie2-build --threads " + config['threads'] + " {input} {params.outNames} &> {log} ;"
 
 # Builds the index of hisat2 mapping for all RNA
-rule hisat2_build_transcriptome:
+rule hisat2_build:
     input:
-        local_path + "database/" + config['fasta_transcriptome']
+        local_path + "database/" + config['fasta']
     output:
-        expand(local_path + "database/transcriptome_hisat2.{exth}.ht2",exth=HISAT2)
+        expand(local_path + "database/index_hisat2.{exth}.ht2",exth=HISAT2)
     params:
-        outNames = local_path + "database/transcriptome_hisat2"
+        outNames = local_path + "database/index_hisat2"
     log:
-        local_path + "logs/hisat2_build_transcriptome/hisat2_build_transcriptome.log"
+        local_path + "logs/hisat2_build/hisat2_build.log"
     shell:
         # hisat2 2.2.1
         "hisat2-build --threads " + config['threads'] + " {input} {params.outNames} &> {log} ;"
@@ -193,36 +195,36 @@ rule bowtie2_run_outRNA:
         sample_names="{sample}"
     shell:
         # bowtie2 2.4.2
-        "bowtie2 -x /data/database/outRNA_bowtie2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output} > /dev/null 2>> {log.bt2} ;"
+        "bowtie2 -x " + local_path + "database/outRNA_bowtie2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output} > /dev/null 2>> {log.bt2} ;"
         "rm -f {input.fastq} ;"
 
 # Mapping of all RNA by bowtie2 and hisat2
-rule run_transcriptome:
+rule run_mapping:
     input:
-        expand(local_path + "database/transcriptome_hisat2.{exth}.ht2",exth=HISAT2),
-        expand(local_path + "database/transcriptome_bowtie2.{extb}.bt2",extb=BOWTIE2),
+        expand(local_path + "database/index_hisat2.{exth}.ht2",exth=HISAT2),
+        expand(local_path + "database/index_bowtie2.{extb}.bt2",extb=BOWTIE2),
         fastq = local_path + "RESULTS/no-outRNA/{sample}" + frag_length_L + ".no-outRNA.fastq.gz"
     output:
         fastq = local_path + "RESULTS/no-outRNA/{sample}" + frag_length_L + ".no-outRNA.notAlign.fastq.gz",
         sam_hisat2 = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".hisat2.sam",
         sam_bowtie2 = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bowtie2.sam"
     log:
-        hisat2_out = local_path + "logsTmp/{sample}_run_transcriptome_hisat2.log",
-        bowtie2_out = local_path + "logsTmp/{sample}_run_transcriptome_bowtie2.log"
+        hisat2_out = local_path + "logsTmp/{sample}_run_mapping_hisat2.log",
+        bowtie2_out = local_path + "logsTmp/{sample}_run_mapping_bowtie2.log"
     params:
         sample_names="{sample}"
     shell:
         # bowtie2 2.4.2
         # hisat2 2.2.1
-        "hisat2 -x /data/database/transcriptome_hisat2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output.fastq} -S {output.sam_hisat2} 2>> {log.hisat2_out} ;"
-        "bowtie2 -x /data/database/transcriptome_bowtie2 --threads " + config['threads'] + " " + mapped_bowtie + "-U {output.fastq} -S {output.sam_bowtie2} 2>> {log.bowtie2_out};"
+        "hisat2 -x " + local_path + "database/index_hisat2 --threads " + config['threads'] + " " + mapped_aligner + "-U {input.fastq} --un-gz {output.fastq} -S {output.sam_hisat2} 2>> {log.hisat2_out} ;"
+        "bowtie2 -x " + local_path + "database/index_bowtie2 --threads " + config['threads'] + " " + mapped_aligner + "-U {output.fastq} -S {output.sam_bowtie2} 2>> {log.bowtie2_out};"
 
 # Creates bam and sam files
-rule transcriptome_samtools:
+rule samtools_filter:
     input:
         sam_hisat2 = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".hisat2.sam",
         sam_bowtie2 = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bowtie2.sam",
-        fasta = local_path + "database/" + config['fasta_transcriptome']
+        fasta = local_path + "database/" + config['fasta']
     output:
         samuniq = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".uniq.sam",
         cram = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".cram",
@@ -230,17 +232,17 @@ rule transcriptome_samtools:
         bam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam",
         bai = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam.bai"
     log:
-        egrep1 = local_path + "logs/transcriptome_samtools/{sample}.egrep1.log",
-        grep = local_path + "logs/transcriptome_samtools/{sample}.grep.log",
-        egrep2 = local_path + "logs/transcriptome_samtools/{sample}.egrep2.log",
-        view1 = local_path + "logs/transcriptome_samtools/{sample}.samtools_view1.log",
-        view2 = local_path + "logs/transcriptome_samtools/{sample}.samtools_view2.log",
-        sort2 = local_path + "logs/transcriptome_samtools/{sample}.samtools_sort2.log",
-        view3 = local_path + "logs/transcriptome_samtools/{sample}.samtools_view3.log",
-        sort3 = local_path + "logs/transcriptome_samtools/{sample}.samtools_sort3.log",
-        index1 = local_path + "logs/transcriptome_samtools/{sample}.samtools_index1.log",
-        index2 = local_path + "logs/transcriptome_samtools/{sample}.samtools_index2.log",
-        rm = local_path + "logs/transcriptome_samtools/{sample}.rm.log"
+        egrep1 = local_path + "logs/samtools_filter/{sample}.egrep1.log",
+        grep = local_path + "logs/samtools_filter/{sample}.grep.log",
+        egrep2 = local_path + "logs/samtools_filter/{sample}.egrep2.log",
+        view1 = local_path + "logs/samtools_filter/{sample}.samtools_view1.log",
+        view2 = local_path + "logs/samtools_filter/{sample}.samtools_view2.log",
+        sort2 = local_path + "logs/samtools_filter/{sample}.samtools_sort2.log",
+        view3 = local_path + "logs/samtools_filter/{sample}.samtools_view3.log",
+        sort3 = local_path + "logs/samtools_filter/{sample}.samtools_sort3.log",
+        index1 = local_path + "logs/samtools_filter/{sample}.samtools_index1.log",
+        index2 = local_path + "logs/samtools_filter/{sample}.samtools_index2.log",
+        rm = local_path + "logs/samtools_filter/{sample}.rm.log"
     params:
         sam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".sam"
     shell:
@@ -260,7 +262,7 @@ rule htseqcount_transcript:
     input:
         bam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam",
         bai = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam.bai",
-        gff = local_path + "database/" + config['gff_transcriptome'],
+        gff = local_path + "database/" + config['gff'],
         CDS = local_path + "database/" + config['CDSlength']
     output:
         local_path + "RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA.htseqcount.txt"
@@ -270,7 +272,7 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
+        "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
         # "rm -f {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
@@ -278,7 +280,7 @@ rule htseqcount_transcript_utr:
     input:
         bam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam",
         bai = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam.bai",
-        gff = local_path + "database/" + config['gff_transcriptome'],
+        gff = local_path + "database/" + config['gff'],
         CDS = local_path + "database/" + config['CDSlength'],
         five_prime = local_path + "database/" + config['5primelength'],
         three_prime = local_path + "database/" + config['3primelength']
@@ -306,24 +308,24 @@ rule htseqcount_transcript_utr:
         "set +o pipefail ;"
         "totalReads=`samtools view -c {input.bam} 2> {log.view}` ;"
 
-        "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
-        "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} /data/RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
+        "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_CDS} ;"
-        "cat /data/RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
+        "cat " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
 
-        "htseq-count -f bam -t 'three_prime_UTR' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
-        "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
+        "htseq-count -f bam -t 'three_prime_UTR' -i 'ID' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
+        "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_threeprime} ;"
-        "cat /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt >> {output.counts_threeprime} ;"
+        "cat " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt >> {output.counts_threeprime} ;"
 
-        "htseq-count -f bam -t 'five_prime_UTR' -i 'ID' --secondary-alignments " + mapped_htseq + "--supplementary-alignments " + mapped_htseq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
-        "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
+        "htseq-count -f bam -t 'five_prime_UTR' -i 'ID' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
+        "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_fiveprime} ;"
-        "cat /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt >> {output.counts_fiveprime} ;"
+        "cat " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt >> {output.counts_fiveprime} ;"
 
-        "rm -f /data/RESULTS/tmpCDS.{wildcards.sample}.txt ;"
-        "rm -f /data/RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
-        "rm -f /data/RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
+        "rm -f " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "rm -f " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
+        "rm -f " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
         # "rm -f {input.bam} {input.bai};"
 
         "echo 'RPKM moyen' 1>> {log.rpkm_out} 2> {log.rpkm} ;"
@@ -336,7 +338,7 @@ rule htseqcount_transcript_utr:
 rule quality_controls_bamDivision:
     input:
         sam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".uniq.sam",
-        gff = local_path + "database/" + config['gff_transcriptome']
+        gff = local_path + "database/" + config['gff']
     output:
         bam = local_path + "RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
         bai = local_path + "RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai"
@@ -348,14 +350,14 @@ rule quality_controls_bamDivision:
     shell:
         # samtools 1.11
         # gawk 5.1.0
-        "bash " + trip_tools + "BamDivision.sh -N {params.sample_names} -l {params.read_length} -S {input.sam} -T " + config['threads'] + " -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
+        "bash " + trip_tools + "BamDivision.sh -N {params.sample_names} -l {params.read_length} -S {input.sam} -T " + config['threads'] + " -O " + local_path + "RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Creates bed files from fasta files
 rule quality_controls_bedcount:
     input:
         bam = local_path + "RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
         bai = local_path + "RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai",
-        fasta = local_path + "database/" + config['fasta_transcriptome']
+        fasta = local_path + "database/" + config['fasta']
     output:
         sequenceBedCount = local_path + "RESULTS/qualitativeAnalysis/sequenceBedCount/{sample}.{taille}.count.sequence.bed",
         readsLengthRepartitionBed = local_path + "RESULTS/qualitativeAnalysis/readsLengthRepartition/{sample}.{taille}.bed",
@@ -367,7 +369,7 @@ rule quality_controls_bedcount:
         local_path + "logs/quality_controls_bedcount/{sample}.{taille}.readsLengthRepartition.log"
     shell:
         # bedtools 2.29.2
-        "bash " + trip_tools + "readsLengthRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D /data/RESULTS/qualitativeAnalysis/bamDivision/ -O /data/RESULTS/qualitativeAnalysis/ 2> {log} ;"
+        "bash " + trip_tools + "readsLengthRepartition.sh -N {params.sample_names} -l {params.read_length} -F {input.fasta} -D " + local_path + "RESULTS/qualitativeAnalysis/bamDivision/ -O " + local_path + "RESULTS/qualitativeAnalysis/ 2> {log} ;"
 
 # Outputs the number of reads on each reads length
 rule quality_controls_readsLengthRepartition:
@@ -392,7 +394,7 @@ rule quality_controls_readsLengthRepartition:
 rule quality_controls_periodicity:
     input:
         bed = local_path + "RESULTS/qualitativeAnalysis/readsLengthRepartition/{sample}.{taille}.bed",
-        gff = local_path + "database/" + config['gff_transcriptome']
+        gff = local_path + "database/" + config['gff']
     output:
         start = local_path + "RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt",
         stop = local_path + "RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt"
@@ -404,8 +406,8 @@ rule quality_controls_periodicity:
         stop = local_path + "logs/quality_controls_periodicity/{sample}.{taille}.log"
     shell:
         # gawk 5.1.0
-        "bash " + trip_tools + "periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
-        "bash " + trip_tools + "periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D /data/RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O /data/RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
+        "bash " + trip_tools + "periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O " + local_path + "RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
+        "bash " + trip_tools + "periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O " + local_path + "RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
 
 rule graphs_length:
     input:
@@ -462,9 +464,9 @@ rule count_matrix_creation:
     run:
         shell("cat {input} > {output} ;")
         for sample in SAMPLES:
-            shell("join --nocheck-order -t $'\t' -j 1 /data/RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
+            shell("join --nocheck-order -t $'\t' -j 1 " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
             shell("cat {params.tmp_file} > {output} ;")
-        shell("rm -f /data/RESULTS/DESeq2/gene_list.txt {params.tmp_file} ;")
+        shell("rm -f " + local_path + "RESULTS/DESeq2/gene_list.txt {params.tmp_file} ;")
 
 rule DESeq2_analysis:
     input:
