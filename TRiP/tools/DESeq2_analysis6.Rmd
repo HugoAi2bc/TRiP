@@ -48,17 +48,6 @@ Var_padj <- as.numeric(gsub(" ", "", params[which(params=="p-val")+1], fixed = T
 ```{r data , echo=FALSE}
 pathway = "/data/RESULTS/DESeq2/count_matrix.txt"
 expData = read.table(pathway, header = T, row.names = 1)
-
-
-
-
-sum_vec = c()
-for(i in 1:dim(expData)[[1]]) {
-  sum = 0
-  sum = sum(expData[i,1:4])
-  sum_vec = c(sum_vec,sum)
-}
-expData = expData[sum_vec>=10,]
 ```
 
 
