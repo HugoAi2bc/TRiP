@@ -262,8 +262,7 @@ rule htseqcount_transcript:
     input:
         bam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam",
         bai = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam.bai",
-        gff = local_path + "database/" + config['gff'],
-        CDS = local_path + "database/" + config['CDSlength']
+        gff = local_path + "database/" + config['gff']
     output:
         local_path + "RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA.htseqcount.txt"
     log:
