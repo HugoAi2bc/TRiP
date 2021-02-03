@@ -31,6 +31,9 @@ readsLength_min: "25"
 # Maximum read length kept for ribosome profiling
 readsLength_max: "35"
 
+# Attribut to regroup reads during counting
+gff_attribut: "ID"
+
 # Name of the reference condition
 reference_condition: ""
 # Thresholds to adjust for differential expression analysis :
