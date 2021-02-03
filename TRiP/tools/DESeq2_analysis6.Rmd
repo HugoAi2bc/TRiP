@@ -333,7 +333,7 @@ plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
 ```{r Creation Tables finales, include = FALSE}
 Bruts_Norm <- cbind(expData_Sorted, normCountData )
 
-Table_Complete <- data.frame(cbind(row.names(Bruts_Norm) , Bruts_Norm, CT_Mean,Mut_Mean , resDESeq) )
+Table_Complete <- data.frame(cbind(row.names(Bruts_Norm) , Bruts_Norm, CT_Mean, Mut_Mean, resDESeq) )
 
 
 colnames(Table_Complete) =  c("genes" ,
@@ -358,7 +358,7 @@ repressedGenes <- repressedGenes[(order(repressedGenes[,"padj"])),]
 ```
 
 
-```{r, echo = FALSE}
+```{r Tables writing}
 write.table(Table_Complete,
             file = paste0("/data/RESULTS/DESeq2/complete.txt"),
             quote = F, sep = "\t", row.names = F)
@@ -375,9 +375,9 @@ write.table(repressedGenes,
 \
 **OUTPUT FILES** :  
 All the output files can be found in the directory “RESULTS/DESeq2/”   
-`r paste0("/RESULTS/DESeq2/complete.txt")`  
-`r paste0("/RESULTS/DESeq2/up.txt")  `  
-`r paste0("/RESULTS/DESeq2/down.txt")  `   
+`r paste0("RESULTS/DESeq2/complete.txt")`  
+`r paste0("RESULTS/DESeq2/up.txt")  `  
+`r paste0("RESULTS/DESeq2/down.txt")  `   
 \
 *Explanation of each column* :  
 
