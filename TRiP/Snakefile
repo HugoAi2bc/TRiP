@@ -271,7 +271,7 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
+        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
         # "rm -f {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
@@ -307,17 +307,17 @@ rule htseqcount_transcript_utr:
         "set +o pipefail ;"
         "totalReads=`samtools view -c {input.bam} 2> {log.view}` ;"
 
-        "htseq-count -f bam -t 'CDS' -i 'ID' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
         "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_CDS} ;"
         "cat " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
 
-        "htseq-count -f bam -t 'three_prime_UTR' -i 'ID' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'three_prime_UTR' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
         "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_threeprime} ;"
         "cat " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt >> {output.counts_threeprime} ;"
 
-        "htseq-count -f bam -t 'five_prime_UTR' -i 'ID' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'five_prime_UTR' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
         "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_fiveprime} ;"
         "cat " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt >> {output.counts_fiveprime} ;"
