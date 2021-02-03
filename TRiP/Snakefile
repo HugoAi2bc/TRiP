@@ -102,7 +102,7 @@ onsuccess:
             logs_files.close()
         data_report.write("\n\n\n")
 
-        shell("rm -f " + local_path + "RESULTS/CRAM/" + sample + frag_length_L + ".uniq.sam ;")
+        shell("rm -f " + local_path + "RESULTS/BAM/" + sample + frag_length_L + ".uniq.sam ;")
 
     data_report.close()
 
@@ -206,8 +206,8 @@ rule run_mapping:
         fastq = local_path + "RESULTS/no-outRNA/{sample}" + frag_length_L + ".no-outRNA.fastq.gz"
     output:
         fastq = local_path + "RESULTS/no-outRNA/{sample}" + frag_length_L + ".no-outRNA.notAlign.fastq.gz",
-        sam_hisat2 = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".hisat2.sam",
-        sam_bowtie2 = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bowtie2.sam"
+        sam_hisat2 = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".hisat2.sam",
+        sam_bowtie2 = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bowtie2.sam"
     log:
         hisat2_out = local_path + "logsTmp/{sample}_run_mapping_hisat2.log",
         bowtie2_out = local_path + "logsTmp/{sample}_run_mapping_bowtie2.log"
@@ -222,15 +222,15 @@ rule run_mapping:
 # Creates bam and sam files
 rule samtools_filter:
     input:
-        sam_hisat2 = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".hisat2.sam",
-        sam_bowtie2 = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bowtie2.sam",
+        sam_hisat2 = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".hisat2.sam",
+        sam_bowtie2 = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bowtie2.sam",
         fasta = local_path + "database/" + config['fasta']
     output:
-        samuniq = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".uniq.sam",
-        cram = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".cram",
-        crai = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".cram.crai",
-        bam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam",
-        bai = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam.bai"
+        samuniq = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".uniq.sam",
+        cram = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".cram",
+        crai = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".cram.crai",
+        bam = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bam",
+        bai = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bam.bai"
     log:
         egrep1 = local_path + "logs/samtools_filter/{sample}.egrep1.log",
         grep = local_path + "logs/samtools_filter/{sample}.grep.log",
@@ -244,7 +244,7 @@ rule samtools_filter:
         index2 = local_path + "logs/samtools_filter/{sample}.samtools_index2.log",
         rm = local_path + "logs/samtools_filter/{sample}.rm.log"
     params:
-        sam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".sam"
+        sam = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".sam"
     shell:
         # samtools 1.11
         "set +o pipefail ;"
@@ -260,8 +260,8 @@ rule samtools_filter:
 # Counts reads on each transcript
 rule htseqcount_transcript:
     input:
-        bam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam",
-        bai = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam.bai",
+        bam = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bam",
+        bai = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bam.bai",
         gff = local_path + "database/" + config['gff']
     output:
         local_path + "RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA.htseqcount.txt"
@@ -271,14 +271,14 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  >> {output} ;"
+        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  > {output} ;"
         # "rm -f {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
 rule htseqcount_transcript_utr:
     input:
-        bam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam",
-        bai = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".bam.bai",
+        bam = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bam",
+        bai = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bam.bai",
         gff = local_path + "database/" + config['gff'],
         CDS = local_path + "database/" + config['CDSlength'],
         five_prime = local_path + "database/" + config['5primelength'],
@@ -307,19 +307,19 @@ rule htseqcount_transcript_utr:
         "set +o pipefail ;"
         "totalReads=`samtools view -c {input.bam} 2> {log.view}` ;"
 
-        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 > " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
-        "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_CDS} ;"
+        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 >> " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
         "cat " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
 
-        "htseq-count -f bam -t 'three_prime_UTR' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 > " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
-        "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_threeprime} ;"
+        "htseq-count -f bam -t 'three_prime_UTR' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 >> " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
+        "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
         "cat " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt >> {output.counts_threeprime} ;"
 
-        "htseq-count -f bam -t 'five_prime_UTR' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 > " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
-        "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
         "echo Genes\\\t{wildcards.sample} > {output.counts_fiveprime} ;"
+        "htseq-count -f bam -t 'five_prime_UTR' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 >> " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
+        "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
         "cat " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt >> {output.counts_fiveprime} ;"
 
         "rm -f " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
@@ -336,7 +336,7 @@ rule htseqcount_transcript_utr:
 # Divisions of SAM file according to read length and turns it into BAM
 rule quality_controls_bamDivision:
     input:
-        sam = local_path + "RESULTS/CRAM/{sample}" + frag_length_L + ".uniq.sam",
+        sam = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".uniq.sam",
         gff = local_path + "database/" + config['gff']
     output:
         bam = local_path + "RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
@@ -479,7 +479,7 @@ rule DESeq2_analysis:
     log:
         deseq2 = local_path + "logs/DESeq2_analysis/DESeq2_analysis.log"
     params:
-        reportPath = local_path + "RESULTS/",
+        reportPath = local_path + "RESULTS/DESeq2/",
         # reportName = config['project_name'] + ".Final_report"
         reportName = config['project_name'] + ".Final_report_len-" + config['readsLength_min'] + "-" + config['readsLength_max'] + "_ref-" + config['reference_condition'] + "_pval" + config['p-val'] + "_logFC" + config['logFC']
     shell:
