@@ -49,15 +49,6 @@ Var_padj <- as.numeric(gsub(" ", "", params[which(params=="p-val")+1], fixed = T
 pathway = "/data/RESULTS/DESeq2/count_matrix.txt"
 expData = read.table(pathway, header = T, row.names = 1)
 
-
-
-
-expData = read.csv("/home/hugo.arbes/Hugo/GST/TRiP/article/data_to_test/LRRK2/article_data/DESeq2/lines_normalized/normalized_counts_by_cell_line_matrix2.csv", header = T, row.names = 1, sep = "\t", stringsAsFactors=FALSE)
-expData = expData[,5:8]
-#expData = as.numeric(expData)
-expData = as.matrix(expData)
-
-
 #sum_vec = c()
 #for(i in 1:dim(expData)[[1]]) {
 #  sum = 0
