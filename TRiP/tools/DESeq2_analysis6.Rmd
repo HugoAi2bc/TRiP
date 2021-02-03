@@ -73,10 +73,6 @@ First of all, the count matrix obtained with TRiP tool is loaded in R. It contai
 
 \
 *Table 1 : Header of the count matrix*
-```{r  results = 'asis', echo = FALSE}
-knitr::kable(head(expData[,]))
-```
-
 ```{r Determination of the number of samples , include=FALSE }
 expData_Sorted <- expData[,sort(colnames(expData))]
 Names_Col <- colnames(expData_Sorted)
@@ -96,6 +92,10 @@ if (Cond[1] != refCond) {
    Names_Col <- colnames(expData_Sorted) 
    sample <- Cond[1]
 }
+```
+
+```{r  results = 'asis', echo = FALSE}
+knitr::kable(head(expData[,]))
 ```
 ##### *`r paste0("Samples : ",nb_col_condB," ",Cond[1]," vs ",nb_col_condA," ",Cond[nb_col_condB+1])`*
  \
