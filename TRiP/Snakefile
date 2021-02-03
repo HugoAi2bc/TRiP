@@ -448,7 +448,7 @@ rule count_matrix_initialization:
     shell:
         "set +o pipefail ;"
         "echo Genes\\\t > {output} ;"
-        "cut -f1 {input.counts} | sort >> {output} 2> {log} ;"
+        "tail +2 {input.counts} | cut -f1 | sort >> {output} 2> {log} ;"
 
 # Adds the read counts of each sample to the matrix
 rule count_matrix_creation:
