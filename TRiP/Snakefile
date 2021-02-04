@@ -27,7 +27,7 @@ else:
 
 # Change cutadapt options to keep or not multi-mapped reads
 if config['times_mapped'] == "0":
-    mapped_samtools = "3348 -q 1 "
+    mapped_samtools = "3332 -q 1 "
     mapped_htseq_mode = "score "
     mapped_htseq_mapq = "10 "
     mapped_aligner = ""
@@ -106,6 +106,8 @@ onsuccess:
 
     data_report.close()
 
+    # Copies config file to keep trace of parameters used
+    shell("cp " + local_path + "/config.yaml > " + local_path + "RESULTS/save_config.yaml ;")
     # Removes useless directory
     shell("rm -f -r " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ " + local_path + "RESULTS/qualitativeAnalysis/readsLengthRepartition/*.bed " + local_path + "RESULTS/qualitativeAnalysis/sequenceBedCount/ " + local_path + "RESULTS/qualitativeAnalysis/*tempoR.Rout ;")
     shell("rm -f -r " + local_path + "RESULTS/no-outRNA/ " + local_path + "RESULTS/cutadapt/ " + local_path + "database/*t2 " + local_path + "database/*.fai " + local_path + "*tempoR.Rout ;")
@@ -227,21 +229,21 @@ rule samtools_filter:
         fasta = local_path + "database/" + config['fasta']
     output:
         samuniq = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".uniq.sam",
-        cram = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".cram",
-        crai = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".cram.crai",
+        # cram = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".cram",
+        # crai = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".cram.crai",
         bam = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bam",
         bai = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".bam.bai"
     log:
         egrep1 = local_path + "logs/samtools_filter/{sample}.egrep1.log",
-        grep = local_path + "logs/samtools_filter/{sample}.grep.log",
+        grep1 = local_path + "logs/samtools_filter/{sample}.grep.log",
         egrep2 = local_path + "logs/samtools_filter/{sample}.egrep2.log",
         view1 = local_path + "logs/samtools_filter/{sample}.samtools_view1.log",
         view2 = local_path + "logs/samtools_filter/{sample}.samtools_view2.log",
         sort2 = local_path + "logs/samtools_filter/{sample}.samtools_sort2.log",
-        view3 = local_path + "logs/samtools_filter/{sample}.samtools_view3.log",
-        sort3 = local_path + "logs/samtools_filter/{sample}.samtools_sort3.log",
+        # view3 = local_path + "logs/samtools_filter/{sample}.samtools_view3.log",
+        # sort3 = local_path + "logs/samtools_filter/{sample}.samtools_sort3.log",
         index1 = local_path + "logs/samtools_filter/{sample}.samtools_index1.log",
-        index2 = local_path + "logs/samtools_filter/{sample}.samtools_index2.log",
+        # index2 = local_path + "logs/samtools_filter/{sample}.samtools_index2.log",
         rm = local_path + "logs/samtools_filter/{sample}.rm.log"
     params:
         sam = local_path + "RESULTS/BAM/{sample}" + frag_length_L + ".sam"
@@ -249,12 +251,12 @@ rule samtools_filter:
         # samtools 1.11
         "set +o pipefail ;"
         "egrep -i 'XM:i:2|XM:i:0|XM:i:1|@' {input.sam_hisat2} 1> {params.sam} 2> {log.egrep1} ;"
-        "grep -v '@' {input.sam_bowtie2} 2> {log.grep} | egrep -i 'XM:i:2|XM:i:0|XM:i:1' 1>> {params.sam} 2> {log.egrep2} ;"
+        "grep -v '@' {input.sam_bowtie2} 2> {log.grep1} | egrep -i 'XM:i:2|XM:i:0|XM:i:1' 1>> {params.sam} 2> {log.egrep2} ;"
         "samtools view -@ " + config['threads'] + " -F " + mapped_samtools + "-h {params.sam} 1> {output.samuniq}  2> {log.view1} ;"
         "samtools view -@ " + config['threads'] + " -b {output.samuniq}  2> {log.view2} | samtools sort -@ " + config['threads'] + " -o {output.bam}  2> {log.sort2} ;"
-        "samtools view -@ " + config['threads'] + " -T {input.fasta} -C {output.samuniq}  2> {log.view3} | samtools sort -@ " + config['threads'] + " -o {output.cram}  2> {log.sort3} ;"
+        # "samtools view -@ " + config['threads'] + " -T {input.fasta} -C {output.samuniq}  2> {log.view3} | samtools sort -@ " + config['threads'] + " -o {output.cram}  2> {log.sort3} ;"
         "samtools index {output.bam} 2> {log.index1} ;"
-        "samtools index {output.cram} 2> {log.index2} ;"
+        # "samtools index {output.cram} 2> {log.index2} ;"
         "rm -f {params.sam} {input.sam_hisat2} {input.sam_bowtie2} 2> {log.rm};"
 
 # Counts reads on each transcript
@@ -271,7 +273,9 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  > {output} ;"
+        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' --secondary-alignments " + mapped_htseq_mode + "--supplementary-alignments " + mapped_htseq_mode + "-a " + mapped_htseq_mapq + "-m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  > " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "sort " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt >> {output} ;"
+        "rm -f " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
         # "rm -f {input.bam} {input.bai};"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
@@ -463,7 +467,8 @@ rule count_matrix_creation:
     run:
         shell("cat {input} > {output} ;")
         for sample in SAMPLES:
-            shell("join --nocheck-order --header -t $'\t' " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
+            shell("join --header -t $'\t' " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
+            # shell("join --nocheck-order --header -t $'\t' " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
             shell("cat {params.tmp_file} > {output} ;")
         shell("rm -f " + local_path + "RESULTS/DESeq2/gene_list.txt {params.tmp_file} ;")
 
