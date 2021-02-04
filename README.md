@@ -3,12 +3,14 @@
 Welcome to the TRiP tool tutorial !  
 >TRiP is designed to perform all classical steps of **ribosome profiling** (RiboSeq) data >analysis from the FastQ files to the differential expression analysis.
 
+[TOC]
+
 ## 1) Install Docker  
 First of all, Docker must be present in version 19 or higher.  
 If you don’t already have it, now is the time to fix it !  
 Docker Engine is available on different OS like macOS and Windows 10 through Docker Desktop and as a static binary installation for a variety of Linux platforms. All are available here : https://docs.docker.com/engine/install/  
 >Tips:  
->&emsp;For Windows, WSL2 and Ubuntu from Microsoft store applications are needed too.  
+>&emsp;&emsp;&emsp;For Windows, WSL2 and Ubuntu from Microsoft store applications are needed too.  
   
 ## 2) Directory preparation  
 TRiP does not need installation (yipee) but a precise folder architecture is required (boo).  
@@ -23,25 +25,25 @@ Project_name
 ### a) *fastq* subfolder  
 This subfolder, as its name suggests, should contain your FastQs. These must be compressed in .gz.  
 **Format of file name must be as following:**  
-&emsp;<span style="color:purple">biological_condition_name</span>.<span style="color:green">replicat</span>.<span style="color:blue">fastq.gz</span>  
+&emsp;&emsp;&emsp;+biological_condition_name+.<span style="color:green">replicat</span>.<span style="color:blue">fastq.gz</span>  
 For example, for the first replicat of the wild-type condition, sample will be named *WT.1.fastq.gz*  
 >Caution, for **Windows**, extensions can be hidden.    
    
 Folder architecture at this step:  
 Project_name  
 └── fastq   
-    ├── condA.1.fastq.gz   
-    ├── condA.2.fastq.gz   
-    ├── condB.1.fastq.gz   
-    └── condB.2.fastq.gz  
+&emsp;&emsp;├── condA.1.fastq.gz   
+&emsp;&emsp;├── condA.2.fastq.gz   
+&emsp;&emsp;├── condB.1.fastq.gz   
+&emsp;&emsp;└── condB.2.fastq.gz  
   
   
 ### b) *database* subfolder  
 In this subfolder, you must put at least the following three files:  
 - your genome fasta file: Whether it's the genome or the transcriptome, it must be your reference fasta file where reads will be aligned. It must, like the other files, be downloaded from the [Ensembl](https://www.ensembl.org/index.html) database.  
 > Note: 
->&emsp;For complexe genomes, transcriptome is preferable (less complexity and better analysis).   
->&emsp;If the genome is used, the computer needs a larger RAM capacity than for transcriptome.    
+>&emsp;&emsp;For complexe genomes, transcriptome is preferable (less complexity and better analysis).   
+>&emsp;&emsp;If the genome is used, the computer needs a larger RAM capacity than for transcriptome.    
    
    
 - GFF3 file corresponding to the reference genome dropped.  
@@ -52,15 +54,14 @@ If you have them, files containing each annotation length (see next paragraph) a
 Folder architecture at this step:  
 Project_name  
 ├── fastq   
-│   ├── condA.1.fastq.gz   
-│   ├── condA.2.fastq.gz   
-│   ├── condB.1.fastq.gz   
-│   └── condB.2.fastq.gz  
+│&emsp;&emsp;├── condA.1.fastq.gz   
+│&emsp;&emsp;├── condA.2.fastq.gz   
+│&emsp;&emsp;├── condB.1.fastq.gz   
+│&emsp;&emsp;└── condB.2.fastq.gz  
 └── database   
-    ├── reference_transcriptome.fa  
-    ├── reference_transcriptome.gff3  
-    ├── RNA_to_remove.fa  
-    └── annotation_length.txt (if possible)  
+&emsp;&emsp;├── reference_transcriptome.fa  
+&emsp;&emsp;├── RNA_to_remove.fa  
+&emsp;&emsp;└── annotation_length.txt (if possible)  
   
 ### c) [config.yaml](link to configfile entre parenthèses) file  
 Configfile file is used to define parameters to tell TRiP how to process your data.  
