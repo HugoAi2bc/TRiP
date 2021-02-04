@@ -62,7 +62,7 @@ rule all:
         expand(local_path + "RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
 
         #call for count matrix creation for DESeq2 dans final report
-        local_path + "RESULTS/" + config['project_name'] + ".Final_report_len-" + config['readsLength_min'] + "-" + config['readsLength_max'] + "_ref-" + config['reference_condition'] + "_pval" + config['p-val'] + "_logFC" + config['logFC'] + ".html"
+        local_path + "RESULTS/DESeq2/" + config['project_name'] + ".Final_report_len-" + config['readsLength_min'] + "-" + config['readsLength_max'] + "_ref-" + config['reference_condition'] + "_pval" + config['p-val'] + "_logFC" + config['logFC'] + ".html"
 
 
 # When the jobs are all done
@@ -480,7 +480,7 @@ rule DESeq2_analysis:
         up = local_path + "RESULTS/DESeq2/up.txt",
         down = local_path + "RESULTS/DESeq2/down.txt",
         # report = local_path + "RESULTS/" + config['project_name'] + ".Final_report.html"
-        report = local_path + "RESULTS/" + config['project_name'] + ".Final_report_len-" + config['readsLength_min'] + "-" + config['readsLength_max'] + "_ref-" + config['reference_condition'] + "_pval" + config['p-val'] + "_logFC" + config['logFC'] + ".html"
+        report = local_path + "RESULTS/DESeq2/" + config['project_name'] + ".Final_report_len-" + config['readsLength_min'] + "-" + config['readsLength_max'] + "_ref-" + config['reference_condition'] + "_pval" + config['p-val'] + "_logFC" + config['logFC'] + ".html"
     log:
         deseq2 = local_path + "logs/DESeq2_analysis/DESeq2_analysis.log"
     params:
