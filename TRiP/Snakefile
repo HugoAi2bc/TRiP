@@ -448,11 +448,13 @@ rule count_matrix_initialization:
     output:
         local_path + "RESULTS/DESeq2/gene_list.txt"
     log:
-        local_path + "logs/count_matrix_initialization/cut_sort.log"
+        header = "logs/count_matrix_initialization/head.log",
+        core = local_path + "logs/count_matrix_initialization/cut_sort.log"
     shell:
         "set +o pipefail ;"
-        "echo Genes\\\t > {output} ;"
-        "tail +2 {input.counts} | cut -f1 | sort >> {output} 2> {log} ;"
+        # "echo Genes\\\t > {output} ;"
+        "head -1 {input.counts} | cut -f1 >> {output} 2> {log.header}"
+        "tail +2 {input.counts} | cut -f1 | sort >> {output} 2> {log.core} ;"
 
 # Adds the read counts of each sample to the matrix
 rule count_matrix_creation:
@@ -486,7 +488,7 @@ rule DESeq2_analysis:
     params:
         reportPath = local_path + "RESULTS/DESeq2/",
         # reportName = config['project_name'] + ".Final_report"
-        reportName = config['project_name'] + ".Final_report
+        reportName = config['project_name'] + ".Final_report"
     shell:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
