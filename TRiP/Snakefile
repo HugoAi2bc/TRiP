@@ -452,7 +452,6 @@ rule count_matrix_initialization:
         core = local_path + "logs/count_matrix_initialization/cut_sort.log"
     shell:
         "set +o pipefail ;"
-        # "echo Genes\\\t > {output} ;"
         "head -1 {input.counts} | cut -f1 >> {output} 2> {log.header} ;"
         "tail +2 {input.counts} | cut -f1 | sort >> {output} 2> {log.core} ;"
 
@@ -470,7 +469,6 @@ rule count_matrix_creation:
         shell("cat {input} > {output} ;")
         for sample in SAMPLES:
             shell("join --nocheck-order --header -t $'\t' " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
-            # shell("join --nocheck-order --header -t $'\t' " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
             shell("cat {params.tmp_file} > {output} ;")
         shell("rm -f " + local_path + "RESULTS/DESeq2/gene_list.txt {params.tmp_file} ;")
 
@@ -481,14 +479,12 @@ rule DESeq2_analysis:
         complete = local_path + "RESULTS/DESeq2/complete.txt",
         up = local_path + "RESULTS/DESeq2/up.txt",
         down = local_path + "RESULTS/DESeq2/down.txt",
-        # report = local_path + "RESULTS/" + config['project_name'] + ".Final_report.html"
         report = local_path + "RESULTS/DESeq2/" + config['project_name'] + ".Final_report.html"
     log:
         control = local_path + "logs/DESeq2_analysis/header_control.log",
         deseq2 = local_path + "logs/DESeq2_analysis/DESeq2_analysis.log"
     params:
         reportPath = local_path + "RESULTS/DESeq2/",
-        # reportName = config['project_name'] + ".Final_report"
         reportName = config['project_name'] + ".Final_report"
     shell:
         # bioconductor-deseq2 1.30.0
@@ -497,5 +493,5 @@ rule DESeq2_analysis:
         # bioconductor-deseq2 1.30.0
         # r-stringr 1.4.0
         "set +o pipefail ;"
-        "[ `head -2 {input} | cut -f1 | uniq | wc -l` == 1 ] && sed -e '2d' {input} > {output.matrix} 2> {log.control};"
+        "[ `head -2 {input} | cut -f1 | uniq | wc -l` == 1 ] && sed -i -e '2d' {input} ;"
         "Rscript -e \"rmarkdown::render('" + trip_tools + "DESeq2_analysis7.Rmd', output_format='html_document', output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
