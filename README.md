@@ -8,23 +8,25 @@ First of all, Docker must be present in version 19 or higher.
 If you don’t already have it, now is the time to fix it !  
 Docker Engine is available on different OS like macOS and Windows 10 through Docker Desktop and as a static binary installation for a variety of Linux platforms. All are available here : https://docs.docker.com/engine/install/  
 >Tips:  
->	For Windows, WSL2 and Ubuntu from Microsoft store applications are needed too.  
+>&emsp;For Windows, WSL2 and Ubuntu from Microsoft store applications are needed too.  
   
 ## 2) Directory preparation  
 TRiP does not need installation (yipee) but a precise folder architecture is required (boo).  
 The first step is the project folder creation. It is named as your project and will be the volume linked to Docker.  
 Then, two sub-folders and a file have to be created and completed respectively.  
 > **Caution, those steps are majors for the good course of the analysis**  
-> **Subfolders don’t have uppercase**  
+> **Subfolders don’t have uppercase**    
+  
 Folder architecture at this step:  
 Project_name  
   
 ### a) *fastq* subfolder  
 This subfolder, as its name suggests, should contain your FastQs. These must be compressed in .gz.  
 **Format of file name must be as following:**  
-	<span style="color:purple">biological_condition_name</span>.<span style="color:green">replicat</span>.<span style="color:blue">fastq.gz</span>  
+&emsp;<span style="color:purple">biological_condition_name</span>.<span style="color:green">replicat</span>.<span style="color:blue">fastq.gz</span>  
 For example, for the first replicat of the wild-type condition, sample will be named *WT.1.fastq.gz*  
->Caution, for **Windows**, extensions can be hidden.   
+>Caution, for **Windows**, extensions can be hidden.    
+   
 Folder architecture at this step:  
 Project_name  
 └── fastq   
@@ -37,6 +39,11 @@ Project_name
 ### b) *database* subfolder  
 In this subfolder, you must put at least the following three files:  
 - your genome fasta file: Whether it's the genome or the transcriptome, it must be your reference fasta file where reads will be aligned. It must, like the other files, be downloaded from the [Ensembl](https://www.ensembl.org/index.html) database.  
+> Note: 
+>&emsp;For complexe genomes, transcriptome is preferable (less complexity and better analysis).   
+>&emsp;If the genome is used, the computer needs a larger RAM capacity than for transcriptome.    
+   
+   
 - GFF3 file corresponding to the reference genome dropped.  
 - out-RNA fasta: This fasta file must gather together RNA sequences you want to remove. As a rule, these are at least rRNA. You can also add mitochondrial RNA or any other RNA.  
   
@@ -57,7 +64,7 @@ Project_name
   
 ### c) [config.yaml](link to configfile entre parenthèses) file  
 Configfile file is used to define parameters to tell TRiP how to process your data.  
-You must download it [here](lien final du config)  
+You must download it [here](lien final du config) and open it with a text editor.    
 It must be carefully completed and be present in the project directory everytime you want to run TRiP.  
 >Caution  
 >	Spaces and quotation marks **must not be changed**! Your information must be entered in quotes     
@@ -84,7 +91,9 @@ You also have to define the range for read length selection. Default values are 
 *kmer_min*: minimum read length  
 *kmer_max*: maximum read length  
 #### Statistical settings  
-To be able to perform statistical analyzes, you must define a reference condition as well as your thresholds. We have pre-define them:  
+To be able to perform statistical analyzes, you must define a reference condition as well as your thresholds.   
+*reference_condition*: it correspond to the reference biological_condition_name
+We have pre-define them:  
 *p-val*: defined at 0.01 to keep only genes with a high confidence.  
 *logFC*: defined at 0 to keep all the genes.  
 #### Window for qualitative test  
@@ -115,30 +124,38 @@ Project_name
 │   ├── reference_transcriptome.gff3  
 │   └── RNA_to_remove.fa  
 └── configfile.yaml  
+
+Don't forget to save file !        
   
 ## 3) Pull TRiP  
 When the folder architecture is ready, it’s time to take a TRiP !  
 First, open a terminal.  
-If you never had use TRiP on your workstation, you must pulled it from Docker hub:  
-	`(sudo) docker pull equipegst/trip`  
-> Depending on the OS, superuser rights may be required  
+If you never had use TRiP on your workstation, you must pull it from Docker hub.  
+Copy and past the following command line:    
+	`docker pull equipegst/trip`  
+If you have rights problem, copy and past this command:    
+	`sudo docker pull equipegst/trip`     
   
 ## 4) Run TRiP  
 Then, or if you already have used TRiP, you can run it thanks to the following command:  
 	`(sudo) docker run -v /path/to/working/directory/:/data/ equipegst/trip`  
 */path/to/working/directory/* corresponds to the project_name directory full path.   
-*/data/* path **must not be modified in any way**  
+*/data/* **must not be modified in any way**  
 >Caution:  
 >	All paths must start and finish with a slash “/”.   
   
+   
 >For Windows users  
 >	Path has to start at the local disks C or D: *C:\your\path\*   
->	Path has to be composed and finished with backslashes “\”.  
->	/data/ path do not change !  
+>	Path has to be composed and finished with backslashes “\”.   
+>	/data/ path do not change !   
   
+## 5) In case of error   
+Probleme docker   
+probleme de mémoire   
+Et si problème autre sur un job, voir la rule et aller dans le dossier logs     
   
-  
-## 5) Understand results  
+## 6) Understand results  
 Here the project_name folder architecture after TRiP run.  
 Initial folders and files are still present and highlighted in green in the tree architecture below.  
 <span style="color:green">Project_name  
