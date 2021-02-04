@@ -467,7 +467,7 @@ rule count_matrix_creation:
     run:
         shell("cat {input} > {output} ;")
         for sample in SAMPLES:
-            shell("join --header -t $'\t' " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
+            shell("join --nocheck-order --header -t $'\t' " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
             # shell("join --nocheck-order --header -t $'\t' " + local_path + "RESULTS/htseqcount_CDS/" + sample + frag_length_L + ".no-outRNA." + counts + ".txt {output} > {params.tmp_file} 2>> {log} ;")
             shell("cat {params.tmp_file} > {output} ;")
         shell("rm -f " + local_path + "RESULTS/DESeq2/gene_list.txt {params.tmp_file} ;")
