@@ -38,12 +38,6 @@ readsLength_min: "25"
 readsLength_max: "35"
 
 
-# times_mapped sets number of genome sequences for multi-mapped reads during alignment
-# '0' to take only uniquely mapped reads
-# '1' to keep only one multi-mapped reads and a higher number for more sequences corresponding to the same read
-times_mapped: "0"
-
-
 # Attribut to regroup reads during counting
 gff_attribut: "ID"
 
