@@ -1,52 +1,67 @@
 # Name for the experiment
 project_name: ""
 
-# Names of the files in the "database/" directory :
 # Name of the genome or transcriptome fasta file to align on
 fasta: ""
+
 # Name of the gff file with genome or transcriptome annotations
 gff: ""
+
 # Fasta file with not interesting sequences
 fasta_outRNA: ""
 
-# Does UTR covering has to be calculated : "yes" or "no" (you need the corresponding length files for it)
+
+# Does UTR covering has to be calculated ('yes' or 'no'). You need the corresponding length files if set to 'yes'
 UTR: "no"
-# The length options will be ignore if UTR is set on "yes"
+
+# The length options will be ignore if UTR is set on 'yes'
 # File with CDS lengths
 CDSlength: ""
+
 # File with 5' UTR lengths
 5primelength: ""
+
 # File with 3' UTR lengths
 3primelength: ""
 
-# Are the sequencing adapters already removed in fastq files ? "yes" or "no"
+
+# Are the sequencing adapters already removed in fastq files ? 'yes' or 'no'
 already_trimmed: ""
+
 # Adapter sequence
 adapt_sequence: ""
+
 # Minimum read length kept for ribosome profiling
 readsLength_min: "25"
+
 # Maximum read length kept for ribosome profiling
 readsLength_max: "35"
 
 
 # times_mapped sets number of genome sequences for multi-mapped reads during alignment
-# "0" to take only uniquely mapped reads
-# "1" to keep only one multi-mapped reads and a higher number for more sequences corresponding to the same read
+# '0' to take only uniquely mapped reads
+# '1' to keep only one multi-mapped reads and a higher number for more sequences corresponding to the same read
 times_mapped: "0"
+
 
 # Attribut to regroup reads during counting
 gff_attribut: "ID"
 
+
 # Name of the reference condition
 reference_condition: ""
-# Thresholds to adjust for differential expression analysis :
+
+# Thresholds to adjust for differential expression analysis
 p-val: "0.01"
 logFC: "0"
 
+
 # Number of bases to look before the start and after the stop for periodicity (relative positions)
 window_bf: "50"
+
 # Number of bases to look after the start and before the stop for periodicity (relative positions)
 window_af: "100"
+
 
 # Number of threads to be used
 threads: "2"
