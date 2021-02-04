@@ -25,17 +25,17 @@ if config['already_trimmed'] == "no":
 else:
     trim = ""
 
-# Change cutadapt options to keep or not multi-mapped reads
-if config['times_mapped'] == "0":
-    mapped_samtools = "3332 -q 1 "
-    mapped_htseq_mode = "score "
-    mapped_htseq_mapq = "10 "
-    mapped_aligner = ""
-else:
-    mapped_samtools = "1028 "
-    mapped_htseq_mode = "ignore "
-    mapped_htseq_mapq = "0 "
-    mapped_aligner = "-k " + config['times_mapped'] + " "
+# # Change cutadapt options to keep or not multi-mapped reads
+# if config['times_mapped'] == "0":
+mapped_samtools = "-F 3332 -q 1 "
+mapped_htseq_mode = "score "
+mapped_htseq_mapq = "10 "
+mapped_aligner = ""
+# else:
+#     mapped_samtools = "1028 "
+#     mapped_htseq_mode = "ignore "
+#     mapped_htseq_mapq = "0 "
+#     mapped_aligner = "-k " + config['times_mapped'] + " "
 
 # Change names for snakemake workflow, depending on data given
 if config['UTR'] == "yes":
@@ -252,7 +252,7 @@ rule samtools_filter:
         "set +o pipefail ;"
         "egrep -i 'XM:i:2|XM:i:0|XM:i:1|@' {input.sam_hisat2} 1> {params.sam} 2> {log.egrep1} ;"
         "grep -v '@' {input.sam_bowtie2} 2> {log.grep1} | egrep -i 'XM:i:2|XM:i:0|XM:i:1' 1>> {params.sam} 2> {log.egrep2} ;"
-        "samtools view -@ " + config['threads'] + " -F " + mapped_samtools + "-h {params.sam} 1> {output.samuniq}  2> {log.view1} ;"
+        "samtools view -@ " + config['threads'] + mapped_samtools + "-h {params.sam} 1> {output.samuniq}  2> {log.view1} ;"
         "samtools view -@ " + config['threads'] + " -b {output.samuniq}  2> {log.view2} | samtools sort -@ " + config['threads'] + " -o {output.bam}  2> {log.sort2} ;"
         # "samtools view -@ " + config['threads'] + " -T {input.fasta} -C {output.samuniq}  2> {log.view3} | samtools sort -@ " + config['threads'] + " -o {output.cram}  2> {log.sort3} ;"
         "samtools index {output.bam} 2> {log.index1} ;"
