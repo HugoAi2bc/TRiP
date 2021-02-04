@@ -11,6 +11,7 @@ fasta_outRNA: ""
 
 # Does UTR covering has to be calculated : "yes" or "no" (you need the corresponding length files for it)
 UTR: "no"
+# The length options will be ignore if UTR is set on "yes"
 # File with CDS lengths
 CDSlength: ""
 # File with 5' UTR lengths
@@ -18,10 +19,6 @@ CDSlength: ""
 # File with 3' UTR lengths
 3primelength: ""
 
-# Sets number of genome sequences for multi-mapped reads during alignment :
-# "0" to take only uniquely mapped reads
-# "1" to keep only one multi-mapped reads and a higher number for more sequences corresponding to the same read
-times_mapped: "0"
 # Are the sequencing adapters already removed in fastq files ? "yes" or "no"
 already_trimmed: ""
 # Adapter sequence
@@ -30,6 +27,12 @@ adapt_sequence: ""
 readsLength_min: "25"
 # Maximum read length kept for ribosome profiling
 readsLength_max: "35"
+
+
+# times_mapped sets number of genome sequences for multi-mapped reads during alignment
+# "0" to take only uniquely mapped reads
+# "1" to keep only one multi-mapped reads and a higher number for more sequences corresponding to the same read
+times_mapped: "0"
 
 # Attribut to regroup reads during counting
 gff_attribut: "ID"
