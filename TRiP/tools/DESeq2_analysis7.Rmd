@@ -42,21 +42,21 @@ Var_log2FC <- as.numeric(gsub(" ", "", params[which(params=="logFC")+1], fixed =
 Var_padj <- as.numeric(gsub(" ", "", params[which(params=="p-val")+1], fixed = TRUE))
 ```
 \
-*`r paste0("Reference condition : ", refCond)`*
+##### *`r paste0("Reference condition : ", refCond)`*
 \
 
 ```{r data , echo=FALSE}
 pathway = "/data/RESULTS/DESeq2/count_matrix.txt"
-expData = read.table(pathway, header = T, row.names = 1)
+expData = read.table(pathway, header = T, row.names = 1, check.names = FALSE)
 
+# Minimum counts threshold :
 #sum_vec = c()
 #for(i in 1:dim(expData)[[1]]) {
 #  sum = 0
 #  sum = sum(expData[i,1:4])
 #  sum_vec = c(sum_vec,sum)
 #}
-#expData = expData[sum_vec>=64,]
-
+#expData = expData[sum_vec>=10,]
 ```
 
 
@@ -72,11 +72,12 @@ First of all, the count matrix obtained with TRiP tool is loaded in R. It contai
 `r nrow(expData)` features are compared in this study.
 
 \
-*Table 1 : Header of the count matrix*
+
+
 ```{r Determination of the number of samples , include=FALSE }
 expData_Sorted <- expData[,sort(colnames(expData))]
 Names_Col <- colnames(expData_Sorted)
-Cond <- str_replace(Names_Col,regex(".[[:digit:]]{1,}$"),"")
+Cond <- str_replace(Names_Col,regex("[.]{0,1}[[:digit:]]{1,}$"),"")
 nb_col_condA <- table(factor(Cond))[[1]]
 nb_col_condB <- table(factor(Cond))[[2]]
 sample <- Cond[nb_col_condA+1]
@@ -94,6 +95,7 @@ if (Cond[1] != refCond) {
 }
 ```
 
+*Table 1 : Header of the count matrix*
 ```{r  results = 'asis', echo = FALSE}
 knitr::kable(head(expData_Sorted[,]))
 ```
@@ -158,7 +160,7 @@ To check that normalization went well, we realized two graphs. The first one (fi
 *Figure 4 : Number of normalized reads counts per sample.*  
 
 
-```{r DESeq2, echo=FALSE}
+```{r, echo=FALSE}
 conds    = factor(c(rep("CondA", nb_col_condA), rep("CondB", nb_col_condB)))
 colData  = data.frame(condition = conds)
 ddsObjet = DESeqDataSetFromMatrix(countData = expData_Sorted,
@@ -333,7 +335,7 @@ plot(resDESeq[, "log2FoldChange"], -log10(Valeurs_Limite_Y),
 ```{r Creation Tables finales, include = FALSE}
 Bruts_Norm <- cbind(expData_Sorted, normCountData )
 
-Table_Complete <- data.frame(cbind(row.names(Bruts_Norm) , Bruts_Norm, CT_Mean, Mut_Mean, resDESeq) )
+Table_Complete <- data.frame(cbind(row.names(Bruts_Norm) , Bruts_Norm, CT_Mean,Mut_Mean , resDESeq) )
 
 
 colnames(Table_Complete) =  c("genes" ,
@@ -358,7 +360,7 @@ repressedGenes <- repressedGenes[(order(repressedGenes[,"padj"])),]
 ```
 
 
-```{r Tables writing}
+```{r, echo = FALSE}
 write.table(Table_Complete,
             file = paste0("/data/RESULTS/DESeq2/complete.txt"),
             quote = F, sep = "\t", row.names = F)
