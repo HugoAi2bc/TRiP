@@ -158,7 +158,7 @@ Et si problème autre sur un job, voir la rule et aller dans le dossier logs
 ## 6) Understand results  
 Here the project_name folder architecture after TRiP run.  
 Initial folders and files are still present and highlighted in green in the tree architecture below.  
-<span style="color:green">Project_name  
+<span style="color: green">Project_name  
 ├── fastq/   
 │   ├── condA.1.fastq.gz   
 │   ├── condA.2.fastq.gz   
@@ -168,10 +168,10 @@ Initial folders and files are still present and highlighted in green in the tree
 │   ├── reference_transcriptome.fa</span>  
 │   ├── reference_transcriptome.index.ht2  
 │   ├── reference_transcriptome.index.bt2  
-<span style="color:green">│   ├── reference_transcriptome.gff3  
+<span style="color: green">│   ├── reference_transcriptome.gff3  
 │   ├── RNA_to_remove.fa</span>  
 │   ├── RNA_to_remove.index.bt2  
-<span style="color:green">│   └── annotation_length.txt (if possible)</span>  
+<span style="color: green">│   └── annotation_length.txt (if possible)</span>  
 ├── logs/   
 │   └── *one_log_by_step*  
 ├── RESULTS/  
@@ -211,7 +211,7 @@ Initial folders and files are still present and highlighted in green in the tree
 │   ├── PROJECT_NAME.Analysis_report.txt  
 │   ├── PROJECT_NAME.Final_report.html  
 ├── dag_all.svg  
-<span style="color:green">└── configfile.yaml</span>  
+<span style="color: green">└── configfile.yaml</span>  
 - *logs* folder groups together all the output messages from tools used in TRiP analysis pipeline. Thus, in the event of an error, it allows you to identify the problematic step to give us feedback.   
 - *RESULTS* folder contains 7 subfolders:   
 	i) *BAM*: it contains a BAM file for each sample (allows visualization on tools such as IGV).  
