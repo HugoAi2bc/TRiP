@@ -62,7 +62,7 @@ rule all:
         expand(local_path + "RESULTS/htseqcount_CDS/{sample}" + frag_length_L + ".no-outRNA." + counts + ".txt", sample=SAMPLES),
 
         #call for count matrix creation for DESeq2 dans final report
-        local_path + "RESULTS/DESeq2/" + config['project_name'] + ".Final_report_len-" + config['readsLength_min'] + "-" + config['readsLength_max'] + "_ref-" + config['reference_condition'] + "_pval" + config['p-val'] + "_logFC" + config['logFC'] + ".html"
+        local_path + "RESULTS/DESeq2/" + config['project_name'] + ".Final_report.html"
 
 
 # When the jobs are all done
@@ -480,17 +480,17 @@ rule DESeq2_analysis:
         up = local_path + "RESULTS/DESeq2/up.txt",
         down = local_path + "RESULTS/DESeq2/down.txt",
         # report = local_path + "RESULTS/" + config['project_name'] + ".Final_report.html"
-        report = local_path + "RESULTS/DESeq2/" + config['project_name'] + ".Final_report_len-" + config['readsLength_min'] + "-" + config['readsLength_max'] + "_ref-" + config['reference_condition'] + "_pval" + config['p-val'] + "_logFC" + config['logFC'] + ".html"
+        report = local_path + "RESULTS/DESeq2/" + config['project_name'] + ".Final_report.html"
     log:
         deseq2 = local_path + "logs/DESeq2_analysis/DESeq2_analysis.log"
     params:
         reportPath = local_path + "RESULTS/DESeq2/",
         # reportName = config['project_name'] + ".Final_report"
-        reportName = config['project_name'] + ".Final_report_len-" + config['readsLength_min'] + "-" + config['readsLength_max'] + "_ref-" + config['reference_condition'] + "_pval" + config['p-val'] + "_logFC" + config['logFC']
+        reportName = config['project_name'] + ".Final_report
     shell:
         # bioconductor-deseq2 1.30.0
         # r-rmarkdown 2.6
         # r-factominer 2.4
         # bioconductor-deseq2 1.30.0
         # r-stringr 1.4.0
-        "Rscript -e \"rmarkdown::render('" + trip_tools + "DESeq2_analysis6.Rmd', output_format='html_document', output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
+        "Rscript -e \"rmarkdown::render('" + trip_tools + "DESeq2_analysis7.Rmd', output_format='html_document', output_file='{params.reportName}', output_dir='{params.reportPath}')\" 2> {log.deseq2} ;"
