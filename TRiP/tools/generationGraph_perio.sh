@@ -40,7 +40,7 @@ do
 	echo "#! bin/R" > "${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R"
 	echo "perio<-read.table(file = '${path}periodicity/${file}.txt')" >> "${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R"
 	echo "jpeg(filename = '${path}graphes/periodicity/${file}.jpeg')" >> "${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R"
-	echo "barplot(perio\$V2,col = c('red','green','blue'),names.arg = perio\$V1,cex.names = 0.75, las=3, xlab = 'Relative position of reads start', ylab = 'Number of reads')" >> "${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R"
+	echo "barplot(perio\$V2,col = c('red','green','blue'),names.arg = perio\$V1,cex.names = 0.75, las=3, xlab = 'Relative positions around CDS ${pos}s', ylab = 'Number of reads')" >> "${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R"
 	echo "dev.off()" >> "${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R"
 	R CMD BATCH "${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R"
 	rm -f "${path}graphes/periodicity/${N}.${l}.${m}.${M}.tempoR.R"
