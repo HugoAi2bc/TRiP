@@ -21,7 +21,7 @@ LENGTHS = list(map(str,range(int(config['readsLength_min']),int(config['readsLen
 
 # Change cutadapt options, depending on data given
 if config['already_trimmed'] == "no":
-    trim = "--trimmed-only "
+    trim = "-a " + config['adapt_sequence'] + " --trimmed-only "
 else:
     trim = ""
 
@@ -169,7 +169,7 @@ rule adapt_trimming:
         sample_names = "{sample}"
     shell:
         # cutadapt 3.1
-        "cutadapt -a " + config['adapt_sequence'] + " -e 0.125 " + trim + "--max-n=1 -m " + config['readsLength_min'] + " -M " + config['readsLength_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
+        "cutadapt " + trim + "-e 0.125 --max-n=1 -m " + config['readsLength_min'] + " -M " + config['readsLength_max'] + " -o {output} {input} 1>> {log.cutadapt_out} 2> {log.cutadapt} ;"
 
 # Mapping of non-coding RNA
 rule bowtie2_run_outRNA:
