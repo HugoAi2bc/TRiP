@@ -31,6 +31,7 @@ if config['UTR'] == "yes":
 else:
     counts = "htseqcount"
 
+
 frag_length_S = "." + LENGTHS[0]
 frag_length_L = "." + LENGTHS[0] + "-" + LENGTHS[len(LENGTHS)-1]
 
@@ -253,7 +254,7 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 >> {output} ;"
+        "htseq-count -f bam -t '" + config['gff_element'] + "' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 >> {output} ;"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
 rule htseqcount_transcript_utr:
@@ -289,17 +290,17 @@ rule htseqcount_transcript_utr:
         "totalReads=`samtools view -c {input.bam} 2> {log.view}` ;"
 
         "echo Genes\\\t{wildcards.sample} > {output.counts_CDS} ;"
-        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 >> " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t '" + config['gff_element'] + "' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 >> " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
         "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
         "cat " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
 
         "echo Genes\\\t{wildcards.sample} > {output.counts_threeprime} ;"
-        "htseq-count -f bam -t 'three_prime_UTR' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 >> " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t '" + config['gff_element_three_prime_utr'] + "' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 >> " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
         "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
         "cat " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt >> {output.counts_threeprime} ;"
 
         "echo Genes\\\t{wildcards.sample} > {output.counts_fiveprime} ;"
-        "htseq-count -f bam -t 'five_prime_UTR' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 >> " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t '" + config['gff_element_five_prime_utr'] + "' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 >> " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
         "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
         "cat " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt >> {output.counts_fiveprime} ;"
 
@@ -385,8 +386,8 @@ rule quality_controls_periodicity:
         stop = local_path + "logs/quality_controls_periodicity/{sample}.{taille}.log"
     shell:
         # gawk 5.1.0
-        "bash " + trip_tools + "periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t 'CDS' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O " + local_path + "RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
-        "bash " + trip_tools + "periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t 'CDS' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O " + local_path + "RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
+        "bash " + trip_tools + "periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ -p 'start' -t '" + config['gff_element'] + "' -m " + config['window_bf'] + " -M " + config['window_af'] + " -r 'metagene' -O " + local_path + "RESULTS/qualitativeAnalysis/ 2> {log.start} ;"
+        "bash " + trip_tools + "periodicity.sh -N {params.sample_names} -l {params.read_length} -G {input.gff} -D " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ -p 'stop' -t '" + config['gff_element'] + "' -m " + config['window_af'] + " -M " + config['window_bf'] + " -r 'metagene' -O " + local_path + "RESULTS/qualitativeAnalysis/ 2> {log.stop} ;"
 
 # Creates graphs of reads length repartition
 rule graphs_length:
