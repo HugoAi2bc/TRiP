@@ -181,7 +181,7 @@ rule bowtie2_run_outRNA:
     log:
         bt2 = local_path + "logsTmp/{sample}_bowtie2_run_outRNA.log"
     params:
-        sample_names="{sample}"
+        sample_names = "{sample}"
     shell:
         # bowtie2 2.4.2
         "bowtie2 -x " + local_path + "database/outRNA_bowtie2 --threads " + config['threads'] + " -U {input.fastq} --un-gz {output} > /dev/null 2>> {log.bt2} ;"
@@ -253,9 +253,7 @@ rule htseqcount_transcript:
         # htseq 0.12.4
         "set +o pipefail ;"
         "echo Genes\\\t{wildcards.sample} > {output};"
-        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5  > " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
-        "sort " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt >> {output} ;"
-        "rm -f " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
+        "htseq-count -f bam -t 'CDS' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 >> {output} ;"
 
 # Counts reads on each 5prime, 3prime or CDS part of each transcript
 rule htseqcount_transcript_utr:
@@ -324,8 +322,8 @@ rule quality_controls_bamDivision:
         bam = local_path + "RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam",
         bai = local_path + "RESULTS/qualitativeAnalysis/bamDivision/{sample}.{taille}.uniq.sort.bam.bai"
     params:
-        sample_names="{sample}",
-        read_length="{taille}"
+        sample_names = "{sample}",
+        read_length = "{taille}"
     log:
         local_path + "logs/quality_controls_bamDivision/{sample}.{taille}.BamDivision.log"
     shell:
@@ -344,8 +342,8 @@ rule quality_controls_bedcount:
         readsLengthRepartitionBed = local_path + "RESULTS/qualitativeAnalysis/readsLengthRepartition/{sample}.{taille}.bed",
         bed = local_path + "RESULTS/qualitativeAnalysis/bedCount/{sample}.{taille}.count.bed",
     params:
-        sample_names="{sample}",
-        read_length="{taille}"
+        sample_names = "{sample}",
+        read_length = "{taille}"
     log:
         local_path + "logs/quality_controls_bedcount/{sample}.{taille}.readsLengthRepartition.log"
     shell:
@@ -360,7 +358,7 @@ rule quality_controls_readsLengthRepartition:
         local_path + "RESULTS/qualitativeAnalysis/readsLengthRepartition/{sample}.readsLengthRepartition.txt"
     params:
         path = local_path + "RESULTS/qualitativeAnalysis/readsLengthRepartition/",
-        sample_names="{sample}"
+        sample_names = "{sample}"
     log:
         wc = local_path + "logs/quality_controls_readsLengthRepartition/{sample}.wc.log",
         sed1 = local_path + "logs/quality_controls_readsLengthRepartition/{sample}.sed1.log",
@@ -380,8 +378,8 @@ rule quality_controls_periodicity:
         start = local_path + "RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".txt",
         stop = local_path + "RESULTS/qualitativeAnalysis/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".txt"
     params:
-        sample_names="{sample}",
-        read_length="{taille}"
+        sample_names = "{sample}",
+        read_length = "{taille}"
     log:
         start = local_path + "logs/quality_controls_periodicity/{sample}.{taille}.log",
         stop = local_path + "logs/quality_controls_periodicity/{sample}.{taille}.log"
@@ -397,7 +395,7 @@ rule graphs_length:
     output:
         length = local_path + "RESULTS/qualitativeAnalysis/graphes/readsLengthRepartition/{sample}.readsLengthRepartition.jpeg"
     params:
-        sample_name="{sample}"
+        sample_name = "{sample}"
     log:
         bash = local_path + "logs/graphs_length/{sample}.generationGraph_length.log"
     shell:
@@ -412,8 +410,8 @@ rule graphs_periodicity:
         perioStart = local_path + "RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.start.CDS.-" + config['window_bf'] + "+" + config['window_af'] + ".jpeg",
         perioStop = local_path + "RESULTS/qualitativeAnalysis/graphes/periodicity/{sample}.{taille}.periodicity.stop.CDS.-" + config['window_af'] + "+" + config['window_bf'] + ".jpeg"
     params:
-        sample_name="{sample}",
-        read_length="{taille}"
+        sample_name = "{sample}",
+        read_length = "{taille}"
     log:
         bash = local_path + "logs/graphs_periodicity/{sample}.{taille}.generationGraph_perio.log"
     shell:
@@ -423,7 +421,7 @@ rule graphs_periodicity:
 # Creates the row names (genes/transcript names) of the count matrix
 rule count_matrix_initialization:
     input:
-        ready= expand(rules.htseqcount_transcript_utr.output, sample=SAMPLES) if config['UTR']=="yes" else expand(rules.htseqcount_transcript.output, sample=SAMPLES),
+        ready = expand(rules.htseqcount_transcript_utr.output, sample=SAMPLES) if config['UTR']=="yes" else expand(rules.htseqcount_transcript.output, sample=SAMPLES),
         counts = local_path + "RESULTS/htseqcount_CDS/" + SAMPLES[0] + "" + frag_length_L + ".no-outRNA." + counts + ".txt"
     output:
         local_path + "RESULTS/DESeq2/gene_list.txt"
