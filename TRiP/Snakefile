@@ -59,6 +59,8 @@ onsuccess:
     logs_names = ["adapt_trimming","bowtie2_run_outRNA","run_mapping_hisat2","run_mapping_bowtie2","rpkmMoyen"]
     if config['UTR'] == "no":
         logs_names = logs_names[:-1]
+    # else:
+    #     shell("Rscript " + trip_tools + "CDSvsUTR_coverage_graph.R ;")
 
     # File for the statistical report
     data_report = open(local_path + "RESULTS/" + config['project_name'] + ".Analysis_Report.txt","w")
@@ -93,6 +95,10 @@ onsuccess:
         shell("rm -f " + local_path + "RESULTS/BAM/" + sample + frag_length_L + ".uniq.sam ;")
 
     data_report.close()
+
+
+    if config['UTR'] == "yes":
+        shell("Rscript " + trip_tools + "CDSvsUTR_coverage_graph.R " + config['project_name'] " ;")
 
     # Copies config file to keep trace of parameters used
     shell("cp " + local_path + "config.yaml " + local_path + "RESULTS/ ;")
