@@ -98,7 +98,7 @@ onsuccess:
 
 
     if config['UTR'] == "yes":
-        shell("Rscript " + trip_tools + "CDSvsUTR_coverage_graph.R " + config['project_name'] " ;")
+        shell("Rscript " + trip_tools + "CDSvsUTR_coverage_graph.R " + config['project_name'] + " ;")
 
     # Copies config file to keep trace of parameters used
     shell("cp " + local_path + "config.yaml " + local_path + "RESULTS/ ;")
@@ -297,27 +297,27 @@ rule htseqcount_transcript_utr:
 
         "echo Genes\\\t{wildcards.sample} > {output.counts_CDS} ;"
         "htseq-count -f bam -t '" + config['gff_element_cds'] + "' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_CDS} | head -n -5 >> " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
-        "RPKMmoyenCDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
+        "mean_RPKM_CDS=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.CDS} " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt 2> {log.join_CDS} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_CDS}` ;"
         "cat " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt >> {output.counts_CDS} ;"
 
         "echo Genes\\\t{wildcards.sample} > {output.counts_threeprime} ;"
         "htseq-count -f bam -t '" + config['gff_element_three_prime_utr'] + "' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_3prime} | head -n -5 >> " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
-        "RPKMmoyen3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
+        "mean_RPKM_3prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.three_prime} " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt 2> {log.join_3prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_3prime}` ;"
         "cat " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt >> {output.counts_threeprime} ;"
 
         "echo Genes\\\t{wildcards.sample} > {output.counts_fiveprime} ;"
         "htseq-count -f bam -t '" + config['gff_element_five_prime_utr'] + "' -i '" + config['gff_attribut'] + "' -m intersection-strict {input.bam} {input.gff} 2> {log.htseqcount_5prime} | head -n -5 >> " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
-        "RPKMmoyen5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
+        "mean_RPKM_5prime=`join -1 1 -2 1 -o 1.1,1.2,2.2 -t $'\t' {input.five_prime} " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt 2> {log.join_5prime} | awk -F '\t' -v totalReads=$totalReads '{{print $0,$3/($2/1000*totalReads/1000000)}}' | awk 'BEGIN{{sum=0}}{{sum=sum+$4}}END{{print sum/NR}}' 2> {log.awk_5prime}` ;"
         "cat " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt >> {output.counts_fiveprime} ;"
 
         "rm -f " + local_path + "RESULTS/tmpCDS.{wildcards.sample}.txt ;"
         "rm -f " + local_path + "RESULTS/tmp_threeprime.{wildcards.sample}.txt ;"
         "rm -f " + local_path + "RESULTS/tmp_fiveprime.{wildcards.sample}.txt ;"
 
-        "echo 'RPKM moyen' 1>> {log.rpkm_out} 2> {log.rpkm} ;"
-        "echo 'CDS : '$RPKMmoyenCDS 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
-        "echo '5prime : '$RPKMmoyen5prime 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
-        "echo '3prime : '$RPKMmoyen3prime 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
+        "echo 'Mean RPKM' 1>> {log.rpkm_out} 2> {log.rpkm} ;"
+        "echo 'CDS : '$mean_RPKM_CDS 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
+        "echo '5prime : '$mean_RPKM_5prime 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
+        "echo '3prime : '$mean_RPKM_3prime 1>> {log.rpkm_out} 2>> {log.rpkm} ;"
 
 # Quality controls :
 # Divisions of SAM file according to read length and turns it into BAM
