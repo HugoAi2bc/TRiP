@@ -283,7 +283,7 @@ Figure 10 is the MA-plot which shows the mean of normalized counts for each feat
    
 *Figure 10 : MA-plot*   
 ```{r MA-plot, fig.height = 4, fig.width =4, echo=FALSE}
-plotMA(resDESeq, ylab = "log2 FC", colSig = rgb(1,0,0,0.5))
+plotMA(resDESeq, alpha = Var_padj, ylab = "log2 FC", colSig = rgb(1,0,0,0.5))
 ```
 
 
