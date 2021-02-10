@@ -98,10 +98,10 @@ onsuccess:
 
 
     if config['UTR'] == "yes":
-        shell("Rscript " + trip_tools + "CDSvsUTR_coverage_graph.R " + config['project_name'] + " ;")
+        shell("Rscript " + trip_tools + "CDSvsUTR_coverage_graph.R " + config['project_name'] + " 2> logs/CDSvsUTR.log 1>> logs/CDSvsUTR.log ;")
 
     # Copies config file to keep trace of parameters used
-    shell("cp " + local_path + "config.yaml " + local_path + "RESULTS/ 2> logs/CDSvsUTR.log 1>> logs/CDSvsUTR.log ;")
+    shell("cp " + local_path + "config.yaml " + local_path + "RESULTS/ ;")
     # Removes useless directories
     shell("rm -f -r " + local_path + "RESULTS/qualitativeAnalysis/bedCount/ " + local_path + "RESULTS/qualitativeAnalysis/readsLengthRepartition/*.bed " + local_path + "RESULTS/qualitativeAnalysis/sequenceBedCount/ " + local_path + "RESULTS/qualitativeAnalysis/*tempoR.Rout ;")
     shell("rm -f -r " + local_path + "RESULTS/no-outRNA/ " + local_path + "RESULTS/cutadapt/ " + local_path + "database/*t2 " + local_path + "database/*.fai " + local_path + "*tempoR.Rout ;")
