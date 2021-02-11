@@ -98,7 +98,7 @@ onsuccess:
 
 
     if config['UTR'] == "yes":
-        shell("Rscript " + trip_tools + "CDSvsUTR_coverage_graph.R " + config['project_name'] + " 1> logs/CDSvsUTR.log ;")
+        shell("Rscript " + trip_tools + "CDSvsUTR_coverage_graph.R " + config['project_name'] + " ;")
 
     # Copies config file to keep trace of parameters used
     shell("cp " + local_path + "config.yaml " + local_path + "RESULTS/ ;")
